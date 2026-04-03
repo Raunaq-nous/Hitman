@@ -20,7 +20,7 @@ export async function GET() {
 
     if (!user) return NextResponse.json({ message: "User not found" }, { status: 404 });
 
-    const joinedLeagues = user.leagueMembers.map(lm => lm.league);
+    const joinedLeagues = user.leagueMembers.map((lm: any) => lm.league);
 
     return NextResponse.json({ ownedLeagues: user.ownedLeagues, joinedLeagues });
   } catch (error) {
