@@ -50,13 +50,14 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
       const json = await res.json();
       if (json.success && json.data) {
         setData(json.data);
-        setLoading(false);
       } else {
         setError(json.error || "Failed to fetch");
       }
     } catch (e) {
       setError("Network error — retrying...");
       console.error("Live score error:", e);
+    } finally {
+      setLoading(false);
     }
   };
 
