@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // ─── Server-side cache (30-second TTL to conserve API quota) ───
 let cachedData: any = null;
 let lastFetchTime = 0;
