@@ -201,42 +201,61 @@ export async function GET(req: NextRequest) {
       throw new Error("Invalid API response");
     }
 
+    // ==== PRE-BUILD MOCK DATA ====
+    const dummyIPLData = {
+      source: "MOCK DATA (SIMULATION)",
+      matchId: "mock-1",
+      matchName: "Chennai Super Kings vs Punjab Kings",
+      matchType: "t20",
+      score: "PBKS: 184/5 (19.2)",
+      status: "PBKS need 12 runs from 4 balls",
+      overs: "19.2",
+      isLive: true,
+      matchStarted: true,
+      matchEnded: false,
+      teams: [
+        { name: "Chennai Super Kings", shortName: "CSK" },
+        { name: "Punjab Kings", shortName: "PBKS" }
+      ],
+      scores: [
+        { runs: 195, wickets: 6, overs: "20.0", inning: "Chennai Super Kings" },
+        { runs: 184, wickets: 5, overs: "19.2", inning: "Punjab Kings" }
+      ],
+      target: 196,
+      currentInnings: 2,
+      lastUpdated: new Date().toISOString(),
+      innings1: null,
+      innings2: null,
+      matchResult: null,
+      venue: "M. A. Chidambaram Stadium, Chennai",
+      date: new Date().toISOString(),
+      tossDecision: "PBKS opt to bowl"
+    };
+
     // Filter IPL matches and other T20 matches
     const allMatches = json.data;
     const iplMatches = allMatches.filter((m: any) =>
       m.name?.toLowerCase().includes("indian premier league") ||
+      m.name?.toLowerCase().includes("ipl") ||
       m.series_id === "87c62aac-bc3c-4738-ab93-19da0690488f"
     );
-    const otherT20s = allMatches.filter((m: any) =>
-      m.matchType === "t20" && !iplMatches.includes(m)
-    );
 
-    // Build response — prioritize live IPL, then completed IPL, then other T20
+    // Build response — prioritize live IPL, then completed IPL
     const liveIPL = iplMatches.filter((m: any) => m.matchStarted && !m.matchEnded);
     const completedIPL = iplMatches.filter((m: any) => m.matchEnded);
-    const liveOther = otherT20s.filter((m: any) => m.matchStarted && !m.matchEnded);
 
-    // Primary match: live IPL > completed recent IPL > any live T20
-    const primaryMatch = liveIPL[0] || completedIPL[0] || liveOther[0] || allMatches[0];
-    const primaryData = primaryMatch ? buildLiveData(primaryMatch) : null;
+    // Primary match: If no real IPL match is found, force the Mock IPL Match instead of bleeding other leagues.
+    const primaryData = liveIPL.length > 0 
+      ? buildLiveData(liveIPL[0]) 
+      : (completedIPL.length > 0 ? buildLiveData(completedIPL[0]) : dummyIPLData);
 
-    // All IPL matches for the sidebar
-    const allIPLData = iplMatches.map((m: any) => buildLiveData(m));
+    // All IPL matches for the sidebar (fallback to dummy if empty)
+    const allIPLData = iplMatches.length > 0 ? iplMatches.map((m: any) => buildLiveData(m)) : [dummyIPLData];
 
     const result = {
       primary: primaryData,
       iplMatches: allIPLData,
-      allMatches: allMatches.slice(0, 10).map((m: any) => ({
-        id: m.id,
-        name: m.name,
-        status: m.status,
-        isLive: m.matchStarted && !m.matchEnded,
-        matchEnded: m.matchEnded,
-        teams: m.teams,
-        venue: m.venue,
-        date: m.date,
-        score: parseScore(m.score),
-      })),
+      allMatches: [], // Enforce only IPL matches inside the interface
       apiInfo: {
         hitsToday: json.info?.hitsToday,
         hitsLimit: json.info?.hitsLimit,
