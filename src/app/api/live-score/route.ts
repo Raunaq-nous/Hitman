@@ -261,21 +261,21 @@ export async function GET(req: NextRequest) {
     const dummyIPLData = {
       source: "MOCK DATA (FALLBACK)",
       matchId: "mock-1",
-      matchName: "Mumbai Indians vs Chennai Super Kings",
+      matchName: "Chennai Super Kings vs Punjab Kings",
       matchType: "t20",
-      score: "MI: 184/5 (19.2)",
-      status: "MI need 12 runs from 4 balls",
+      score: "PBKS: 184/5 (19.2)",
+      status: "PBKS need 12 runs from 4 balls",
       overs: "19.2",
       isLive: true,
       matchStarted: true,
       matchEnded: false,
       teams: [
         { name: "Chennai Super Kings", shortName: "CSK" },
-        { name: "Mumbai Indians", shortName: "MI" }
+        { name: "Punjab Kings", shortName: "PBKS" }
       ],
       scores: [
         { runs: 195, wickets: 6, overs: "20.0", inning: "Chennai Super Kings" },
-        { runs: 184, wickets: 5, overs: "19.2", inning: "Mumbai Indians" }
+        { runs: 184, wickets: 5, overs: "19.2", inning: "Punjab Kings" }
       ],
       target: 196,
       currentInnings: 2,
@@ -283,9 +283,9 @@ export async function GET(req: NextRequest) {
       innings1: null,
       innings2: null,
       matchResult: null,
-      venue: "Wankhede Stadium, Mumbai",
+      venue: "M. A. Chidambaram Stadium, Chennai",
       date: new Date().toISOString(),
-      tossDecision: "MI opt to bowl"
+      tossDecision: "PBKS opt to bowl"
     };
 
     return NextResponse.json({
