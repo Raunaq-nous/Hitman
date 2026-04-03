@@ -244,10 +244,8 @@ export async function GET(req: NextRequest) {
     const liveIPL = iplMatches.filter((m: any) => m.matchStarted && !m.matchEnded);
     const completedIPL = iplMatches.filter((m: any) => m.matchEnded);
 
-    // Primary match: If no real IPL match is found, force the Mock IPL Match instead of bleeding other leagues.
-    const primaryData = liveIPL.length > 0 
-      ? buildLiveData(liveIPL[0]) 
-      : (completedIPL.length > 0 ? buildLiveData(completedIPL[0]) : dummyIPLData);
+    // Primary match: If no real LIVE IPL match is found, force the Mock IPL Match to simulate today's event instead of bleeding yesterday's completed match!
+    const primaryData = liveIPL.length > 0 ? buildLiveData(liveIPL[0]) : dummyIPLData;
 
     // All IPL matches for the sidebar (fallback to dummy if empty)
     const allIPLData = iplMatches.length > 0 ? iplMatches.map((m: any) => buildLiveData(m)) : [dummyIPLData];
