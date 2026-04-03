@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     // Generate mock stats and points per player
     const playerPointsMap: Record<string, number> = {};
     
-    players.forEach(p => {
+    players.forEach((p: any) => {
       // Mock stats
       const runs = Math.floor(Math.random() * 80);
       const fours = Math.floor(runs / 8);
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     for (const team of teams) {
       let totalPoints = 0;
 
-      team.players.forEach(fp => {
+      team.players.forEach((fp: any) => {
         let pPoints = playerPointsMap[fp.playerId] || 0;
         
         if (fp.playerId === team.captainId) {
