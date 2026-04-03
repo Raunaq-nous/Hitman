@@ -1,0 +1,10 @@
+{
+  "RUN": 1,
+  "BOUNDARY": 1,
+  "SIX": 2,
+  "WICKET": 25,
+  "CATCH": 8,
+  "RUNOUT": 10,
+  "CAPTAIN_MULTIPLIER": 2.0,
+  "VICE_CAPTAIN_MULTIPLIER": 1.5
+}
