@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  avatar    String?
+  xp        Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownedLeagues League[]       @relation("LeagueOwner")
+  leagueMembers LeagueMember[]
+  fantasyTeams FantasyTeam[]
+}
+
+model League {
+  id         String   @id @default(cuid())
+  name       String
+  inviteCode String   @unique
+  ownerId    String
+  owner      User     @relation("LeagueOwner", fields: [ownerId], references: [id])
+  createdAt  DateTime @default(now())
+
+  members    LeagueMember[]
+}
+
+model LeagueMember {
+  id       String @id @default(cuid())
+  userId   String
+  leagueId String
+  user     User   @relation(fields: [userId], references: [id])
+  league   League @relation(fields: [leagueId], references: [id])
+  joinedAt DateTime @default(now())
+
+  @@unique([userId, leagueId])
+}
+
+model Match {
+  id        String   @id @default(cuid())
+  team1     String
+  team2     String
+  date      DateTime
+  status    String   @default("UPCOMING") // UPCOMING, LIVE, COMPLETED
+  createdAt DateTime @default(now())
+
+  fantasyTeams FantasyTeam[]
+}
+
+model Player {
+  id      String @id @default(cuid())
+  name    String
+  team    String
+  role    String // BATSMAN, BOWLER, ALL_ROUNDER, WICKETKEEPER
+  credits Float  @default(9.0)
+  
+  fantasyPicks FantasyTeamPlayer[]
+}
+
+model FantasyTeam {
+  id            String   @id @default(cuid())
+  userId        String
+  matchId       String
+  captainId     String
+  viceCaptainId String
+  totalPoints   Float    @default(0)
+  createdAt     DateTime @default(now())
+
+  user   User  @relation(fields: [userId], references: [id])
+  match  Match @relation(fields: [matchId], references: [id])
+
+  players FantasyTeamPlayer[]
+}
+
+model FantasyTeamPlayer {
+  id            String      @id @default(cuid())
+  fantasyTeamId String
+  playerId      String
+
+  fantasyTeam FantasyTeam @relation(fields: [fantasyTeamId], references: [id])
+  player      Player      @relation(fields: [playerId], references: [id])
+
+  @@unique([fantasyTeamId, playerId])
+}
