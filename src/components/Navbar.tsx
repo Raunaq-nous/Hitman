@@ -12,7 +12,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <Link href="/" className="flex items-center space-x-2 shrink-0">
-            <img src="/icon-192.png" alt="Hitman" className="h-8 w-8 rounded-sm" />
+            <img src="/icons/icon-192.png" alt="Hitman" className="h-8 w-8 rounded-sm" />
             <span className="font-bold text-lg tracking-[0.2em] font-mono text-red-600">HITMAN</span>
           </Link>
 
