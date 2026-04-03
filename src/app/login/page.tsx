@@ -37,11 +37,11 @@ export default function LoginPage() {
     <div className="flex justify-center items-center h-[calc(100vh-8rem)]">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
         <div className="flex flex-col items-center mb-8">
-          <div className="h-16 w-16 bg-indigo-100 flex justify-center items-center rounded-full mb-4">
-            <Trophy className="h-8 w-8 text-indigo-600" />
+          <div className="h-16 w-16 bg-red-100 flex justify-center items-center rounded-full mb-4">
+            <Trophy className="h-8 w-8 text-red-600" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Welcome Back</h2>
-          <p className="text-sm text-gray-500 mt-2">Sign in to your Pitch11 account</p>
+          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight font-mono">Welcome Back</h2>
+          <p className="text-sm text-gray-500 mt-2 font-mono">Sign in to your HITMAN account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -58,7 +58,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="you@example.com"
             />
           </div>
@@ -70,7 +70,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="••••••••"
             />
           </div>
@@ -78,7 +78,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-all flex justify-center items-center"
+            className="w-full bg-red-600 text-white font-bold font-mono tracking-widest py-3 px-4 rounded-lg hover:bg-red-700 hover:shadow-[0_0_15px_rgba(220,38,38,0.5)] focus:ring-4 focus:ring-red-200 transition-all flex justify-center items-center"
           >
             {loading ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -90,7 +90,7 @@ export default function LoginPage() {
 
         <p className="mt-8 text-center text-sm text-gray-600">
           Don't have an account?{" "}
-          <Link href="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
+          <Link href="/register" className="font-semibold text-red-600 hover:text-red-500">
             Create an account
           </Link>
         </p>

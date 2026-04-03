@@ -5,12 +5,13 @@ import { redirect } from "next/navigation";
 import { Trophy, Medal, User } from "lucide-react";
 import Link from "next/link";
 
-export default async function LeagueLeaderboardPage({ params }: { params: { leagueId: string } }) {
+export default async function LeagueLeaderboardPage({ params }: { params: Promise<{ leagueId: string }> }) {
+  const { leagueId } = await params;
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
 
   const league = await prisma.league.findUnique({
-    where: { id: params.leagueId },
+    where: { id: leagueId },
     include: { members: { include: { user: true } } }
   });
   if (!league) redirect("/dashboard");

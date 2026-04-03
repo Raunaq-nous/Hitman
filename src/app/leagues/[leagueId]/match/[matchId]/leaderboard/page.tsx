@@ -6,23 +6,24 @@ import { Trophy, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import SimulateMatchButton from "@/components/SimulateMatchButton";
 
-export default async function MatchLeaderboardPage({ params }: { params: { leagueId: string; matchId: string } }) {
+export default async function MatchLeaderboardPage({ params }: { params: Promise<{ leagueId: string; matchId: string }> }) {
+  const { leagueId, matchId } = await params;
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
 
-  const match = await prisma.match.findUnique({ where: { id: params.matchId } });
-  if (!match) redirect(`/leagues/${params.leagueId}`);
+  const match = await prisma.match.findUnique({ where: { id: matchId } });
+  if (!match) redirect(`/leagues/${leagueId}`);
 
   // Get league to filter teams only for users in this league
   const league = await prisma.league.findUnique({
-    where: { id: params.leagueId },
+    where: { id: leagueId },
     include: { members: true }
   });
   const memberIds = league?.members.map(m => m.userId) || [];
 
   const teams = await prisma.fantasyTeam.findMany({
     where: { 
-      matchId: params.matchId,
+      matchId: matchId,
       userId: { in: memberIds }
     },
     include: {
@@ -37,7 +38,7 @@ export default async function MatchLeaderboardPage({ params }: { params: { leagu
       <div className="flex justify-between items-center mb-8">
         <div>
           <div className="flex items-center space-x-2 mb-2">
-            <Link href={`/leagues/${params.leagueId}`} className="text-gray-400 hover:text-indigo-600">
+            <Link href={`/leagues/${leagueId}`} className="text-gray-400 hover:text-indigo-600">
               <ArrowLeft size={20} />
             </Link>
             <span className="text-sm font-semibold uppercase tracking-widest text-indigo-600">

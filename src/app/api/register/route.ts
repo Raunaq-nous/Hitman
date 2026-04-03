@@ -28,8 +28,9 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ message: "User created" }, { status: 201 });
+    return NextResponse.json({ message: "User created", user: { id: user.id } }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ message: "Error creating user" }, { status: 500 });
+    console.error("Registration API error:", error);
+    return NextResponse.json({ message: "Error creating user", error: String(error) }, { status: 500 });
   }
 }
