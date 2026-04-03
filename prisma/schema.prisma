@@ -17,9 +17,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  ownedLeagues League[]       @relation("LeagueOwner")
+  ownedLeagues  League[]       @relation("LeagueOwner")
   leagueMembers LeagueMember[]
-  fantasyTeams FantasyTeam[]
+  fantasyTeams  FantasyTeam[]
 }
 
 model League {
@@ -30,27 +30,30 @@ model League {
   owner      User     @relation("LeagueOwner", fields: [ownerId], references: [id])
   createdAt  DateTime @default(now())
 
-  members    LeagueMember[]
+  members LeagueMember[]
 }
 
 model LeagueMember {
-  id       String @id @default(cuid())
+  id       String   @id @default(cuid())
   userId   String
   leagueId String
-  user     User   @relation(fields: [userId], references: [id])
-  league   League @relation(fields: [leagueId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  league   League   @relation(fields: [leagueId], references: [id])
   joinedAt DateTime @default(now())
 
   @@unique([userId, leagueId])
 }
 
 model Match {
-  id        String   @id @default(cuid())
-  team1     String
-  team2     String
-  date      DateTime
-  status    String   @default("UPCOMING") // UPCOMING, LIVE, COMPLETED
-  createdAt DateTime @default(now())
+  id            String   @id @default(cuid())
+  team1         String
+  team2         String
+  date          DateTime
+  status        String   @default("UPCOMING") // UPCOMING, LIVE, COMPLETED
+  tossCompleted Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  playing11 MatchPlayer[]
 
   fantasyTeams FantasyTeam[]
 }
@@ -61,8 +64,10 @@ model Player {
   team    String
   role    String // BATSMAN, BOWLER, ALL_ROUNDER, WICKETKEEPER
   credits Float  @default(9.0)
-  
-  fantasyPicks FantasyTeamPlayer[]
+
+  fantasyPicks     FantasyTeamPlayer[]
+  stats            PlayerStats[]
+  matchAppearances MatchPlayer[]
 }
 
 model FantasyTeam {
@@ -74,14 +79,14 @@ model FantasyTeam {
   totalPoints   Float    @default(0)
   createdAt     DateTime @default(now())
 
-  user   User  @relation(fields: [userId], references: [id])
-  match  Match @relation(fields: [matchId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+  match Match @relation(fields: [matchId], references: [id])
 
   players FantasyTeamPlayer[]
 }
 
 model FantasyTeamPlayer {
-  id            String      @id @default(cuid())
+  id            String @id @default(cuid())
   fantasyTeamId String
   playerId      String
 
@@ -89,4 +94,30 @@ model FantasyTeamPlayer {
   player      Player      @relation(fields: [playerId], references: [id])
 
   @@unique([fantasyTeamId, playerId])
+}
+
+model MatchPlayer {
+  id        String  @id @default(cuid())
+  matchId   String
+  playerId  String
+  isPlaying Boolean @default(false)
+
+  match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([matchId, playerId])
+}
+
+model PlayerStats {
+  id            String @id @default(cuid())
+  playerId      String
+  season        Int
+  matchesPlayed Int
+  runs          Int
+  wickets       Int
+  avgPoints     Float
+
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, season])
 }

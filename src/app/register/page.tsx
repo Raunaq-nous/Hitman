@@ -42,11 +42,11 @@ export default function RegisterPage() {
     <div className="flex justify-center items-center h-[calc(100vh-8rem)]">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
         <div className="flex flex-col items-center mb-8">
-          <div className="h-16 w-16 bg-yellow-100 flex justify-center items-center rounded-full mb-4">
-            <Trophy className="h-8 w-8 text-yellow-600" />
+          <div className="h-16 w-16 bg-red-100 flex justify-center items-center rounded-full mb-4">
+            <Trophy className="h-8 w-8 text-red-600" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Join Pitch11</h2>
-          <p className="text-sm text-gray-500 mt-2">Where Every Pick Wins the Match</p>
+          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight font-mono">Join HITMAN</h2>
+          <p className="text-sm text-gray-500 mt-2 font-mono">Where Every Pick Wins the Match</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -63,7 +63,7 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="John Doe"
             />
           </div>
@@ -75,7 +75,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="you@example.com"
             />
           </div>
@@ -87,7 +87,7 @@ export default function RegisterPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="Create a strong password"
             />
           </div>
@@ -95,7 +95,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-all flex justify-center items-center mt-2"
+            className="w-full bg-red-600 text-white font-bold font-mono tracking-widest py-3 px-4 rounded-lg hover:bg-red-700 hover:shadow-[0_0_15px_rgba(220,38,38,0.5)] focus:ring-4 focus:ring-red-200 transition-all flex justify-center items-center mt-2"
           >
             {loading ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -107,7 +107,7 @@ export default function RegisterPage() {
 
         <p className="mt-8 text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
+          <Link href="/login" className="font-semibold text-red-600 hover:text-red-500">
             Sign in
           </Link>
         </p>
