@@ -129,15 +129,20 @@ async function main() {
 
   console.log("📅 Seeding real IPL 2026 schedule (70 league matches)...");
 
-  // Determine match status based on today's date
-  const today = new Date("2026-04-03");
-  const completedMatches = [1, 2, 3, 4, 5, 6]; // Matches 1-6 happened before April 3
+  // Determine match status dynamically based on today's real date (IST)
+  const now = new Date();
+  const istOffset = 5.5 * 60 * 60 * 1000;
+  const istTime = new Date(now.getTime() + istOffset);
+  const todayStr = istTime.toISOString().split('T')[0];
 
   for (const fixture of IPL_2026_SCHEDULE) {
-    const matchDate = new Date(fixture.date);
     let status = "UPCOMING";
-    if (completedMatches.includes(fixture.match)) status = "COMPLETED";
-    else if (fixture.date === "2026-04-03") status = "UPCOMING"; // Today's match hasn't started yet
+    if (fixture.date < todayStr) status = "COMPLETED";
+    else if (fixture.date === todayStr) status = "IN_PROGRESS";
+    else status = "UPCOMING";
+
+    // Standardize to ~7:30 PM IST (14:00 UTC)
+    const matchDate = new Date(fixture.date + "T14:00:00Z");
 
     const match = await prisma.match.create({
       data: {
