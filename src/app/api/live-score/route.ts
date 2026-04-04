@@ -212,13 +212,11 @@ export async function GET(req: NextRequest) {
     const todaysMatches = IPL_2026_SCHEDULE.filter(m => m.date === todayStr);
 
     // ==== 1. FETCH SIMULATED MATCHES FROM DB ====
+    // Remove strict date filter for matches already marked as IN_PROGRESS or UPCOMING.
+    // If it's in progress in the DB, it's live!
     const dbLiveMatches = await prisma.match.findMany({
       where: {
-        status: { in: ["IN_PROGRESS", "UPCOMING"] },
-        date: {
-          gte: new Date(todayStr + "T00:00:00Z"),
-          lte: new Date(todayStr + "T23:59:59Z")
-        }
+        status: { in: ["IN_PROGRESS", "UPCOMING"] }
       },
       include: { playing11: true }
     });
