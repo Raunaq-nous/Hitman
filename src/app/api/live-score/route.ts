@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { IPL_2026_SCHEDULE, IPL_TEAMS as FULL_IPL_TEAMS } from "../../../constants/iplData";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -202,17 +203,65 @@ export async function GET(req: NextRequest) {
       throw new Error("Invalid API response");
     }
 
-    // ==== PRE-BUILD MOCK DATA ====
+    // ==== 0. DATE PREPARATION ====
     const nowDate = new Date();
     const istOffset = 5.5 * 60 * 60 * 1000;
     const istTime = new Date(nowDate.getTime() + istOffset);
     const todayStr = istTime.toISOString().split('T')[0];
     
-    let todaysMatches = IPL_2026_SCHEDULE.filter(m => m.date === todayStr);
-    
-    // Choose the first scheduled match of the day or fallback
-    const fallbackMatch = todaysMatches.length > 0 ? todaysMatches[0] : IPL_2026_SCHEDULE[7]; // Match 8 is on April 4
+    const todaysMatches = IPL_2026_SCHEDULE.filter(m => m.date === todayStr);
 
+    // ==== 1. FETCH SIMULATED MATCHES FROM DB ====
+    const dbLiveMatches = await prisma.match.findMany({
+      where: {
+        status: { in: ["IN_PROGRESS", "UPCOMING"] },
+        date: {
+          gte: new Date(todayStr + "T00:00:00Z"),
+          lte: new Date(todayStr + "T23:59:59Z")
+        }
+      },
+      include: { playing11: true }
+    });
+
+    const simulatedIPLMatches = dbLiveMatches.map(m => {
+      const t1 = FULL_IPL_TEAMS.find(t => t.shortName === m.team1);
+      const t2 = FULL_IPL_TEAMS.find(t => t.shortName === m.team2);
+      
+      // Basic simulation stats if match is "Live" in DB
+      const isLive = m.status === "IN_PROGRESS";
+      const dummyScore = isLive ? [
+        { inning: `${m.team1} 1st Inning`, runs: 85, wickets: 2, overs: "10.4" }
+      ] : [];
+
+      return {
+        source: "SIMULATED (DB)",
+        matchId: m.id,
+        matchName: `${t1?.name || m.team1} vs ${t2?.name || m.team2}`,
+        matchType: "t20",
+        score: isLive ? `${m.team1}: 85/2 (10.4)` : "Match haven't started",
+        status: isLive ? `${t1?.shortName} chose to bat` : `Scheduled at ${t1?.venue || "TBD"}`,
+        overs: isLive ? "10.4" : "0",
+        isLive: isLive,
+        matchStarted: isLive,
+        matchEnded: false,
+        teams: [
+          { name: t1?.name || m.team1, shortName: m.team1, img: t1?.logoUrl || "" },
+          { name: t2?.name || m.team2, shortName: m.team2, img: t2?.logoUrl || "" }
+        ],
+        scores: dummyScore,
+        target: null,
+        currentInnings: 1,
+        lastUpdated: new Date().toISOString(),
+        innings1: null,
+        innings2: null,
+        matchResult: null,
+        venue: t1?.venue || "TBD",
+        date: m.date.toISOString(),
+        tossDecision: m.tossCompleted ? "Toss completed in simulation" : "Toss pending"
+      };
+    });
+
+    const fallbackMatch = todaysMatches.length > 0 ? todaysMatches[0] : IPL_2026_SCHEDULE[7]; 
     const team1Name = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatch.team1)?.name || fallbackMatch.team1;
     const team2Name = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatch.team2)?.name || fallbackMatch.team2;
 
@@ -228,8 +277,8 @@ export async function GET(req: NextRequest) {
       matchStarted: false,
       matchEnded: false,
       teams: [
-        { name: team1Name, shortName: fallbackMatch.team1 },
-        { name: team2Name, shortName: fallbackMatch.team2 }
+        { name: team1Name, shortName: fallbackMatch.team1, img: "" },
+        { name: team2Name, shortName: fallbackMatch.team2, img: "" }
       ],
       scores: [],
       target: null,
@@ -251,15 +300,24 @@ export async function GET(req: NextRequest) {
       m.series_id === "87c62aac-bc3c-4738-ab93-19da0690488f"
     );
 
-    // Build response — prioritize live IPL, then completed IPL
+    // Build response — prioritize DB Live, then real Live IPL, then completed IPL
     const liveIPL = iplMatches.filter((m: any) => m.matchStarted && !m.matchEnded);
-    const completedIPL = iplMatches.filter((m: any) => m.matchEnded);
+    
+    // FILTER OUT YESTERDAY'S MATCHES FROM REAL API (Strict Date Check)
+    const filteredLiveReal = liveIPL.filter((m: any) => {
+      const matchDate = m.date?.split('T')[0];
+      return matchDate === todayStr; 
+    });
 
-    // Primary match: If no real LIVE IPL match is found, force the Mock IPL Match to simulate today's event instead of bleeding yesterday's completed match!
-    const primaryData = liveIPL.length > 0 ? buildLiveData(liveIPL[0]) : dummyIPLData;
+    // Primary match: Simulated Live > Real Live > Simulated Mock
+    const primaryData = simulatedIPLMatches.find(m => m.isLive) 
+                       || (filteredLiveReal.length > 0 ? buildLiveData(filteredLiveReal[0]) : null)
+                       || (simulatedIPLMatches.length > 0 ? simulatedIPLMatches[0] : dummyIPLData);
 
-    // All IPL matches for the sidebar (fallback to dummy if empty)
-    const allIPLData = iplMatches.length > 0 ? iplMatches.map((m: any) => buildLiveData(m)) : [dummyIPLData];
+    // All IPL matches for the sidebar
+    const allIPLData = [...simulatedIPLMatches];
+    if (filteredLiveReal.length > 0) allIPLData.push(...filteredLiveReal.map((m: any) => buildLiveData(m)));
+    if (allIPLData.length === 0) allIPLData.push(dummyIPLData);
 
     const result = {
       primary: primaryData,
@@ -285,22 +343,22 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: true, data: cachedData, cached: true, stale: true });
     }
 
-    // ==== FALLBACK MOCK DATA ====
-    const nowFb = new Date();
-    const istOffsetFb = 5.5 * 60 * 60 * 1000;
-    const istTimeFb = new Date(nowFb.getTime() + istOffsetFb);
-    const todayStrFb = istTimeFb.toISOString().split('T')[0];
+    // ==== FALLBACK MOCK DATA ==== (Reuse logic from above)
+    const nowDate = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const istTime = new Date(nowDate.getTime() + istOffset);
+    const todayStr = istTime.toISOString().split('T')[0];
     
-    let todaysMatchesFb = IPL_2026_SCHEDULE.filter(m => m.date === todayStrFb);
-    const fallbackMatchFb = todaysMatchesFb.length > 0 ? todaysMatchesFb[0] : IPL_2026_SCHEDULE[7]; 
+    const todaysMatchesFbList = IPL_2026_SCHEDULE.filter(m => m.date === todayStr);
+    const fallbackMatchFb = todaysMatchesFbList.length > 0 ? todaysMatchesFbList[0] : IPL_2026_SCHEDULE[7]; 
 
-    const team1NameFb = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatchFb.team1)?.name || fallbackMatchFb.team1;
-    const team2NameFb = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatchFb.team2)?.name || fallbackMatchFb.team2;
+    const t1 = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatchFb.team1);
+    const t2 = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatchFb.team2);
 
     const dummyIPLData = {
       source: "MOCK DATA (FALLBACK)",
       matchId: `mock-${fallbackMatchFb.match}`,
-      matchName: `${team1NameFb} vs ${team2NameFb}`,
+      matchName: `${t1?.name || fallbackMatchFb.team1} vs ${t2?.name || fallbackMatchFb.team2}`,
       matchType: "t20",
       score: `${fallbackMatchFb.team1}: 0/0 (0.0)`,
       status: `Upcoming match at ${fallbackMatchFb.venue}`,
@@ -309,8 +367,8 @@ export async function GET(req: NextRequest) {
       matchStarted: false,
       matchEnded: false,
       teams: [
-        { name: team1NameFb, shortName: fallbackMatchFb.team1 },
-        { name: team2NameFb, shortName: fallbackMatchFb.team2 }
+        { name: t1?.name || fallbackMatchFb.team1, shortName: fallbackMatchFb.team1, img: t1?.logoUrl || "" },
+        { name: t2?.name || fallbackMatchFb.team2, shortName: fallbackMatchFb.team2, img: t2?.logoUrl || "" }
       ],
       scores: [],
       target: null,

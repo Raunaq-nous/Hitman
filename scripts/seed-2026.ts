@@ -95,83 +95,102 @@ async function main() {
 
   console.log("🏏 Seeding verified IPL 2026 squads for all 10 franchises...");
 
+  const allPlayersToCreate: any[] = [];
+  const statsToCreate: any[] = [];
+
   for (const [teamId, roles] of Object.entries(teamsData)) {
     for (const [roleKey, playerNames] of Object.entries(roles)) {
       const role = roleMap[roleKey];
       for (const name of playerNames) {
-        const credits = Number((Math.random() * 2.5 + 7.0).toFixed(1)); // 7.0 – 9.5 range
-        const player = await prisma.player.create({
-          data: { name, team: teamId, role, credits: Math.min(credits, 10.0) }
+        const credits = Number((Math.random() * 2.5 + 7.0).toFixed(1));
+        allPlayersToCreate.push({
+          name,
+          team: teamId,
+          role,
+          credits: Math.min(credits, 10.0)
         });
-
-        for (const year of seasons) {
-          let runs = 0, wickets = 0;
-          if (role === "BATSMAN" || role === "WICKETKEEPER") {
-            runs = rand(100, 550);
-            wickets = rand(0, 2);
-          } else if (role === "BOWLER") {
-            runs = rand(0, 80);
-            wickets = rand(5, 22);
-          } else {
-            runs = rand(80, 350);
-            wickets = rand(3, 12);
-          }
-          const matches = rand(5, 14);
-          const avg = Number(((runs * 1.2 + wickets * 25) / matches).toFixed(1));
-
-          await prisma.playerStats.create({
-            data: { playerId: player.id, season: year, matchesPlayed: matches, runs, wickets, avgPoints: avg }
-          });
-        }
       }
     }
   }
 
+  // Use createMany for players
+  await prisma.player.createMany({ data: allPlayersToCreate });
+  const createdPlayers = await prisma.player.findMany();
+
+  // Prepare stats
+  for (const player of createdPlayers) {
+    for (const year of seasons) {
+      let runs = 0, wickets = 0;
+      if (player.role === "BATSMAN" || player.role === "WICKETKEEPER") {
+        runs = rand(100, 550);
+        wickets = rand(0, 2);
+      } else if (player.role === "BOWLER") {
+        runs = rand(0, 80);
+        wickets = rand(5, 22);
+      } else {
+        runs = rand(80, 350);
+        wickets = rand(3, 12);
+      }
+      const matches = rand(5, 14);
+      const avg = Number(((runs * 1.2 + wickets * 25) / matches).toFixed(1));
+      statsToCreate.push({
+        playerId: player.id,
+        season: year,
+        matchesPlayed: matches,
+        runs,
+        wickets,
+        avgPoints: avg
+      });
+    }
+  }
+
+  await prisma.playerStats.createMany({ data: statsToCreate });
+  console.log(`   ✅ Seeded ${createdPlayers.length} players and ${statsToCreate.length} historical stats records.`);
+
   console.log("📅 Seeding real IPL 2026 schedule (70 league matches)...");
 
-  // Determine match status dynamically based on today's real date (IST)
   const now = new Date();
   const istOffset = 5.5 * 60 * 60 * 1000;
   const istTime = new Date(now.getTime() + istOffset);
   const todayStr = istTime.toISOString().split('T')[0];
 
-  for (const fixture of IPL_2026_SCHEDULE) {
+  const matchesToCreate = IPL_2026_SCHEDULE.map(fixture => {
     let status = "UPCOMING";
     if (fixture.date < todayStr) status = "COMPLETED";
     else if (fixture.date === todayStr) status = "IN_PROGRESS";
     else status = "UPCOMING";
 
-    // Standardize to ~7:30 PM IST (14:00 UTC)
-    const matchDate = new Date(fixture.date + "T14:00:00Z");
+    return {
+      team1: fixture.team1,
+      team2: fixture.team2,
+      date: new Date(fixture.date + "T14:00:00Z"),
+      status,
+      tossCompleted: status === "COMPLETED"
+    };
+  });
 
-    const match = await prisma.match.create({
-      data: {
-        team1: fixture.team1,
-        team2: fixture.team2,
-        date: matchDate,
-        status,
-        tossCompleted: status === "COMPLETED",
-      }
-    });
+  await prisma.match.createMany({ data: matchesToCreate });
+  const createdMatches = await prisma.match.findMany();
 
-    // Add playing 11 records for each match
-    const matchSquad = await prisma.player.findMany({
-      where: { team: { in: [fixture.team1, fixture.team2] } }
-    });
+  console.log("🏏 Generating Match-Player records (Lineups)...");
+  const matchPlayersToCreate: any[] = [];
 
+  for (const match of createdMatches) {
+    const matchSquad = createdPlayers.filter(p => p.team === match.team1 || p.team === match.team2);
     const playing11Data = matchSquad.map(p => ({
       matchId: match.id,
       playerId: p.id,
-      isPlaying: Math.random() > 0.3 // ~70% chance of being in Playing 11
+      isPlaying: Math.random() > 0.3
     }));
-
-    await prisma.matchPlayer.createMany({ data: playing11Data });
+    matchPlayersToCreate.push(...playing11Data);
   }
 
+  await prisma.matchPlayer.createMany({ data: matchPlayersToCreate });
+
   console.log("✅ IPL 2026 database seeding complete!");
-  console.log(`   → ${Object.values(teamsData).reduce((sum, roles) => sum + Object.values(roles).reduce((s, arr) => s + arr.length, 0), 0)} players across 10 teams`);
+  console.log(`   → ${createdPlayers.length} players across 10 teams`);
   console.log(`   → ${IPL_2026_SCHEDULE.length} matches scheduled`);
-  console.log(`   → 5-year historical stats seeded`);
+  console.log(`   → ${statsToCreate.length} historical stats seeded`);
 }
 
 main().catch(console.error).finally(() => prisma.$disconnect());
