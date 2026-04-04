@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { IPL_2026_SCHEDULE, IPL_TEAMS as FULL_IPL_TEAMS } from "../../../constants/iplData";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -202,34 +203,44 @@ export async function GET(req: NextRequest) {
     }
 
     // ==== PRE-BUILD MOCK DATA ====
+    const nowDate = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const istTime = new Date(nowDate.getTime() + istOffset);
+    const todayStr = istTime.toISOString().split('T')[0];
+    
+    let todaysMatches = IPL_2026_SCHEDULE.filter(m => m.date === todayStr);
+    
+    // Choose the first scheduled match of the day or fallback
+    const fallbackMatch = todaysMatches.length > 0 ? todaysMatches[0] : IPL_2026_SCHEDULE[7]; // Match 8 is on April 4
+
+    const team1Name = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatch.team1)?.name || fallbackMatch.team1;
+    const team2Name = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatch.team2)?.name || fallbackMatch.team2;
+
     const dummyIPLData = {
       source: "MOCK DATA (SIMULATION)",
-      matchId: "mock-1",
-      matchName: "Chennai Super Kings vs Punjab Kings",
+      matchId: `mock-${fallbackMatch.match}`,
+      matchName: `${team1Name} vs ${team2Name}`,
       matchType: "t20",
-      score: "PBKS: 184/5 (19.2)",
-      status: "PBKS need 12 runs from 4 balls",
-      overs: "19.2",
-      isLive: true,
-      matchStarted: true,
+      score: `${fallbackMatch.team1}: 0/0 (0.0)`,
+      status: `Upcoming match at ${fallbackMatch.venue}`,
+      overs: "0.0",
+      isLive: false,
+      matchStarted: false,
       matchEnded: false,
       teams: [
-        { name: "Chennai Super Kings", shortName: "CSK" },
-        { name: "Punjab Kings", shortName: "PBKS" }
+        { name: team1Name, shortName: fallbackMatch.team1 },
+        { name: team2Name, shortName: fallbackMatch.team2 }
       ],
-      scores: [
-        { runs: 195, wickets: 6, overs: "20.0", inning: "Chennai Super Kings" },
-        { runs: 184, wickets: 5, overs: "19.2", inning: "Punjab Kings" }
-      ],
-      target: 196,
-      currentInnings: 2,
+      scores: [],
+      target: null,
+      currentInnings: 1,
       lastUpdated: new Date().toISOString(),
       innings1: null,
       innings2: null,
       matchResult: null,
-      venue: "M. A. Chidambaram Stadium, Chennai",
+      venue: fallbackMatch.venue,
       date: new Date().toISOString(),
-      tossDecision: "PBKS opt to bowl"
+      tossDecision: "Toss pending. Match hasn't started yet."
     };
 
     // Filter IPL matches and other T20 matches
@@ -275,34 +286,42 @@ export async function GET(req: NextRequest) {
     }
 
     // ==== FALLBACK MOCK DATA ====
+    const nowFb = new Date();
+    const istOffsetFb = 5.5 * 60 * 60 * 1000;
+    const istTimeFb = new Date(nowFb.getTime() + istOffsetFb);
+    const todayStrFb = istTimeFb.toISOString().split('T')[0];
+    
+    let todaysMatchesFb = IPL_2026_SCHEDULE.filter(m => m.date === todayStrFb);
+    const fallbackMatchFb = todaysMatchesFb.length > 0 ? todaysMatchesFb[0] : IPL_2026_SCHEDULE[7]; 
+
+    const team1NameFb = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatchFb.team1)?.name || fallbackMatchFb.team1;
+    const team2NameFb = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatchFb.team2)?.name || fallbackMatchFb.team2;
+
     const dummyIPLData = {
       source: "MOCK DATA (FALLBACK)",
-      matchId: "mock-1",
-      matchName: "Chennai Super Kings vs Punjab Kings",
+      matchId: `mock-${fallbackMatchFb.match}`,
+      matchName: `${team1NameFb} vs ${team2NameFb}`,
       matchType: "t20",
-      score: "PBKS: 184/5 (19.2)",
-      status: "PBKS need 12 runs from 4 balls",
-      overs: "19.2",
-      isLive: true,
-      matchStarted: true,
+      score: `${fallbackMatchFb.team1}: 0/0 (0.0)`,
+      status: `Upcoming match at ${fallbackMatchFb.venue}`,
+      overs: "0.0",
+      isLive: false,
+      matchStarted: false,
       matchEnded: false,
       teams: [
-        { name: "Chennai Super Kings", shortName: "CSK" },
-        { name: "Punjab Kings", shortName: "PBKS" }
+        { name: team1NameFb, shortName: fallbackMatchFb.team1 },
+        { name: team2NameFb, shortName: fallbackMatchFb.team2 }
       ],
-      scores: [
-        { runs: 195, wickets: 6, overs: "20.0", inning: "Chennai Super Kings" },
-        { runs: 184, wickets: 5, overs: "19.2", inning: "Punjab Kings" }
-      ],
-      target: 196,
-      currentInnings: 2,
+      scores: [],
+      target: null,
+      currentInnings: 1,
       lastUpdated: new Date().toISOString(),
       innings1: null,
       innings2: null,
       matchResult: null,
-      venue: "M. A. Chidambaram Stadium, Chennai",
+      venue: fallbackMatchFb.venue,
       date: new Date().toISOString(),
-      tossDecision: "PBKS opt to bowl"
+      tossDecision: "Toss pending. Match hasn't started yet."
     };
 
     return NextResponse.json({
