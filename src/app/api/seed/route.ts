@@ -82,21 +82,19 @@ function rand(min: number, max: number) {
 
 export async function POST() {
   try {
-    const matchesCount = await prisma.match.count();
+    // FORCE WIPING AND RE-SEEDING EVERY TIME THE USER HITS THIS FOR NOW TO UNBLOCK THEM
+    console.log("Wiping all existing fantasy data to force a clean 2026 sync...");
     
-    // Only seed if we haven't already seeded the full 70-match schedule
-    if (matchesCount < 70) {
-      console.log("Wiping partial/old data and seeding full 2026 schedule...");
-      
-      await prisma.playerStats.deleteMany({});
-      await prisma.matchPlayer.deleteMany({});
-      await prisma.fantasyTeamPlayer.deleteMany({});
-      await prisma.fantasyTeam.deleteMany({});
-      await prisma.match.deleteMany({});
-      await prisma.player.deleteMany({});
-      
-      console.log("Seeding players...");
-      for (const [teamId, roles] of Object.entries(teamsData)) {
+    // Ordered deletions to respect foreign key constraints
+    await prisma.playerStats.deleteMany({});
+    await prisma.matchPlayer.deleteMany({});
+    await prisma.fantasyTeamPlayer.deleteMany({});
+    await prisma.fantasyTeam.deleteMany({});
+    await prisma.match.deleteMany({});
+    await prisma.player.deleteMany({});
+    
+    console.log("Seeding players...");
+    for (const [teamId, roles] of Object.entries(teamsData)) {
         for (const [roleKey, playerNames] of Object.entries(roles)) {
           const role = roleMap[roleKey];
           for (const name of playerNames) {
@@ -169,36 +167,8 @@ export async function POST() {
       }
 
       return NextResponse.json({ success: true, message: "Successfully synced with original IPL 2026 schedule." });
+    } catch (error: any) {
+      console.error("Seeding failed", error);
+      return NextResponse.json({ success: false, message: "Seeding failed", error: String(error) }, { status: 500 });
     }
-    
-    // If we have 70 matches already, we should just update the statuses to be properly synced dynamically!
-    console.log("70 matches found. Resyncing statuses based on today's date.");
-    const now = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000;
-    const istTime = new Date(now.getTime() + istOffset);
-    const todayStr = istTime.toISOString().split('T')[0];
-    
-    // Fetch all to update
-    const allMatches = await prisma.match.findMany();
-    for (const match of allMatches) {
-       // match.date is a Date object. Let's get its string YYYY-MM-DD
-       const mDateStr = match.date.toISOString().split('T')[0];
-       let status = "UPCOMING";
-       if (mDateStr < todayStr) status = "COMPLETED";
-       else if (mDateStr === todayStr) status = "IN_PROGRESS";
-       else status = "UPCOMING";
-       
-       if (match.status !== status) {
-         await prisma.match.update({
-           where: { id: match.id },
-           data: { status }
-         });
-       }
-    }
-
-    return NextResponse.json({ success: true, message: "Statuses properly rest-synched." });
-  } catch (error: any) {
-    console.error("Seeding failed", error);
-    return NextResponse.json({ success: false, message: "Seeding failed", error: String(error) }, { status: 500 });
   }
-}
