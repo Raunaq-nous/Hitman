@@ -8,6 +8,7 @@ import PWARegister from '@/components/PWARegister'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://hitman-drab.vercel.app'),
   title: 'HITMAN | Fantasy Cricket League',
   description: 'Build your ultimate fantasy cricket team, create private leagues, invite friends, and compete for the top payout pool. Real-time live scores from CricketData.org included.',
   manifest: '/manifest.json',
