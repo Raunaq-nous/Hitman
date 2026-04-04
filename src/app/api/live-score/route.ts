@@ -326,6 +326,7 @@ export async function GET(req: NextRequest) {
         hitsLimit: json.info?.hitsLimit,
         hitsUsed: json.info?.hitsUsed,
       },
+      version: "2026-04-04-v2"
     };
 
     // Cache the result
