@@ -74,8 +74,8 @@
       "depends_on": [
         "F-H-03"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "git log -10 --format=\"%an <%ae>\" verified: all recent commits authored by Raunaq-nous (verified email & noreply address)"
     },
     {
       "id": "F-H-05",
