@@ -28,8 +28,8 @@
       "depends_on": [
         "F-H-00"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "git log verified (8 commits); 0 failed patches; _incoming removed; node harness/verify.mjs --ci passed"
     },
     {
       "id": "F-H-02",

@@ -61,6 +61,12 @@ Features: F-Z-01, F-Z-02, F-Z-03
 
 ## Progress log
 <!-- newest first: date, feature, plan, result -->
+### 2026-10-18 — F-H-01: Phase 0 work is on the overhaul branch as separate commits
+- Plan: Verify all eight Phase 0 commits exist in git log, check for any failed patches in _incoming, remove _incoming directory completely, and verify with `node harness/verify.mjs --ci`.
+- Scope: Verification of history and cleanup of _incoming folder.
+- Result: PASS. All 8 Phase 0 commit subjects present in git log. 0 failed patches. _incoming directory deleted. node harness/verify.mjs --ci clean.
+
+
 ### 2026-10-18 — F-H-00: CI green on the current codebase
 - Plan: Run `node harness/init.mjs` to bootstrap dependencies, execute `node harness/verify.mjs --ci`, and resolve any lint or build errors on overhaul so CI passes cleanly.
 - Scope: Fixes strictly limited to lint and build requirements for CI gate; no unrelated feature code.
