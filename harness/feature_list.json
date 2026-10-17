@@ -59,8 +59,8 @@
       "depends_on": [
         "F-H-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "git log --all -p | grep -i -E '[a-z0-9._-]+@okicici' -> empty; git log --all --name-only --format= | grep -E '(^|/)dev\\.db$' -> empty"
     },
     {
       "id": "F-H-04",

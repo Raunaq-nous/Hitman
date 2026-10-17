@@ -61,6 +61,12 @@ Features: F-Z-01, F-Z-02, F-Z-03
 
 ## Progress log
 <!-- newest first: date, feature, plan, result -->
+### 2026-10-18 — F-H-03: Sensitive history purge verified
+- Plan: Search full git history across all branches and commits for UPI handle and dev.db paths. Verify both return empty.
+- Scope: History audit commands.
+- Result: PASS. Cleaned local main ref to match origin/main and ran git gc/prune. `git log --all -p | grep -i -E "[a-z0-9._-]+@okicici"` and `git log --all --name-only --format= | grep -E "(^|/)dev\.db$"` both return empty with exit status 1.
+
+
 ### 2026-10-18 — F-H-02: Harness and docs in place
 - Plan: Verify AGENTS.md, GEMINI.md, ARCHITECTURE.md, .agents/, docs/, harness/ exist. Add .worktrees/, data/raw/, and harness/.agent-heartbeat to root .gitignore. Run node harness/check-features.mjs and node harness/verify.mjs --ci.
 - Scope: .gitignore updates and harness validation.
