@@ -41,7 +41,7 @@ export default function LoginPage() {
             <Trophy className="h-8 w-8 text-red-600" />
           </div>
           <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight font-mono">Welcome Back</h2>
-          <p className="text-sm text-gray-500 mt-2 font-mono">Sign in to your HITMAN account</p>
+          <p className="text-sm text-gray-500 mt-2 font-mono">Sign in to ALTER EGO</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

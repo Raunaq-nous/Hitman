@@ -1,5 +1,5 @@
-// PITCH11 Service Worker — Caching for offline PWA support
-const CACHE_NAME = "pitch11-v1";
+// ALTER EGO service worker — Caching for offline PWA support
+const CACHE_NAME = "alterego-v2";
 const STATIC_ASSETS = [
   "/",
   "/commentary",
