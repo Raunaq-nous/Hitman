@@ -61,6 +61,12 @@ Features: F-Z-01, F-Z-02, F-Z-03
 
 ## Progress log
 <!-- newest first: date, feature, plan, result -->
+### 2026-10-18 — F-H-04: Commits are authored by the owner
+- Plan: Inspect git log -10 --format="%an <%ae>" to verify owner author and email on recent commits.
+- Scope: Commit authorship verification.
+- Result: PASS. All recent commits authored by Raunaq-nous with verified email / GitHub noreply address. No bot or third-party author names present.
+
+
 ### 2026-10-18 — F-H-03: Sensitive history purge verified
 - Plan: Search full git history across all branches and commits for UPI handle and dev.db paths. Verify both return empty.
 - Scope: History audit commands.

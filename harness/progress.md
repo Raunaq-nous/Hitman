@@ -3,11 +3,13 @@
 STATUS: IN PROGRESS
 CURRENT PHASE: 0
 LAST GATE: none
-NEXT PROMPT: Run feature F-H-04 (Commits are authored by the owner)
+NEXT PROMPT: Run feature F-H-05 (Standard npm scripts exist and work)
 
 ## Session log
 <!-- Append newest first: date (UTC), features touched, commits, verification results, blockers, NEXT PROMPT -->
+- 2026-10-17 (UTC) | F-H-04 | chore(git): verify author identity on overhaul commits [F-H-04] | git log -10 author verified: Raunaq-nous | NEXT: F-H-05
 - 2026-10-17 (UTC) | F-H-03 | chore(security): verify history purge for UPI and dev.db [F-H-03] | git log --all -p grep UPI empty, dev.db empty | NEXT: F-H-04
+
 - 2026-10-17 (UTC) | F-H-02 | chore(harness): verify docs in place and update gitignore [F-H-02] | check-features.mjs exits 0, .gitignore updated, verify --ci clean | NEXT: F-H-03
 
 - 2026-10-17 (UTC) | F-H-01 | chore(kit): verify Phase 0 commits and remove _incoming [F-H-01] | git log (8 commits), 0 failed patches, _incoming deleted | NEXT: F-H-02
