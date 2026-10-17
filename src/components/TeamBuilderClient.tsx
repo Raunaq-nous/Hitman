@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserPlus, UserCheck, Star, Shield, ChevronRight } from "lucide-react";
-import TreasurerCard from "@/components/TreasurerCard";
+import { ROLE_LIMITS, MAX_CREDITS } from "@/lib/fantasyRules";
 
 type Stat = { season: number; matches: number; runs: number; wickets: number; avg: number };
 type Player = { id: string; name: string; team: string; role: string; credits: number; isPlaying: boolean; stats: Stat[]; subRole?: string };
@@ -40,10 +40,10 @@ function getSubRole(player: Player): string {
 type RoleFilter = "ALL" | "BATSMAN" | "BOWLER" | "ALL_ROUNDER" | "WICKETKEEPER";
 
 const ROLE_REQUIREMENTS = {
-  BATSMAN: { min: 3, max: 6, label: "BAT" },
-  BOWLER: { min: 3, max: 6, label: "BOWL" },
-  ALL_ROUNDER: { min: 1, max: 4, label: "AR" },
-  WICKETKEEPER: { min: 1, max: 3, label: "WK" },
+  BATSMAN: { ...ROLE_LIMITS.BATSMAN, label: "BAT" },
+  BOWLER: { ...ROLE_LIMITS.BOWLER, label: "BOWL" },
+  ALL_ROUNDER: { ...ROLE_LIMITS.ALL_ROUNDER, label: "AR" },
+  WICKETKEEPER: { ...ROLE_LIMITS.WICKETKEEPER, label: "WK" },
 };
 
 export default function TeamBuilderClient({
@@ -67,13 +67,10 @@ export default function TeamBuilderClient({
   const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
   const [captainId, setCaptainId] = useState<string | null>(null);
   const [viceCaptainId, setViceCaptainId] = useState<string | null>(null);
-  const [step, setStep] = useState<"PAYMENT" | "SELECT" | "CAPTAIN">("PAYMENT");
-  const [hasPaid, setHasPaid] = useState(false);
+  const [step, setStep] = useState<"SELECT" | "CAPTAIN">("SELECT");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("ALL");
-
-  const MAX_CREDITS = 110;
   const currentCredits = selectedPlayers.reduce((sum, p) => sum + p.credits, 0);
 
   const roleCount: Record<string, number> = {
@@ -181,7 +178,7 @@ export default function TeamBuilderClient({
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Sidebar: Progress & Rules */}
       <div className="lg:col-span-1 space-y-4">
-        {step !== "PAYMENT" && (
+        {(
           <div className="glass-panel p-6 rounded-sm">
             <h2 className="text-lg font-bold mb-4 text-white font-mono uppercase tracking-widest">
               {step === "SELECT" ? "TEAM PROGRESS" : "ASSIGN CAPTAIN & VC"}
@@ -337,29 +334,7 @@ export default function TeamBuilderClient({
 
       {/* Main Content */}
       <div className="lg:col-span-2 glass-panel p-6 rounded-sm min-h-[600px]">
-        {step === "PAYMENT" ? (
-          <div className="text-center py-8">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold font-mono tracking-widest text-white mb-2">ENTRY FEE REQUIRED</h2>
-              <p className="text-gray-400 font-mono text-sm max-w-lg mx-auto">
-                To build your roster for this match, you must first secure your spot in the prize pool. Pay the ₹100 entry fee to unlock team builder.
-              </p>
-            </div>
-            
-            <div className="bg-black/40 border border-white/5 rounded-sm p-4 relative mb-6">
-              <TreasurerCard leagueName={`${team1} vs ${team2}`} membersCount={membersCount} />
-              {/* Invisible overlay button below the QR to click once paid */}
-              <div className="mt-6 border-t border-white/10 pt-6">
-                 <button 
-                   onClick={() => { setHasPaid(true); setStep("SELECT"); }}
-                   className="w-full neo-brutal bg-green-600 font-bold font-mono text-white py-4 rounded-sm tracking-widest hover:bg-green-500 transition shadow-[0_0_20px_rgba(34,197,94,0.3)]"
-                 >
-                   ✓ I HAVE PAID THE ENTRY FEE
-                 </button>
-              </div>
-            </div>
-          </div>
-        ) : step === "SELECT" ? (
+        {step === "SELECT" ? (
           <>
             {/* Header with toss status */}
             <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-4">
