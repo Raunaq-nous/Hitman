@@ -1,10 +1,16 @@
 {
+  "version": 2,
   "RUN": 1,
   "BOUNDARY": 1,
   "SIX": 2,
   "WICKET": 25,
   "CATCH": 8,
   "RUNOUT": 10,
+  "MILESTONE_30": 4,
+  "MILESTONE_50": 8,
+  "MILESTONE_100": 16,
+  "HAUL_4": 8,
+  "HAUL_5": 16,
   "CAPTAIN_MULTIPLIER": 2.0,
   "VICE_CAPTAIN_MULTIPLIER": 1.5
 }
