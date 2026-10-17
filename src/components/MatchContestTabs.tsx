@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Trophy, Radio, Wallet, Users2 } from "lucide-react";
+import { Trophy, Radio, Users2 } from "lucide-react";
 import LiveMatchCenter from "@/components/LiveMatchCenter";
-import TreasurerCard from "@/components/TreasurerCard";
 
 type PlayerInfo = {
   id: string;
@@ -23,7 +22,7 @@ type ExistingTeam = {
   players: PlayerInfo[];
 };
 
-type TabKey = "TEAM" | "LIVE" | "TREASURER";
+type TabKey = "TEAM" | "LIVE";
 
 export default function MatchContestTabs({
   matchId,
@@ -49,7 +48,6 @@ export default function MatchContestTabs({
   const tabs: { key: TabKey; label: string; icon: any }[] = [
     { key: "TEAM", label: "YOUR TEAM", icon: Users2 },
     { key: "LIVE", label: "LIVE MATCH", icon: Radio },
-    { key: "TREASURER", label: "TREASURER", icon: Wallet },
   ];
 
   const roleEmoji = (role: string) => {
@@ -137,14 +135,6 @@ export default function MatchContestTabs({
         <LiveMatchCenter />
       )}
 
-      {/* TREASURER Tab */}
-      {activeTab === "TREASURER" && (
-        <TreasurerCard
-          leagueName={`${team1} v ${team2}`}
-          membersCount={membersCount}
-          entryFee={100}
-        />
-      )}
     </div>
   );
 }
