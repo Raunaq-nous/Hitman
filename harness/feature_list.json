@@ -1,0 +1,1308 @@
+{
+  "version": 1,
+  "note": "Agents may set passes and evidence; never delete or weaken acceptance criteria.",
+  "features": [
+    {
+      "id": "F-H-00",
+      "phase": "0",
+      "title": "CI green on the current codebase",
+      "acceptance": [
+        "node harness/verify.mjs --ci passes on the overhaul branch (fix existing lint and build errors without changing behaviour)",
+        "no feature work beyond what CI needs"
+      ],
+      "verify": "node harness/verify.mjs --ci",
+      "depends_on": [],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-H-01",
+      "phase": "0",
+      "title": "Phase 0 work is on the overhaul branch as separate commits",
+      "acceptance": [
+        "git log shows the eight Phase 0 commit subjects from _incoming/phase0-patches/manifest.tsv (applied by harness/prepare-repo.sh)",
+        "if any *.FAILED.patch remains in _incoming/phase0-patches/, apply it by hand, then delete _incoming/",
+        "_incoming/ no longer exists"
+      ],
+      "verify": "git log --oneline; test ! -d _incoming",
+      "depends_on": [
+        "F-H-00"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-H-02",
+      "phase": "0",
+      "title": "Harness and docs in place",
+      "acceptance": [
+        "AGENTS.md, GEMINI.md, ARCHITECTURE.md, .agents/, docs/, harness/ present",
+        "root .gitignore ignores .worktrees/, data/raw/ and harness/.agent-heartbeat",
+        "node harness/check-features.mjs exits 0"
+      ],
+      "verify": "node harness/check-features.mjs",
+      "depends_on": [
+        "F-H-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-H-03",
+      "phase": "0",
+      "title": "Sensitive history purge verified",
+      "acceptance": [
+        "after git fetch --unshallow (if the clone is shallow), searching the full history (git log --all -p) with the handle pattern defined in harness/cloud/prepare.sh finds no UPI handle, and no dev.db files appear in any revision",
+        "record the commands and their empty output as evidence"
+      ],
+      "verify": "commands recorded in evidence return nothing",
+      "depends_on": [
+        "F-H-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-H-04",
+      "phase": "0",
+      "title": "Commits are authored by the owner",
+      "acceptance": [
+        "git log -10 --format=\"%an <%ae>\" shows the owner (or the owner's GitHub noreply address), not a bot, for recent feature commits",
+        "if not, fix git config user.email (owner noreply address) for future commits"
+      ],
+      "verify": "git log -10 --format=\"%an <%ae>\"",
+      "depends_on": [
+        "F-H-03"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-H-05",
+      "phase": "0",
+      "title": "Standard npm scripts exist and work",
+      "acceptance": [
+        "scripts: dev, build (no automatic production migrations), start, lint, typecheck, test, test:e2e, db:up, db:migrate, db:seed, data:cricsheet",
+        "docker-compose.yml with a db service (Postgres) used by db:up",
+        "node harness/init.mjs completes in the cloud VM"
+      ],
+      "verify": "node harness/verify.mjs --quick",
+      "depends_on": [
+        "F-H-04"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-H-06",
+      "phase": "0",
+      "title": "Vitest configured with first engine tests",
+      "acceptance": [
+        "vitest config with coverage",
+        "tests for parseOvers, formatOvers, runRate (10.4 → 64; 85/64 ≈ 7.97)"
+      ],
+      "verify": "npm test",
+      "depends_on": [
+        "F-H-05"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-H-07",
+      "phase": "0",
+      "title": "Playwright configured with smoke and accessibility tests",
+      "acceptance": [
+        "landing page renders with no console errors",
+        "axe check passes on the landing page"
+      ],
+      "verify": "npm run test:e2e",
+      "depends_on": [
+        "F-H-05"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-H-08",
+      "phase": "0",
+      "title": "CI workflow green with real gates",
+      "acceptance": [
+        ".github/workflows/ci.yml passes on the overhaul branch with lint, typecheck, unit tests, build and e2e all running rather than skipped"
+      ],
+      "verify": "node harness/verify.mjs --ci shows no SKIP lines",
+      "depends_on": [
+        "F-H-06",
+        "F-H-07"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-H-09",
+      "phase": "0",
+      "title": "Architecture enforced mechanically",
+      "acceptance": [
+        "lint rules or a structural test enforce the layering in ARCHITECTURE.md",
+        "error messages explain the fix",
+        "a deliberately bad import in a test fixture is caught"
+      ],
+      "verify": "npm run lint && npm test",
+      "depends_on": [
+        "F-H-06"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-01",
+      "phase": "1",
+      "title": "Environment parsed with Zod at startup",
+      "acceptance": [
+        "DATABASE_URL required; NEXTAUTH_SECRET ≥ 32 chars in production; NEXTAUTH_URL must be a URL or unset",
+        "an empty NEXTAUTH_URL no longer breaks the build",
+        "unit tests cover each rule"
+      ],
+      "verify": "npm test -- env",
+      "depends_on": [
+        "F-H-09"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-02",
+      "phase": "1",
+      "title": "PostgreSQL everywhere with a migration history",
+      "acceptance": [
+        "Prisma provider postgresql; baseline migration committed",
+        "docker-compose.yml for local Postgres plus embedded fallback",
+        "build never runs migrations against production"
+      ],
+      "verify": "npm run db:migrate && npm test",
+      "depends_on": [
+        "F-F-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-03",
+      "phase": "1",
+      "title": "DTOs at the server boundary",
+      "acceptance": [
+        "no Prisma model or password hash reaches a client component or API response",
+        "a test asserts that serialised user payloads never contain password fields"
+      ],
+      "verify": "npm test -- dto",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-04",
+      "phase": "1",
+      "title": "Membership enforced on every crew and contest read and write",
+      "acceptance": [
+        "non-members get 404 or 403 on crew pages and APIs",
+        "integration tests for cross-user access"
+      ],
+      "verify": "npm test -- authz",
+      "depends_on": [
+        "F-F-03"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-05",
+      "phase": "1",
+      "title": "One team (or one call) per user per match enforced by the database",
+      "acceptance": [
+        "unique constraint plus migration",
+        "API returns a clear conflict error"
+      ],
+      "verify": "npm test -- unique",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-06",
+      "phase": "1",
+      "title": "No unkeyed global caches",
+      "acceptance": [
+        "module-level cache replaced by a keyed, bounded TTL cache provider",
+        "tests cover expiry and key isolation"
+      ],
+      "verify": "npm test -- cache",
+      "depends_on": [
+        "F-F-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-07",
+      "phase": "1",
+      "title": "Source authority policy replaces ad-hoc fallbacks",
+      "acceptance": [
+        "SourceClass priority table implemented",
+        "simulated or mock data can never be labelled live",
+        "tests for choosing between sources and staleness"
+      ],
+      "verify": "npm test -- authority",
+      "depends_on": [
+        "F-F-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-08",
+      "phase": "1",
+      "title": "Legal-ball primitives used everywhere",
+      "acceptance": [
+        "all overs arithmetic goes through src/engine/legalBalls.ts",
+        "grep shows no decimal-overs arithmetic elsewhere"
+      ],
+      "verify": "npm test -- legalBalls",
+      "depends_on": [
+        "F-H-06"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-09",
+      "phase": "1",
+      "title": "Scoring ledger: append-only, versioned, idempotent",
+      "acceptance": [
+        "scoring events stored append-only with config version",
+        "re-running scoring produces no duplicates",
+        "tests"
+      ],
+      "verify": "npm test -- scoring",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-10",
+      "phase": "1",
+      "title": "Public brand is ALTER EGO everywhere users can see",
+      "acceptance": [
+        "package name, manifest, metadata, UI copy use ALTER EGO and public persona names",
+        "an e2e test scans rendered pages for internal codenames and fails if found"
+      ],
+      "verify": "npm run test:e2e -- brand",
+      "depends_on": [
+        "F-H-07"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-11",
+      "phase": "1",
+      "title": "No-money audit in CI",
+      "acceptance": [
+        "a test scans source and rendered routes for payment, QR, UPI, wallet, entry-fee and prize terms (docs excluded)",
+        "legacy fee and prize fields removed from the schema"
+      ],
+      "verify": "npm test -- no-money",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-F-12",
+      "phase": "1",
+      "title": "Auth hardening",
+      "acceptance": [
+        "rate limits on login and registration",
+        "password policy (≥ 10 characters)",
+        "security headers set",
+        "tests"
+      ],
+      "verify": "npm test -- auth",
+      "depends_on": [
+        "F-F-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-U-01",
+      "phase": "1",
+      "title": "Design tokens light and dark",
+      "acceptance": [
+        "tokens.css per DESIGN.md; no raw hex in components (lint); no pure black or red"
+      ],
+      "verify": "npm run lint && npm test -- tokens",
+      "depends_on": [
+        "F-H-09"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-U-02",
+      "phase": "1",
+      "title": "Self-hosted fonts and type scale",
+      "acceptance": [
+        "Archivo, Literata, JetBrains Mono via fontsource; tabular numerals; build needs no font network"
+      ],
+      "verify": "npm run build",
+      "depends_on": [
+        "F-U-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-U-04",
+      "phase": "1",
+      "title": "Component library and /design gallery",
+      "acceptance": [
+        "Ticket, Stamp, Receipt, Meter, Timing Tower row, Persona Chip, data-state badge, share card",
+        "gallery route for development"
+      ],
+      "verify": "npm run test:e2e -- design",
+      "depends_on": [
+        "F-U-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-A-01",
+      "phase": "1",
+      "title": "Analytics events",
+      "acceptance": [
+        "server-side AnalyticsEvent with the events in the spec; tests"
+      ],
+      "verify": "npm test -- analytics",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-D-01",
+      "phase": "2",
+      "title": "Multi-sport domain schema",
+      "acceptance": [
+        "Sport, Competition, Season, Event, Participant, Incident (append-only, effectiveAt, observedAt, sourceRef, sourceClass, rightsPolicyId, supersedes)",
+        "seed the five sports",
+        "migration and tests"
+      ],
+      "verify": "npm run db:migrate && npm test -- domain",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-D-02",
+      "phase": "2",
+      "title": "Rights control plane",
+      "acceptance": [
+        "policy JSON per source with the schema in data-and-rights.md",
+        "assertRight() used by repos, services and retrieval",
+        "tests for allow and deny of each action; prototype-only sources off when PROTOTYPE_DATA=false"
+      ],
+      "verify": "npm test -- rights",
+      "depends_on": [
+        "F-D-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-D-03",
+      "phase": "2",
+      "title": "Cricsheet ingest",
+      "acceptance": [
+        "npm run data:cricsheet downloads IPL JSON to data/raw/ and ingests events and ball incidents",
+        "attribution recorded",
+        "fixtures subset (≥ 5 matches incl. a tie and a rain-affected match) committed under data/fixtures/cricsheet/"
+      ],
+      "verify": "npm test -- cricsheet",
+      "depends_on": [
+        "F-D-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-D-04",
+      "phase": "2",
+      "title": "Data contract checks",
+      "acceptance": [
+        "monotonic balls, wickets and runs; winner agreement; rain-affected chases excluded from chase WP",
+        "tests on fixtures"
+      ],
+      "verify": "npm test -- contract",
+      "depends_on": [
+        "F-D-03"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-D-05",
+      "phase": "2",
+      "title": "Bitemporal reads and leakage tests",
+      "acceptance": [
+        "getStateAt(eventId, effectiveAt, observedCutoff)",
+        "injected post-cutoff incident has no effect (test)"
+      ],
+      "verify": "npm test -- leakage",
+      "depends_on": [
+        "F-D-03"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-D-06",
+      "phase": "2",
+      "title": "Adapters for five sports",
+      "acceptance": [
+        "adapter interface; cricket (Cricsheet), F1 (OpenF1 historical, prototype flag), football (StatsBomb open data), basketball and tennis honest source-pending adapters",
+        "rights checks in each adapter; tests with recorded fixtures (no network in tests)"
+      ],
+      "verify": "npm test -- adapters",
+      "depends_on": [
+        "F-D-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-D-07",
+      "phase": "2",
+      "title": "Historical replay stream",
+      "acceptance": [
+        "SSE endpoint replays incidents on a replay clock with deterministic observedAt",
+        "tests"
+      ],
+      "verify": "npm test -- replay",
+      "depends_on": [
+        "F-D-05"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-E-01",
+      "phase": "2",
+      "title": "Per-ball outcome model",
+      "acceptance": [
+        "distribution over {0..6, W} by state bucket with smoothing and era weights",
+        "trained on older seasons; artifact versioned with a hash",
+        "tests"
+      ],
+      "verify": "npm test -- outcomes",
+      "depends_on": [
+        "F-D-04"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-E-02",
+      "phase": "2",
+      "title": "Exact chase win probability",
+      "acceptance": [
+        "memoised backward induction over (balls, wickets, runs); tie = 0.5",
+        "tests: terminal states, monotonicity, martingale property"
+      ],
+      "verify": "npm test -- wp",
+      "depends_on": [
+        "F-E-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-E-03",
+      "phase": "2",
+      "title": "Leverage and swing",
+      "acceptance": [
+        "leverage = std dev of next-ball WP; swing = |ΔWP| over a window",
+        "test: death-over leverage exceeds powerplay leverage on fixtures"
+      ],
+      "verify": "npm test -- leverage",
+      "depends_on": [
+        "F-E-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-E-04",
+      "phase": "2",
+      "title": "Isotonic recalibration with a CI calibration gate",
+      "acceptance": [
+        "calibration map fitted on training seasons and versioned",
+        "held-out seasons: every 10-point bucket with ≥ 200 samples within 5 points",
+        "reliability diagram data exported for the Notebook"
+      ],
+      "verify": "npm test -- calibration",
+      "depends_on": [
+        "F-E-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-E-05",
+      "phase": "2",
+      "title": "Option-conditioned win probability",
+      "acceptance": [
+        "decision types: death-over pace vs spin; next-over intent; chase tempo",
+        "shrinkage toward unconditional; insufficient-data threshold; coin-flip band 2 points",
+        "tests"
+      ],
+      "verify": "npm test -- options",
+      "depends_on": [
+        "F-E-04"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-E-06",
+      "phase": "2",
+      "title": "Grader and Brier score",
+      "acceptance": [
+        "read_points = WP(pick) − max WP(others) using the calibrated model",
+        "brier = (confidence − happened)^2; example 0.7 and 0 gives 0.49",
+        "tests"
+      ],
+      "verify": "npm test -- grader",
+      "depends_on": [
+        "F-E-05"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-E-07",
+      "phase": "2",
+      "title": "Read Rating",
+      "acceptance": [
+        "difficulty-weighted Elo: start 1200, K 40 for 20 calls then 24, floor 100",
+        "tests for monotonicity and bounds"
+      ],
+      "verify": "npm test -- rating",
+      "depends_on": [
+        "F-E-06"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-E-08",
+      "phase": "2",
+      "title": "Fifty golden moments",
+      "acceptance": [
+        "auto-selected by leverage and diversified; validated against the data contract; stored with pre-lock state and cutoff",
+        "committed as fixtures"
+      ],
+      "verify": "npm test -- moments",
+      "depends_on": [
+        "F-E-05",
+        "F-D-05"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-E-09",
+      "phase": "2",
+      "title": "Doubly robust counterfactual check (offline)",
+      "acceptance": [
+        "script compares scenario estimates with a doubly robust estimate on historical decisions",
+        "results summarised in QUALITY_SCORE.md; never shown to users as fact",
+        "unit test on synthetic data"
+      ],
+      "verify": "npm test -- dr",
+      "depends_on": [
+        "F-E-05"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-E-10",
+      "phase": "2",
+      "title": "Tennis point importance and Pressure Index",
+      "acceptance": [
+        "iid point model; p = 0.65 gives hold ≈ 0.83; point importance",
+        "tests"
+      ],
+      "verify": "npm test -- tennis",
+      "depends_on": [
+        "F-H-06"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-L-01",
+      "phase": "3",
+      "title": "Ticket Call screen",
+      "acceptance": [
+        "moment context with legal-ball overs, required rate and leverage meter",
+        "options, confidence slider 50–99, Lock",
+        "keyboard and screen-reader accessible; 390 and 1280 evidence"
+      ],
+      "verify": "npm run test:e2e -- lab-call",
+      "depends_on": [
+        "F-E-08",
+        "F-U-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-L-02",
+      "phase": "3",
+      "title": "Lock API",
+      "acceptance": [
+        "server-validated: authenticated, one pick per call, before cutoff, server timestamp",
+        "integration tests"
+      ],
+      "verify": "npm test -- lock",
+      "depends_on": [
+        "F-L-01",
+        "F-F-04"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-L-03",
+      "phase": "3",
+      "title": "Reveal and grading pipeline",
+      "acceptance": [
+        "deterministic grading writes DecisionReview; reproducible from fixtures",
+        "coin-flip calls marked “no grade”"
+      ],
+      "verify": "npm test -- review-pipeline",
+      "depends_on": [
+        "F-L-02",
+        "F-E-07"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-L-04",
+      "phase": "3",
+      "title": "Three-column Review with counterfactual ghost",
+      "acceptance": [
+        "What happened / What was reasonable beforehand / Scenario model estimate, each with receipts",
+        "WP chart with counterfactual ghost line",
+        "Next read button"
+      ],
+      "verify": "npm run test:e2e -- review",
+      "depends_on": [
+        "F-L-03"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-L-05",
+      "phase": "3",
+      "title": "Notebook",
+      "acceptance": [
+        "call history with filters; reliability diagram; Brier over time; skill-domain radar",
+        "small-sample warnings"
+      ],
+      "verify": "npm run test:e2e -- notebook",
+      "depends_on": [
+        "F-L-04"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-L-06",
+      "phase": "3",
+      "title": "Read Rating display and history",
+      "acceptance": [
+        "rating, provisional badge, history chart"
+      ],
+      "verify": "npm run test:e2e -- rating",
+      "depends_on": [
+        "F-L-05"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-L-07",
+      "phase": "3",
+      "title": "Call → review → next read flow under 60 seconds",
+      "acceptance": [
+        "e2e journey completes on a 390 px viewport; analytics events recorded"
+      ],
+      "verify": "npm run test:e2e -- journey",
+      "depends_on": [
+        "F-L-04",
+        "F-A-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-L-08",
+      "phase": "3",
+      "title": "Swing Seismograph and Leverage Meter components",
+      "acceptance": [
+        "SVG components with tokens; unit and visual checks"
+      ],
+      "verify": "npm test -- charts",
+      "depends_on": [
+        "F-U-04"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-C-01",
+      "phase": "3",
+      "title": "Crews: create, invite, join, leave",
+      "acceptance": [
+        "private by default; invite link and code; owner controls",
+        "legacy leagues migrated without fee or prize fields"
+      ],
+      "verify": "npm run test:e2e -- crews",
+      "depends_on": [
+        "F-F-04"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-C-02",
+      "phase": "3",
+      "title": "Timing-tower leaderboard",
+      "acceptance": [
+        "rank, Read Rating, calibration, calls this week, form, position-change markers"
+      ],
+      "verify": "npm run test:e2e -- tower",
+      "depends_on": [
+        "F-C-01",
+        "F-L-06"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-C-03",
+      "phase": "3",
+      "title": "“Called it” share cards",
+      "acceptance": [
+        "image route renders a graded call; no personal data beyond display name; no prize language"
+      ],
+      "verify": "npm test -- og",
+      "depends_on": [
+        "F-L-04"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-C-04",
+      "phase": "3",
+      "title": "Moderation basics",
+      "acceptance": [
+        "report, remove, block, owner transfer; tests"
+      ],
+      "verify": "npm test -- moderation",
+      "depends_on": [
+        "F-C-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-G-01",
+      "phase": "4",
+      "title": "LLM provider interface with Gemini and templates",
+      "acceptance": [
+        "GeminiProvider via @google/genai with model ids from env; TemplateProvider default without a key",
+        "tests use a mock and never touch the network; token, latency and cost logged"
+      ],
+      "verify": "npm test -- provider",
+      "depends_on": [
+        "F-F-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-G-02",
+      "phase": "4",
+      "title": "Generation contract and claim verifier",
+      "acceptance": [
+        "claims typed OBSERVED/DERIVED/MODEL_ESTIMATE/EDITORIAL with source_ids",
+        "verifier rejects unsourced facts, unknown numbers and post-cutoff claims; template fallback"
+      ],
+      "verify": "npm test -- verifier",
+      "depends_on": [
+        "F-G-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-G-03",
+      "phase": "4",
+      "title": "Production prompt and injection tests",
+      "acceptance": [
+        "ten rules stored in src/llm/prompts/production.md",
+        "injection strings inside retrieved text don’t change outputs (tests)"
+      ],
+      "verify": "npm test -- injection",
+      "depends_on": [
+        "F-G-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-G-04",
+      "phase": "4",
+      "title": "Temporal filter on retrieval",
+      "acceptance": [
+        "retrieval respects observedCutoff; tests"
+      ],
+      "verify": "npm test -- retrieval",
+      "depends_on": [
+        "F-D-05",
+        "F-G-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-K-01",
+      "phase": "4",
+      "title": "Desk brief ranked by swing",
+      "acceptance": [
+        "cross-sport items from historical replays, each with swing, story and receipts",
+        "honest source-pending items for sports without data"
+      ],
+      "verify": "npm run test:e2e -- desk",
+      "depends_on": [
+        "F-D-06",
+        "F-E-03",
+        "F-G-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-K-02",
+      "phase": "4",
+      "title": "Receipt Drawer",
+      "acceptance": [
+        "source, observedAt, source class, attribution; keyboard accessible"
+      ],
+      "verify": "npm run test:e2e -- receipts",
+      "depends_on": [
+        "F-K-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-K-03",
+      "phase": "4",
+      "title": "Depth switch Quick / Tactical / Analyst",
+      "acceptance": [
+        "deterministic templates for all three; optional verified LLM phrasing"
+      ],
+      "verify": "npm test -- depth",
+      "depends_on": [
+        "F-K-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-K-04",
+      "phase": "4",
+      "title": "English and Hindi",
+      "acceptance": [
+        "UI and templates localised; split-flap language toggle; persisted preference"
+      ],
+      "verify": "npm run test:e2e -- i18n",
+      "depends_on": [
+        "F-K-03"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-K-05",
+      "phase": "4",
+      "title": "Event Rooms for five sports",
+      "acceptance": [
+        "WP chart, leverage meter, stories, data-state badge, stream-delay honesty badge"
+      ],
+      "verify": "npm run test:e2e -- rooms",
+      "depends_on": [
+        "F-K-01",
+        "F-L-08"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-K-06",
+      "phase": "4",
+      "title": "Rules-first story detector",
+      "acceptance": [
+        "explicit per-sport thresholds produce prioritised stories; tests"
+      ],
+      "verify": "npm test -- stories",
+      "depends_on": [
+        "F-E-03"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-K-07",
+      "phase": "4",
+      "title": "Query planner",
+      "acceptance": [
+        "structured questions answered from the database; LLM only phrases; tests"
+      ],
+      "verify": "npm test -- planner",
+      "depends_on": [
+        "F-G-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-U-03",
+      "phase": "5",
+      "title": "Pictograms and Pictogram Onboarding",
+      "acceptance": [
+        "original SVG pictograms for five sports and key UI on one grid",
+        "three-screen onboarding"
+      ],
+      "verify": "npm run test:e2e -- onboarding",
+      "depends_on": [
+        "F-U-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-U-05",
+      "phase": "5",
+      "title": "Navigation, layout and accessibility",
+      "acceptance": [
+        "mobile-first nav; axe passes on every route; reduced motion respected"
+      ],
+      "verify": "npm run test:e2e -- a11y",
+      "depends_on": [
+        "F-U-04"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-U-06",
+      "phase": "5",
+      "title": "Landing refresh",
+      "acceptance": [
+        "copy matches what ships; no unverifiable statistics; persona lineage reviewed (no likeness)"
+      ],
+      "verify": "npm run test:e2e -- landing",
+      "depends_on": [
+        "F-U-04",
+        "F-F-10"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-U-07",
+      "phase": "5",
+      "title": "Performance budgets",
+      "acceptance": [
+        "LCP ≤ 2.5 s on a mid-range mobile profile for /, /lab and /desk (Lighthouse or Playwright trace); route JS within budget"
+      ],
+      "verify": "documented measurement in evidence",
+      "depends_on": [
+        "F-U-05"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-R-01",
+      "phase": "5",
+      "title": "Five personas and Persona Switchboard",
+      "acceptance": [
+        "persona cards and PLAYBOOK.md files; AI label everywhere; switchboard re-voices the same verified facts"
+      ],
+      "verify": "npm run test:e2e -- roster",
+      "depends_on": [
+        "F-G-02",
+        "F-U-04"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-R-02",
+      "phase": "5",
+      "title": "Persona tools",
+      "acceptance": [
+        "Opener Over Call live in the Lab; Architect, Professor, Iceman and Closer demos on open or labelled illustrative data"
+      ],
+      "verify": "npm run test:e2e -- persona-tools",
+      "depends_on": [
+        "F-R-01",
+        "F-E-10"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-R-03",
+      "phase": "5",
+      "title": "Alter Ego identity model",
+      "acceptance": [
+        "deterministic axes (risk, timing, calibration, contrarianism, domain mix) with explanations; tests"
+      ],
+      "verify": "npm test -- alter-ego",
+      "depends_on": [
+        "F-L-05"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-R-04",
+      "phase": "5",
+      "title": "Dossier Reveal and share card",
+      "acceptance": [
+        "revealed after 10 graded calls; case-file motion; share card"
+      ],
+      "verify": "npm run test:e2e -- reveal",
+      "depends_on": [
+        "F-R-03",
+        "F-C-03"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-R-05",
+      "phase": "5",
+      "title": "Season File",
+      "acceptance": [
+        "printable season summary: best and worst reads, calibration, rating history"
+      ],
+      "verify": "npm run test:e2e -- season-file",
+      "depends_on": [
+        "F-R-03"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-T-01",
+      "phase": "6",
+      "title": "Legal and trust pages",
+      "acceptance": [
+        "/terms, /privacy, /attributions (from rights policies), /ai"
+      ],
+      "verify": "npm run test:e2e -- legal",
+      "depends_on": [
+        "F-D-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-T-02",
+      "phase": "6",
+      "title": "Export and delete my data",
+      "acceptance": [
+        "JSON export; hard delete with confirmation; tests"
+      ],
+      "verify": "npm run test:e2e -- account",
+      "depends_on": [
+        "F-F-03"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-T-03",
+      "phase": "6",
+      "title": "18+ beta gate",
+      "acceptance": [
+        "required confirmation at sign-up with explanation"
+      ],
+      "verify": "npm run test:e2e -- age",
+      "depends_on": [
+        "F-F-12"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-T-04",
+      "phase": "6",
+      "title": "AI labels everywhere personas speak",
+      "acceptance": [
+        "test scans persona surfaces for the AI label"
+      ],
+      "verify": "npm run test:e2e -- ai-label",
+      "depends_on": [
+        "F-R-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-T-05",
+      "phase": "6",
+      "title": "Anti-cheat basics",
+      "acceptance": [
+        "feed-time locks, one pick per call, rate limits, anomaly flag stub; tests"
+      ],
+      "verify": "npm test -- anticheat",
+      "depends_on": [
+        "F-L-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-A-02",
+      "phase": "6",
+      "title": "North star and KPI queries",
+      "acceptance": [
+        "Review-to-Next-Read and KPIs computed weekly; fixture tests with known answers"
+      ],
+      "verify": "npm test -- kpi",
+      "depends_on": [
+        "F-A-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-A-03",
+      "phase": "6",
+      "title": "Admin scoreboards",
+      "acceptance": [
+        "/admin/scoreboards with Trust, Product, Learning and Business; admin-gated"
+      ],
+      "verify": "npm run test:e2e -- scoreboards",
+      "depends_on": [
+        "F-A-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-Z-01",
+      "phase": "7",
+      "title": "Demo works from a clean install with no keys",
+      "acceptance": [
+        "fresh worktree: init, seed, and every main journey works without GEMINI_API_KEY or paid data"
+      ],
+      "verify": "node harness/verify.mjs --clean",
+      "depends_on": [
+        "F-A-03",
+        "F-R-05",
+        "F-K-05",
+        "F-C-04",
+        "F-T-05",
+        "F-U-07",
+        "F-R-04",
+        "F-K-07",
+        "F-K-06",
+        "F-G-03",
+        "F-G-04",
+        "F-T-01",
+        "F-T-02",
+        "F-T-03",
+        "F-T-04",
+        "F-E-09",
+        "F-K-04",
+        "F-K-02",
+        "F-L-07",
+        "F-C-02",
+        "F-U-03",
+        "F-U-06",
+        "F-D-07",
+        "F-F-05",
+        "F-F-06",
+        "F-F-07",
+        "F-F-08",
+        "F-F-09",
+        "F-F-11",
+        "F-R-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-Z-02",
+      "phase": "7",
+      "title": "Docs gardened and walkthrough complete",
+      "acceptance": [
+        "QUALITY_SCORE grades current; WALKTHROUGH links screenshot evidence for every screen; HUMAN_TODO final"
+      ],
+      "verify": "manual review recorded in evidence",
+      "depends_on": [
+        "F-Z-01"
+      ],
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F-Z-03",
+      "phase": "7",
+      "title": "Release v0.1.0-beta",
+      "acceptance": [
+        "CI green on the default branch; every commit on the default branch (no squash); tag v0.1.0-beta pushed; exec plan moved to docs/exec-plans/completed/"
+      ],
+      "verify": "gh run list --branch <default> --limit 1; git tag -l v0.1.0-beta",
+      "depends_on": [
+        "F-Z-02"
+      ],
+      "passes": false,
+      "evidence": ""
+    }
+  ]
+}
