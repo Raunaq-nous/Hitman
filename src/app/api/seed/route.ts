@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isAdminRequest, adminOnly } from "@/lib/admin";
 import { IPL_2026_SCHEDULE } from "@/constants/iplData";
 
 export const dynamic = 'force-dynamic';
@@ -80,7 +81,12 @@ function rand(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export async function POST() {
+export async function POST(req: Request) {
+  // Destructive: wipes and reseeds every table. Off unless explicitly enabled, and admin only.
+  if (process.env.ALLOW_SEED !== "true") {
+    return NextResponse.json({ message: "Seeding is disabled. Set ALLOW_SEED=true outside production." }, { status: 403 });
+  }
+  if (!(await isAdminRequest(req))) return adminOnly();
   try {
     // FORCE WIPING AND RE-SEEDING EVERY TIME THE USER HITS THIS FOR NOW TO UNBLOCK THEM
     console.log("Wiping all existing fantasy data to force a clean 2026 sync...");
