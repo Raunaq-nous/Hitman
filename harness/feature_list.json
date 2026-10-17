@@ -44,8 +44,8 @@
       "depends_on": [
         "F-H-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "node harness/check-features.mjs exited 0; root .gitignore updated; node harness/verify.mjs --ci passed"
     },
     {
       "id": "F-H-03",
