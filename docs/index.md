@@ -1,0 +1,27 @@
+# Documentation index (system of record)
+
+| Document | Purpose | Status |
+|---|---|---|
+| `PRODUCT_SENSE.md` | Thesis, principles, north star, what not to build | Approved |
+| `product-specs/` | One spec per surface (Desk, Decision Lab, Roster, Alter Ego, Crews, Onboarding, Admin, Legal) | Approved |
+| `design-docs/core-beliefs.md` | Agent-first operating principles | Approved |
+| `design-docs/data-and-rights.md` | Sources, source classes, rights policy schema | Approved |
+| `design-docs/models-and-grading.md` | Win probability, leverage, calibration, grader, Read Rating | Approved |
+| `design-docs/llm-generation-contract.md` | Claim types, verifier, production prompt rules, Gemini provider | Approved |
+| `design-docs/bitemporal-store.md` | Incident store and leakage tests | Approved |
+| `../ARCHITECTURE.md` | Pipeline, layering, boundaries, stack | Approved |
+| `DESIGN.md` | Dossier × Munich ’72 design system and the twelve screens | Approved |
+| `FRONTEND.md` | Routes, components, i18n, performance budgets | Approved |
+| `SECURITY.md` | Secrets, untrusted content, auth, abuse | Approved |
+| `RELIABILITY.md` | Freshness, latency, honest states, observability | Approved |
+| `QUALITY_SCORE.md` | Grade per domain, kept current by doc gardening | Living |
+| `PLANS.md` | How execution plans work | Approved |
+| `exec-plans/active/0001-alter-ego-overhaul.md` | The overhaul plan | Active |
+| `exec-plans/tech-debt-tracker.md` | Known debt | Living |
+| `HUMAN_TODO.md` | Actions only a human can take | Living |
+| `RESUME.md` | How a new session resumes | Approved |
+| `WALKTHROUGH.md` | What was built, how to run it, evidence | Written at gates |
+| `references/sources.md` | External references | Living |
+| `research/` | The verified research dossier (PDF) and research page | Reference |
+
+Rule: when code and docs disagree, fix whichever is wrong in the same commit, and note it in the progress log.
