@@ -1,17 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { IPL_2026_SCHEDULE, IPL_TEAMS as FULL_IPL_TEAMS } from "../../../constants/iplData";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
-// ─── Server-side cache (30-second TTL to conserve API quota) ───
-let cachedData: any = null;
-let lastFetchTime = 0;
-const CACHE_TTL = 30_000; // 30 seconds
+// Live IPL scores from CricketData.org. Nothing here is ever simulated or padded with mock data.
+const SOURCE = "CricketData.org";
+const IPL_SERIES_ID = "87c62aac-bc3c-4738-ab93-19da0690488f";
+const CACHE_TTL_MS = 30_000;
 
-// ─── IPL Team short names ───
-const IPL_TEAMS: Record<string, string> = {
+const SHORT_NAMES: Record<string, string> = {
   "Chennai Super Kings": "CSK",
   "Mumbai Indians": "MI",
   "Royal Challengers Bengaluru": "RCB",
@@ -25,371 +21,128 @@ const IPL_TEAMS: Record<string, string> = {
   "Lucknow Super Giants": "LSG",
 };
 
-function getShortName(team: string): string {
-  return IPL_TEAMS[team] || team.split(" ").map(w => w[0]).join("");
+type ApiScore = { r?: number; w?: number; o?: number | string; inning?: string };
+type ApiTeamInfo = { name: string; img?: string };
+type ApiMatch = {
+  id: string; name?: string; matchType?: string; status?: string; venue?: string; date?: string; series_id?: string;
+  teams?: string[]; teamInfo?: ApiTeamInfo[]; score?: ApiScore[]; matchStarted?: boolean; matchEnded?: boolean;
+};
+type Innings = { runs: number; wickets: number; overs: string; balls: number; inning: string };
+
+// Per-instance cache to protect the API quota. Moves to Redis with the ingestion worker in Phase 1.
+let cache: { at: number; payload: Record<string, unknown> } | null = null;
+
+const shortName = (team: string) => SHORT_NAMES[team] ?? team.split(" ").map((w) => w[0]).join("");
+
+// "10.4" overs is 10 overs and 4 balls, i.e. 64 balls, not 10.4 overs.
+function ballsFromOvers(overs: string | number | undefined): number {
+  const [whole, part = "0"] = String(overs ?? "0").split(".");
+  return (parseInt(whole, 10) || 0) * 6 + (parseInt(part, 10) || 0);
 }
 
-function parseScore(scoreArr: any[]): { runs: number; wickets: number; overs: string; inning: string }[] {
-  if (!scoreArr || !Array.isArray(scoreArr)) return [];
-  return scoreArr.map(s => ({
-    runs: s.r || 0,
-    wickets: s.w || 0,
-    overs: String(s.o || "0"),
-    inning: s.inning || "",
-  }));
+const runRate = (runs: number, balls: number) => (balls > 0 ? Number(((runs * 6) / balls).toFixed(2)) : 0);
+const ballsPerInnings = (matchType?: string) => (matchType === "t20" ? 120 : matchType === "odi" ? 300 : null);
+
+// Match the full team name, longest first, so "Royal" can never stand in for two different teams.
+function battingSide(inning: string, teams: string[]): string | null {
+  const s = inning.toLowerCase();
+  return [...teams].sort((a, b) => b.length - a.length).find((t) => s.includes(t.toLowerCase())) ?? null;
 }
 
-function buildLiveData(match: any) {
-  const scores = parseScore(match.score);
-  const teams = match.teams || [];
-  const teamInfo = match.teamInfo || [];
-  const isLive = match.matchStarted && !match.matchEnded;
+function toInnings(score: ApiScore[] | undefined): Innings[] {
+  if (!Array.isArray(score)) return [];
+  return score.map((s) => {
+    const overs = String(s.o ?? "0");
+    return { runs: s.r ?? 0, wickets: s.w ?? 0, overs, balls: ballsFromOvers(overs), inning: s.inning ?? "" };
+  });
+}
 
-  // Determine current innings
-  const currentInnings = scores.length;
-  const latestScore = scores[scores.length - 1];
-  const firstInningsScore = scores.length >= 1 ? scores[0] : null;
+function buildMatch(m: ApiMatch, fetchedAt: string) {
+  const teams = m.teams ?? [];
+  const innings = toInnings(m.score);
+  const isLive = !!m.matchStarted && !m.matchEnded;
+  const latest = innings[innings.length - 1];
+  const first = innings[0];
 
-  // Build score string
-  let scoreStr = "";
-  let statusStr = match.status || "";
+  const side = (inn: Innings, fallbackIndex: number) => {
+    const batting = battingSide(inn.inning, teams) ?? teams[fallbackIndex] ?? `Team ${fallbackIndex + 1}`;
+    const bowling = teams.find((t) => t !== batting) ?? `Team ${fallbackIndex === 0 ? 2 : 1}`;
+    return { batting, bowling };
+  };
 
-  if (latestScore) {
-    // Determine which team is batting
-    const inningStr = latestScore.inning.toLowerCase();
-    let battingTeam = "";
-    for (const team of teams) {
-      if (inningStr.includes(team.toLowerCase().split(" ")[0].toLowerCase())) {
-        battingTeam = team;
-        break;
-      }
-    }
-    if (!battingTeam && teams.length > 0) {
-      // For innings 2, the inning string sometimes has both teams
-      battingTeam = currentInnings === 1 ? teams[0] : teams[1];
-    }
-
-    const shortBat = getShortName(battingTeam);
-    scoreStr = `${shortBat}: ${latestScore.runs}/${latestScore.wickets} (${latestScore.overs})`;
-
-    // If 2nd innings, show target info
-    if (scores.length >= 2 && firstInningsScore) {
-      const target = firstInningsScore.runs + 1;
-      const needed = target - latestScore.runs;
-      const ballsLeft = Math.max(0, 120 - Math.floor(parseFloat(latestScore.overs)) * 6 - (parseFloat(latestScore.overs) % 1) * 10);
-      if (isLive && needed > 0) {
-        statusStr = `${battingTeam} need ${needed} runs from ${ballsLeft} balls`;
-      }
+  let score = "Match not started";
+  let status = m.status ?? "";
+  if (latest) {
+    const { batting } = side(latest, innings.length - 1);
+    score = `${shortName(batting)}: ${latest.runs}/${latest.wickets} (${latest.overs})`;
+    const perInnings = ballsPerInnings(m.matchType);
+    if (isLive && innings.length >= 2 && first && perInnings) {
+      const needed = first.runs + 1 - latest.runs;
+      const ballsLeft = perInnings - latest.balls;
+      if (needed > 0 && ballsLeft > 0) status = `${batting} need ${needed} runs from ${ballsLeft} balls`;
     }
   }
 
-  // Build both innings data for scorecard
-  const innings1Data = firstInningsScore ? {
-    battingTeam: (() => {
-      const inningStr = firstInningsScore.inning.toLowerCase();
-      for (const team of teams) {
-        if (inningStr.includes(team.toLowerCase().split(" ")[0].toLowerCase())) return team;
-      }
-      return teams[0] || "Team 1";
-    })(),
-    bowlingTeam: teams[1] || "Team 2",
-    totalRuns: firstInningsScore.runs,
-    totalWickets: firstInningsScore.wickets,
-    overs: firstInningsScore.overs,
-    runRate: parseFloat((firstInningsScore.runs / Math.max(0.1, parseFloat(firstInningsScore.overs))).toFixed(2)),
-    isCompleted: scores.length >= 2,
-    extras: { wides: 0, noBalls: 0, byes: 0, legByes: 0, total: 0 },
-    batsmen: [],
-    bowlers: [],
-    fallOfWickets: [],
-    partnerships: [],
-  } : null;
+  const inningsData = (inn: Innings | undefined, index: number) => {
+    if (!inn) return null;
+    const { batting, bowling } = side(inn, index);
+    return {
+      battingTeam: batting, bowlingTeam: bowling, totalRuns: inn.runs, totalWickets: inn.wickets, overs: inn.overs,
+      runRate: runRate(inn.runs, inn.balls), isCompleted: index === 0 ? innings.length >= 2 : !!m.matchEnded,
+      extras: { wides: 0, noBalls: 0, byes: 0, legByes: 0, total: 0 }, batsmen: [], bowlers: [], fallOfWickets: [], partnerships: [],
+    };
+  };
 
-  const innings2Score = scores.length >= 2 ? scores[1] : null;
-  const innings2Data = innings2Score ? {
-    battingTeam: (() => {
-      const inningStr = innings2Score.inning.toLowerCase();
-      for (const team of teams) {
-        if (inningStr.includes(team.toLowerCase().split(" ")[0].toLowerCase())) return team;
-      }
-      return teams[1] || "Team 2";
-    })(),
-    bowlingTeam: teams[0] || "Team 1",
-    totalRuns: innings2Score.runs,
-    totalWickets: innings2Score.wickets,
-    overs: innings2Score.overs,
-    runRate: parseFloat((innings2Score.runs / Math.max(0.1, parseFloat(innings2Score.overs))).toFixed(2)),
-    isCompleted: match.matchEnded,
-    extras: { wides: 0, noBalls: 0, byes: 0, legByes: 0, total: 0 },
-    batsmen: [],
-    bowlers: [],
-    fallOfWickets: [],
-    partnerships: [],
-  } : null;
-
-  // Team logos
-  const team1Info = teamInfo.find((t: any) => t.name === teams[0]);
-  const team2Info = teamInfo.find((t: any) => t.name === teams[1]);
-
+  const info = m.teamInfo ?? [];
   return {
-    source: "CRICKETDATA.ORG (LIVE)",
-    matchId: match.id,
-    matchName: match.name,
-    matchType: match.matchType,
-    score: scoreStr || "Match not started",
-    status: statusStr,
-    overs: latestScore?.overs || "0",
-    isLive,
-    matchStarted: match.matchStarted,
-    matchEnded: match.matchEnded,
-    teams: teams.map((t: string, i: number) => ({
-      name: t,
-      shortName: getShortName(t),
-      img: i === 0 ? team1Info?.img : team2Info?.img,
-    })),
-    scores: scores.map(s => ({
-      runs: s.runs,
-      wickets: s.wickets,
-      overs: s.overs,
-      inning: s.inning,
-    })),
-    recentBalls: [],
-    currentBatsmen: [],
-    currentBowler: null,
-    nextBatsman: null,
-    tossWinner: "",
-    tossDecision: statusStr.toLowerCase().includes("opt to") ? statusStr : "",
-    target: scores.length >= 2 && firstInningsScore ? firstInningsScore.runs + 1 : null,
-    currentInnings,
-    lastUpdated: new Date().toISOString(),
-    innings1: innings1Data,
-    innings2: innings2Data,
-    commentary: [],
-    totalCommentaryCount: 0,
-    matchResult: match.matchEnded ? statusStr : null,
-    venue: match.venue || "",
-    date: match.date,
-    seriesId: match.series_id,
+    source: SOURCE, matchId: m.id, matchName: m.name ?? teams.join(" vs "), matchType: m.matchType ?? "",
+    score, status, overs: latest?.overs ?? "0", isLive, matchStarted: !!m.matchStarted, matchEnded: !!m.matchEnded,
+    teams: teams.map((t) => ({ name: t, shortName: shortName(t), img: info.find((i) => i.name === t)?.img })),
+    scores: innings.map(({ runs, wickets, overs, inning }) => ({ runs, wickets, overs, inning })),
+    recentBalls: [], currentBatsmen: [], currentBowler: null, nextBatsman: null, tossWinner: "",
+    tossDecision: status.toLowerCase().includes("opt to") ? status : "",
+    target: innings.length >= 2 && first ? first.runs + 1 : null, currentInnings: innings.length,
+    lastUpdated: fetchedAt, innings1: inningsData(innings[0], 0), innings2: inningsData(innings[1], 1),
+    commentary: [], totalCommentaryCount: 0, matchResult: m.matchEnded ? status : null,
+    venue: m.venue ?? "", date: m.date ?? "", seriesId: m.series_id ?? "",
   };
 }
 
-export async function GET(req: NextRequest) {
+const isIpl = (m: ApiMatch) =>
+  m.series_id === IPL_SERIES_ID || /indian premier league|\bipl\b/i.test(m.name ?? "");
+
+export async function GET() {
+  const apiKey = process.env.CRICKET_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ success: false, error: "Live scores aren’t configured: CRICKET_API_KEY is missing." }, { status: 500 });
+  }
+
+  const now = Date.now();
+  if (cache && now - cache.at < CACHE_TTL_MS) {
+    return NextResponse.json({ success: true, data: cache.payload, cached: true });
+  }
+
   try {
-    const apiKey = process.env.CRICKET_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ success: false, error: "API key not configured" }, { status: 500 });
-    }
+    const res = await fetch(`https://api.cricapi.com/v1/currentMatches?apikey=${encodeURIComponent(apiKey)}&offset=0`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`CricketData.org returned ${res.status}`);
+    const json = await res.json();
+    if (json.status !== "success" || !Array.isArray(json.data)) throw new Error("Unexpected response from CricketData.org");
 
-    const now = Date.now();
-
-    // Return cached data if within TTL
-    if (cachedData && (now - lastFetchTime) < CACHE_TTL) {
-      return NextResponse.json({ success: true, data: cachedData, cached: true });
-    }
-
-    // Fetch from CricketData.org
-    const response = await fetch(
-      `https://api.cricapi.com/v1/currentMatches?apikey=${apiKey}&offset=0`,
-      { next: { revalidate: 30 } }
-    );
-
-    if (!response.ok) {
-      throw new Error(`CricketData API error: ${response.status}`);
-    }
-
-    const json = await response.json();
-
-    if (json.status !== "success" || !json.data) {
-      throw new Error("Invalid API response");
-    }
-
-    // ==== 0. DATE PREPARATION ====
-    const nowDate = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000;
-    const istTime = new Date(nowDate.getTime() + istOffset);
-    const todayStr = istTime.toISOString().split('T')[0];
-    
-    const todaysMatches = IPL_2026_SCHEDULE.filter(m => m.date === todayStr);
-
-    // ==== 1. FETCH SIMULATED MATCHES FROM DB ====
-    // Remove strict date filter for matches already marked as IN_PROGRESS or UPCOMING.
-    // If it's in progress in the DB, it's live!
-    const dbLiveMatches = await prisma.match.findMany({
-      where: {
-        status: { in: ["IN_PROGRESS", "UPCOMING"] }
-      },
-      include: { playing11: true }
-    });
-
-    const simulatedIPLMatches = dbLiveMatches.map(m => {
-      const t1 = FULL_IPL_TEAMS.find(t => t.shortName === m.team1);
-      const t2 = FULL_IPL_TEAMS.find(t => t.shortName === m.team2);
-      
-      // Basic simulation stats if match is "Live" in DB
-      const isLive = m.status === "IN_PROGRESS";
-      const dummyScore = isLive ? [
-        { inning: `${m.team1} 1st Inning`, runs: 85, wickets: 2, overs: "10.4" }
-      ] : [];
-
-      return {
-        source: "SIMULATED (DB)",
-        matchId: m.id,
-        matchName: `${t1?.name || m.team1} vs ${t2?.name || m.team2}`,
-        matchType: "t20",
-        score: isLive ? `${m.team1}: 85/2 (10.4)` : "Match haven't started",
-        status: isLive ? `${t1?.shortName} chose to bat` : `Scheduled at ${t1?.venue || "TBD"}`,
-        overs: isLive ? "10.4" : "0",
-        isLive: isLive,
-        matchStarted: isLive,
-        matchEnded: false,
-        teams: [
-          { name: t1?.name || m.team1, shortName: m.team1, img: t1?.logoUrl || "" },
-          { name: t2?.name || m.team2, shortName: m.team2, img: t2?.logoUrl || "" }
-        ],
-        scores: dummyScore,
-        target: null,
-        currentInnings: 1,
-        lastUpdated: new Date().toISOString(),
-        innings1: null,
-        innings2: null,
-        matchResult: null,
-        venue: t1?.venue || "TBD",
-        date: m.date.toISOString(),
-        tossDecision: m.tossCompleted ? "Toss completed in simulation" : "Toss pending"
-      };
-    });
-
-    const fallbackMatch = todaysMatches.length > 0 ? todaysMatches[0] : IPL_2026_SCHEDULE[7]; 
-    const team1Name = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatch.team1)?.name || fallbackMatch.team1;
-    const team2Name = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatch.team2)?.name || fallbackMatch.team2;
-
-    const dummyIPLData = {
-      source: "MOCK DATA (SIMULATION)",
-      matchId: `mock-${fallbackMatch.match}`,
-      matchName: `${team1Name} vs ${team2Name}`,
-      matchType: "t20",
-      score: `${fallbackMatch.team1}: 0/0 (0.0)`,
-      status: `Upcoming match at ${fallbackMatch.venue}`,
-      overs: "0.0",
-      isLive: false,
-      matchStarted: false,
-      matchEnded: false,
-      teams: [
-        { name: team1Name, shortName: fallbackMatch.team1, img: "" },
-        { name: team2Name, shortName: fallbackMatch.team2, img: "" }
-      ],
-      scores: [],
-      target: null,
-      currentInnings: 1,
-      lastUpdated: new Date().toISOString(),
-      innings1: null,
-      innings2: null,
-      matchResult: null,
-      venue: fallbackMatch.venue,
-      date: new Date().toISOString(),
-      tossDecision: "Toss pending. Match hasn't started yet."
+    const fetchedAt = new Date().toISOString();
+    const live = (json.data as ApiMatch[]).filter((m) => isIpl(m) && m.matchStarted && !m.matchEnded).map((m) => buildMatch(m, fetchedAt));
+    const payload = {
+      primary: live[0] ?? null,
+      iplMatches: live,
+      allMatches: [],
+      source: SOURCE,
+      fetchedAt,
+      apiInfo: { hitsToday: json.info?.hitsToday, hitsLimit: json.info?.hitsLimit, hitsUsed: json.info?.hitsUsed },
     };
-
-    // Filter IPL matches and other T20 matches
-    const allMatches = json.data;
-    const iplMatches = allMatches.filter((m: any) =>
-      m.name?.toLowerCase().includes("indian premier league") ||
-      m.name?.toLowerCase().includes("ipl") ||
-      m.series_id === "87c62aac-bc3c-4738-ab93-19da0690488f"
-    );
-
-    // Build response — prioritize DB Live, then real Live IPL, then completed IPL
-    const liveIPL = iplMatches.filter((m: any) => m.matchStarted && !m.matchEnded);
-    
-    // FILTER OUT YESTERDAY'S MATCHES FROM REAL API (Strict Date Check)
-    const filteredLiveReal = liveIPL.filter((m: any) => {
-      const matchDate = m.date?.split('T')[0];
-      return matchDate === todayStr; 
-    });
-
-    // Primary match: Simulated Live > Real Live > Simulated Mock
-    const primaryData = simulatedIPLMatches.find(m => m.isLive) 
-                       || (filteredLiveReal.length > 0 ? buildLiveData(filteredLiveReal[0]) : null)
-                       || (simulatedIPLMatches.length > 0 ? simulatedIPLMatches[0] : dummyIPLData);
-
-    // All IPL matches for the sidebar
-    const allIPLData = [...simulatedIPLMatches];
-    if (filteredLiveReal.length > 0) allIPLData.push(...filteredLiveReal.map((m: any) => buildLiveData(m)));
-    if (allIPLData.length === 0) allIPLData.push(dummyIPLData);
-
-    const result = {
-      primary: primaryData,
-      iplMatches: allIPLData,
-      allMatches: [], // Enforce only IPL matches inside the interface
-      apiInfo: {
-        hitsToday: json.info?.hitsToday,
-        hitsLimit: json.info?.hitsLimit,
-        hitsUsed: json.info?.hitsUsed,
-      },
-      version: "2026-04-04-v2"
-    };
-
-    // Cache the result
-    cachedData = result;
-    lastFetchTime = now;
-
-    return NextResponse.json({ success: true, data: result });
-  } catch (error: any) {
+    cache = { at: now, payload };
+    return NextResponse.json({ success: true, data: payload });
+  } catch (error) {
     console.error("Live score API error:", error);
-
-    // Return cached data if available
-    if (cachedData) {
-      return NextResponse.json({ success: true, data: cachedData, cached: true, stale: true });
-    }
-
-    // ==== FALLBACK MOCK DATA ==== (Reuse logic from above)
-    const nowDate = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000;
-    const istTime = new Date(nowDate.getTime() + istOffset);
-    const todayStr = istTime.toISOString().split('T')[0];
-    
-    const todaysMatchesFbList = IPL_2026_SCHEDULE.filter(m => m.date === todayStr);
-    const fallbackMatchFb = todaysMatchesFbList.length > 0 ? todaysMatchesFbList[0] : IPL_2026_SCHEDULE[7]; 
-
-    const t1 = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatchFb.team1);
-    const t2 = FULL_IPL_TEAMS.find(t => t.shortName === fallbackMatchFb.team2);
-
-    const dummyIPLData = {
-      source: "MOCK DATA (FALLBACK)",
-      matchId: `mock-${fallbackMatchFb.match}`,
-      matchName: `${t1?.name || fallbackMatchFb.team1} vs ${t2?.name || fallbackMatchFb.team2}`,
-      matchType: "t20",
-      score: `${fallbackMatchFb.team1}: 0/0 (0.0)`,
-      status: `Upcoming match at ${fallbackMatchFb.venue}`,
-      overs: "0.0",
-      isLive: false,
-      matchStarted: false,
-      matchEnded: false,
-      teams: [
-        { name: t1?.name || fallbackMatchFb.team1, shortName: fallbackMatchFb.team1, img: t1?.logoUrl || "" },
-        { name: t2?.name || fallbackMatchFb.team2, shortName: fallbackMatchFb.team2, img: t2?.logoUrl || "" }
-      ],
-      scores: [],
-      target: null,
-      currentInnings: 1,
-      lastUpdated: new Date().toISOString(),
-      innings1: null,
-      innings2: null,
-      matchResult: null,
-      venue: fallbackMatchFb.venue,
-      date: new Date().toISOString(),
-      tossDecision: "Toss pending. Match hasn't started yet."
-    };
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        primary: dummyIPLData,
-        iplMatches: [dummyIPLData],
-        allMatches: [],
-        apiInfo: { hitsToday: 0, hitsLimit: 100, hitsUsed: 0 }
-      },
-      fallback: true
-    });
+    if (cache) return NextResponse.json({ success: true, data: { ...cache.payload, stale: true }, stale: true });
+    return NextResponse.json({ success: false, error: "Live scores are unavailable right now." }, { status: 503 });
   }
 }

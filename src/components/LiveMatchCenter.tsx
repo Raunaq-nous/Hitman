@@ -101,7 +101,14 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
     );
   }
 
-  if (!data?.primary) return null;
+  if (!data?.primary) {
+    return (
+      <div className="glass-panel rounded-sm p-8 text-center">
+        <p className="text-white font-bold text-lg">No live IPL match right now</p>
+        <p className="text-gray-400 text-sm mt-2">Scores appear here as soon as the next match starts. We never show simulated scores as live.</p>
+      </div>
+    );
+  }
 
   const match = data.iplMatches[selectedMatchIdx] || data.primary;
 
@@ -518,7 +525,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
 
       {/* Footer */}
       <div className="px-4 pb-3 flex items-center justify-between text-[9px] text-gray-700 font-mono border-t border-white/5 pt-2">
-        <span>HITMAN ENGINE v2.0 · REAL DATA</span>
+        <span>Source: {match.source}</span>
         <span>Updated: {new Date(match.lastUpdated).toLocaleTimeString("en-IN")}</span>
       </div>
     </div>
