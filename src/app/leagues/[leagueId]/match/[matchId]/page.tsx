@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import TeamBuilderClient from "@/components/TeamBuilderClient";
-import TreasurerCard from "@/components/TreasurerCard";
 import LiveMatchCenter from "@/components/LiveMatchCenter";
 import MatchContestTabs from "@/components/MatchContestTabs";
 

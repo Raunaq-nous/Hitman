@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Trophy, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import SimulateMatchButton from "@/components/SimulateMatchButton";
 
 export default async function MatchLeaderboardPage({ params }: { params: Promise<{ leagueId: string; matchId: string }> }) {
   const { leagueId, matchId } = await params;
@@ -49,7 +48,7 @@ export default async function MatchLeaderboardPage({ params }: { params: Promise
         </div>
         <div>
           {match.status === "UPCOMING" && (
-            <SimulateMatchButton matchId={match.id} />
+            <span className="text-sm text-gray-500">Points post once the real scorecard is in.</span>
           )}
         </div>
       </div>
