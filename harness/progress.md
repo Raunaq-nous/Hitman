@@ -1,9 +1,11 @@
 # Progress
 
-STATUS: NOT STARTED
-CURRENT PHASE: 0.0
+STATUS: IN PROGRESS
+CURRENT PHASE: 0
 LAST GATE: none
-NEXT PROMPT: Run ORIENT FIRST, then PHASE 0.0 steps a–g from the mission prompt (backup, identity, Phase 0 patches, harness commits, history purge, overhaul branch).
+NEXT PROMPT: Run feature F-H-01 (Phase 0 work verification and _incoming cleanup)
 
 ## Session log
 <!-- Append newest first: date (UTC), features touched, commits, verification results, blockers, NEXT PROMPT -->
+- 2026-10-17 (UTC) | F-H-00 | fix(ci): configure eslint for clean ci gate [F-H-00] | node harness/verify.mjs --ci (PASS: feature list, lint, build) | NEXT: F-H-01
+
