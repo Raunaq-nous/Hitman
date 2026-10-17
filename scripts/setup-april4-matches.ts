@@ -55,7 +55,7 @@ async function main() {
       create: {
         name: "Vaibhavi Singh",
         email: "vaibhav@hitman.ai",
-        password: "password123", // Mock
+        password: (process.env.SEED_USER_PASSWORD || (() => { throw new Error("Set SEED_USER_PASSWORD to run this script."); })()), // Mock
       }
     });
 

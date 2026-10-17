@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { randomInt } from "crypto";
+
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const newInviteCode = () => Array.from({ length: 6 }, () => CODE_ALPHABET[randomInt(CODE_ALPHABET.length)]).join("");
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -37,7 +41,7 @@ export async function POST(req: Request) {
     if (!name) return NextResponse.json({ message: "League name required" }, { status: 400 });
 
     // Generate random 6 character code
-    const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const inviteCode = newInviteCode();
 
     const league = await prisma.league.create({
       data: {

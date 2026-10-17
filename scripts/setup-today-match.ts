@@ -100,9 +100,9 @@ async function main() {
 
   const bcrypt = require("bcryptjs");
   const testUsers = [
-    { name: "Vaibhavi", email: "vaibhavi@test.com", password: "test123" },
-    { name: "Player2", email: "player2@test.com", password: "test123" },
-    { name: "Player3", email: "player3@test.com", password: "test123" },
+    { name: "Vaibhavi", email: "vaibhavi@test.com", password: (process.env.SEED_USER_PASSWORD || (() => { throw new Error("Set SEED_USER_PASSWORD to run this script."); })()) },
+    { name: "Player2", email: "player2@test.com", password: (process.env.SEED_USER_PASSWORD || (() => { throw new Error("Set SEED_USER_PASSWORD to run this script."); })()) },
+    { name: "Player3", email: "player3@test.com", password: (process.env.SEED_USER_PASSWORD || (() => { throw new Error("Set SEED_USER_PASSWORD to run this script."); })()) },
   ];
 
   for (const u of testUsers) {
