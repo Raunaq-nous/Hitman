@@ -8,15 +8,36 @@
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --surface: #141414;
+  --font-archivo: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
+  /* One type family everywhere. The old monospace look is retired app-wide. */
+  --font-sans: var(--font-archivo);
+  --font-mono: var(--font-archivo);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 84px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
+  margin: 0;
+  font-family: var(--font-archivo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* Existing dark shell for app pages (dashboard, leagues, schedule, teams). Redesigned in Phase 1. */
+.app-dark {
   background-color: var(--background);
   color: var(--foreground);
   background-image:

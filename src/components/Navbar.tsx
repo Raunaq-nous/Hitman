@@ -13,7 +13,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
           <Link href="/" className="flex items-center space-x-2 shrink-0">
             <img src="/icons/icon-192.png" alt="Hitman" className="h-8 w-8 rounded-sm" />
-            <span className="font-bold text-lg tracking-[0.2em] font-mono text-red-600">HITMAN</span>
+            <span className="font-black text-xl tracking-wide text-white" style={{ fontStretch: "62%" }}>ALTER EGO</span>
           </Link>
 
           <div className="flex items-center justify-between w-full ml-6 lg:ml-10">

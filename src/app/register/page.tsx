@@ -45,7 +45,7 @@ export default function RegisterPage() {
           <div className="h-16 w-16 bg-red-100 flex justify-center items-center rounded-full mb-4">
             <Trophy className="h-8 w-8 text-red-600" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight font-mono">Join HITMAN</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight font-mono">Join ALTER EGO</h2>
           <p className="text-sm text-gray-500 mt-2 font-mono">Where Every Pick Wins the Match</p>
         </div>
 
