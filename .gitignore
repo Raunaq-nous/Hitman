@@ -48,3 +48,9 @@ next-env.d.ts
 *.db
 *.db-journal
 build_log.txt
+
+# worktrees, raw data, agent heartbeat
+.worktrees/
+data/raw/
+harness/.agent-heartbeat
+

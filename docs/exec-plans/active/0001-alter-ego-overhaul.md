@@ -61,6 +61,12 @@ Features: F-Z-01, F-Z-02, F-Z-03
 
 ## Progress log
 <!-- newest first: date, feature, plan, result -->
+### 2026-10-18 — F-H-02: Harness and docs in place
+- Plan: Verify AGENTS.md, GEMINI.md, ARCHITECTURE.md, .agents/, docs/, harness/ exist. Add .worktrees/, data/raw/, and harness/.agent-heartbeat to root .gitignore. Run node harness/check-features.mjs and node harness/verify.mjs --ci.
+- Scope: .gitignore updates and harness validation.
+- Result: PASS. All required docs and harness paths present. .gitignore updated. check-features.mjs exited 0 and verify.mjs --ci passed.
+
+
 ### 2026-10-18 — F-H-01: Phase 0 work is on the overhaul branch as separate commits
 - Plan: Verify all eight Phase 0 commits exist in git log, check for any failed patches in _incoming, remove _incoming directory completely, and verify with `node harness/verify.mjs --ci`.
 - Scope: Verification of history and cleanup of _incoming folder.
