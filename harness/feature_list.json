@@ -1230,8 +1230,8 @@
       "depends_on": [
         "F-A-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: /admin/scoreboards (404 unless the session email is in ADMIN_EMAILS) with Trust (per-source freshness and incident counts, corrections, leakage-test pointer, 7-day verifier pass rate from persisted LlmCall rows), Product (week's north star and KPIs from F-A-02), Learning (honest 'no graded calls yet'/'not collected yet'), Business (ARPU not applicable — no revenue; data cost not tracked; model cost per read from logged costs). LLM calls now persisted (LlmCall model, no prompt/output text). tests/unit/scoreboards.test.ts (2) + tests/e2e/scoreboards.spec.ts (404 for anonymous; four boards for admin) -> pass; full gate PASS. Screenshots docs/evidence/F-A-03/scoreboards-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-Z-01",
