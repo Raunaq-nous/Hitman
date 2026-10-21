@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isAdminRequest, adminOnly } from "@/lib/admin";
 import { IPL_2026_SCHEDULE } from "@/constants/iplData";
+import { env } from "@/providers/env";
 
 export const dynamic = 'force-dynamic';
 
@@ -83,7 +84,7 @@ function rand(min: number, max: number) {
 
 export async function POST(req: Request) {
   // Destructive: wipes and reseeds every table. Off unless explicitly enabled, and admin only.
-  if (process.env.ALLOW_SEED !== "true") {
+  if (!env().ALLOW_SEED) {
     return NextResponse.json({ message: "Seeding is disabled. Set ALLOW_SEED=true outside production." }, { status: 403 });
   }
   if (!(await isAdminRequest(req))) return adminOnly();

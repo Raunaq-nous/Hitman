@@ -6,7 +6,7 @@ import PWARegister from "@/components/PWARegister";
 
 export const metadata: Metadata = {
   // `||` rather than `??`: an empty env var must fall back, because new URL("") throws at build time.
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://hitman-drab.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL?.trim() || "http://localhost:3000"),
   title: { default: "ALTER EGO", template: "%s | ALTER EGO" },
   description:
     "A sports desk and a game in one: one brief across cricket, football, basketball, tennis and F1, and live calls at the moments that decide matches.",

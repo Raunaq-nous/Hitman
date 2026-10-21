@@ -167,8 +167,8 @@
       "depends_on": [
         "F-H-09"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/providers/env.ts parses env with Zod (DATABASE_URL required postgresql://; NEXTAUTH_SECRET >= 32 chars in production; NEXTAUTH_URL URL or unset, empty = unset; flags LIVE_CALLS=false, PROTOTYPE_DATA, LLM_ENABLED from GEMINI_API_KEY; ALLOW_SEED refused in production); src/instrumentation.ts parses at startup; auth/admin/seed/live-score use env(). tests/unit/providers/env.test.ts (6 tests, one per rule) pass via npm test -- env. NEXTAUTH_URL=\"\" npm run build -> exit 0."
     },
     {
       "id": "F-F-02",
