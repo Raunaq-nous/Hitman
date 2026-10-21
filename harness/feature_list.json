@@ -394,8 +394,8 @@
       "depends_on": [
         "F-F-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: AnalyticsEvent model (id, userId nullable, name, props Json, createdAt; migration *_analytics_events). src/domain/analytics: strict Zod schema per spec event (moment_viewed, call_locked, review_viewed, next_read_started, share_clicked, receipt_opened, depth_changed, language_changed, alter_ego_revealed); track() rejects unknown events/props; POST /api/events (rate-limited) records client events with the session user. tests/unit/analytics.test.ts (5 tests) -> pass via npm test -- analytics."
     },
     {
       "id": "F-D-01",

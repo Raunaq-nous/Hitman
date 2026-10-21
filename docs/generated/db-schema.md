@@ -149,3 +149,18 @@ Append-only scoring ledger: one row per (team, player, scoring version). Never u
 | player | Player | @relation(fields: [playerId], references: [id], onDelete: Cascade) |
 
 - `@@unique([playerId, season])`
+
+## AnalyticsEvent
+
+Server-side product analytics (docs/product-specs/admin-and-scoreboards.md). No personal data in props.
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id @default(cuid()) |
+| userId | String? |  |
+| name | String |  |
+| props | Json | @default("{}") |
+| createdAt | DateTime | @default(now()) |
+
+- `@@index([name, createdAt])`
+- `@@index([userId, createdAt])`
