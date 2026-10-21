@@ -2,16 +2,16 @@
 
 | Domain | Grade | Gaps |
 |---|---|---|
-| Harness and CI | B | Gates, quiet verify, structural layering test, test DB schema; real CI run on GitHub pending (pushes blocked, see HUMAN_TODO) |
-| Foundations (env, DTOs, auth) | B | Zod env, DTOs, membership checks, keyed cache, source authority, scoring ledger; auth hardening and no-money audit pending |
-| Data and rights | — | |
-| Engine (WP, leverage, calibration, grading) | D | Legal-ball primitives only (100% coverage) |
+| Harness and CI | B | Quiet gates, structural layering test, test DB schema, screenshot script; a real CI run on GitHub is pending (pushes blocked) |
+| Foundations (env, DTOs, auth) | A | Zod env, DTOs, membership, keyed cache, source authority, scoring ledger, auth hardening, no-money audit, strict TS |
+| Data and rights | C | Multi-sport bitemporal schema and rights control plane done; Cricsheet/OpenF1 ingest blocked by the VM network policy (HUMAN_TODO) |
+| Engine (WP, leverage, calibration, grading) | C | Legal balls and tennis Pressure Index (100% coverage); cricket WP/calibration/grading need Cricsheet data |
 | Decision Lab | — | |
-| Crews | C | Legacy leagues behind a crews service with DTOs and membership; rename, invites, timing tower pending |
-| Desk | — | |
-| LLM contract | — | |
+| Crews | B | Crews with invites, owner controls, moderation; timing tower pending (needs Read Rating) |
+| Desk | D | Query planner only; the brief needs ingested data |
+| LLM contract | A | Provider interface, claim verifier, production prompt, injection tests; temporal retrieval filter pending (F-G-04) |
 | Roster and Alter Ego | — | |
-| Design system and accessibility | — | |
+| Design system and accessibility | B | Tokens, fonts, components, gallery, pictograms, onboarding, nav; axe on every route; legacy contest screens still old-styled |
 | Trust, legal, privacy | — | |
-| Analytics and scoreboards | — | |
+| Analytics and scoreboards | C | Event log done; KPI queries and scoreboards pending |
 Grades: A (complete, tested, documented) · B (works, minor gaps) · C (partial) · D (stub) · — (not started).

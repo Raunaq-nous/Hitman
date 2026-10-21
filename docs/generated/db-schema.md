@@ -12,6 +12,8 @@ Generated from `prisma/schema.prisma` by `node scripts/gen-db-schema.mjs`. Do no
 | password | String |  |
 | avatar | String? |  |
 | xp | Int | @default(0) |
+| favouriteSports | String[] | @default([]) |
+| language | String | @default("en") |
 | createdAt | DateTime | @default(now()) |
 | updatedAt | DateTime | @updatedAt |
 | fantasyTeams | FantasyTeam[] |  |
