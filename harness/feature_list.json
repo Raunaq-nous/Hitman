@@ -337,8 +337,8 @@
       "depends_on": [
         "F-F-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/domain/auth (register + verifyCredentials; bcrypt cost 12; generic duplicate-email error; dummy-hash compare for unknown emails) with RateLimiter (src/providers/rateLimit.ts) on login (10/15 min per email, 30/15 min per IP) and registration (5/h per IP); password policy >= 10 chars (Zod, plus minLength on the form); security headers (CSP, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy, HSTS, COOP, no x-powered-by) via next.config.ts. tests/unit/auth/auth.test.ts (9 tests: limiter window, policy, hashing, generic error, register/login rate limits, route 400, headers) + tests/e2e/headers.spec.ts. npm test -- auth -> pass; node harness/verify.mjs -> RESULT: PASS."
     },
     {
       "id": "F-U-01",

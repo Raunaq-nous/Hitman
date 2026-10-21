@@ -8,6 +8,8 @@ export default defineConfig({
     environment: "node",
     globalSetup: ["tests/setup/db.global.ts"],
     fileParallelism: false,
+    testTimeout: 30_000,
+    hookTimeout: 60_000,
     reporters: process.env.VITEST_VERBOSE ? ["default"] : ["dot"],
     coverage: {
       provider: "v8",

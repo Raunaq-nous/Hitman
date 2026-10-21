@@ -9,7 +9,9 @@ export function findMoneyTerms(where: string, text: string): MoneyHit[] {
   const hits: MoneyHit[] = [];
   for (const m of text.matchAll(MONEY_TERMS)) {
     const before = text.slice(Math.max(0, (m.index ?? 0) - 60), m.index);
-    if (NEGATION.test(before)) continue;
+    const after = text.slice((m.index ?? 0) + m[0].length, (m.index ?? 0) + m[0].length + 3);
+    // "payment=()" in Permissions-Policy *disables* the Payment Request API
+    if (NEGATION.test(before) || after === "=()") continue;
     hits.push({ where, term: m[0], context: text.slice(Math.max(0, (m.index ?? 0) - 40), (m.index ?? 0) + 40).replace(/\s+/g, " ") });
   }
   return hits;
