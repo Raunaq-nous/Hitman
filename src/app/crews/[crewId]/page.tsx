@@ -2,7 +2,8 @@ import Link from "next/link";
 import { pageUserId, orNotFound } from "@/providers/page";
 import { getCrewForMember } from "@/domain/crews/service";
 import { openMatchesForCrew } from "@/domain/contests/service";
-import { InvitePanel, LeaveButton, RemoveMemberButton } from "./CrewAdmin";
+import { listReports } from "@/domain/moderation/service";
+import { InvitePanel, LeaveButton, MemberMenu, RemoveMemberButton, ResolveReportButton } from "./CrewAdmin";
 
 export const metadata = { title: "Crew" };
 
@@ -11,6 +12,7 @@ export default async function CrewPage({ params }: { params: Promise<{ crewId: s
   const userId = await pageUserId();
   const crew = await orNotFound(getCrewForMember(userId, crewId));
   const matches = await openMatchesForCrew(userId, crewId);
+  const reports = crew.isOwner ? await listReports(userId, crewId) : [];
   return (
     <main className="crew-page">
       <header>
@@ -27,10 +29,21 @@ export default async function CrewPage({ params }: { params: Promise<{ crewId: s
               <span className="crew-member-name">{m.user.name}{m.user.id === userId ? " (you)" : ""}</span>
               {m.isOwner && <span className="ui-badge" data-state="delayed">Owner</span>}
               {crew.isOwner && !m.isOwner && <RemoveMemberButton crewId={crew.id} userId={m.user.id} name={m.user.name} />}
+              {m.user.id !== userId && <MemberMenu crewId={crew.id} userId={m.user.id} name={m.user.name} canHandOver={crew.isOwner} />}
             </li>
           ))}
         </ul>
       </section>
+      {crew.isOwner && reports.length > 0 && (
+        <section className="ui-card crew-members" aria-labelledby="reports-h" data-testid="reports">
+          <h2 id="reports-h">Reports</h2>
+          <ul>
+            {reports.map((r) => (
+              <li key={r.id}><span className="crew-member-name">{r.reporterName} reported {r.reportedName}: {r.reason}{r.note ? ` — ${r.note}` : ""}</span><ResolveReportButton crewId={crew.id} reportId={r.id} /></li>
+            ))}
+          </ul>
+        </section>
+      )}
       <section className="ui-card crew-matches" aria-labelledby="matches-h">
         <h2 id="matches-h">Matches</h2>
         {matches.length === 0 ? (

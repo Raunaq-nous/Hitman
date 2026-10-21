@@ -246,3 +246,27 @@ model Incident {
   @@index([eventId, observedAt])
   @@index([eventId, t, seq])
 }
+
+/// A member's report about another member of the same crew; the crew owner reviews it.
+model CrewReport {
+  id         String   @id @default(cuid())
+  crewId     String
+  reporterId String
+  reportedId String
+  reason     String
+  note       String?
+  status     String   @default("OPEN")
+  createdAt  DateTime @default(now())
+
+  @@index([crewId, status])
+}
+
+/// blocker never sees blocked's name or activity, and blocked can't join crews the blocker owns.
+model UserBlock {
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+
+  @@id([blockerId, blockedId])
+  @@index([blockedId])
+}

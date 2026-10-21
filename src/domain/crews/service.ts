@@ -17,12 +17,15 @@ export async function requireMembership(userId: string, crewId: string): Promise
 export async function getCrewForMember(userId: string, crewId: string): Promise<CrewDetailDTO> {
   const crew = await repo.findCrewWithMembers(crewId);
   if (!crew || !crew.members.some((m) => m.userId === userId)) throw new DomainError("NOT_FOUND", "Crew not found.");
+  const blocked = new Set(await repo.blockedIdsFor(userId));
+  // people you blocked stay in shared crews you don't own, but you never see their name
+  const shown = (u: { id: string; name: string; avatar: string | null; xp: number }) => (blocked.has(u.id) ? { ...u, name: "Blocked member", avatar: null } : u);
   return {
     id: crew.id,
     name: crew.name,
     inviteCode: crew.inviteCode,
     isOwner: crew.ownerId === userId,
-    members: crew.members.map((m) => ({ user: toPublicUser(m.user), joinedAt: m.joinedAt.toISOString(), isOwner: m.userId === crew.ownerId })),
+    members: crew.members.map((m) => ({ user: toPublicUser(shown(m.user)), joinedAt: m.joinedAt.toISOString(), isOwner: m.userId === crew.ownerId })),
   };
 }
 
@@ -96,6 +99,8 @@ export async function transferOwnership(ownerId: string, crewId: string, newOwne
 export async function joinCrew(userId: string, inviteCode: string): Promise<{ id: string; name: string }> {
   const crew = await repo.findCrewByCode(inviteCode);
   if (!crew) throw new DomainError("NOT_FOUND", "No crew has that invite code.");
+  // a blocked person gets the same answer as a wrong code
+  if (await repo.isBlockedBy(crew.ownerId, userId)) throw new DomainError("NOT_FOUND", "No crew has that invite code.");
   try {
     await repo.insertMember(userId, crew.id);
   } catch (e) {

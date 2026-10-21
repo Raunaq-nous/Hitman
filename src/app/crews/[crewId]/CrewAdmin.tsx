@@ -67,3 +67,42 @@ export function LeaveButton({ crewId }: { crewId: string }): React.JSX.Element {
     </div>
   );
 }
+
+async function send(url: string, method: "POST" | "DELETE", body?: unknown): Promise<{ ok: boolean; message?: string }> {
+  const res = await fetch(url, { method, headers: body ? { "Content-Type": "application/json" } : undefined, body: body ? JSON.stringify(body) : undefined });
+  if (res.ok) return { ok: true };
+  return { ok: false, message: ((await res.json().catch(() => ({}))) as { message?: string }).message };
+}
+
+/** Per-member moderation: report and block for everyone; hand over for the owner. */
+export function MemberMenu({ crewId, userId, name, canHandOver }: { crewId: string; userId: string; name: string; canHandOver: boolean }): React.JSX.Element {
+  const router = useRouter();
+  const [reason, setReason] = useState("abuse");
+  const [note, setNote] = useState<string | null>(null);
+  async function act(fn: () => Promise<{ ok: boolean; message?: string }>, done: string): Promise<void> {
+    const r = await fn();
+    setNote(r.ok ? done : r.message ?? "That didn’t work. Try again.");
+    if (r.ok) router.refresh();
+  }
+  return (
+    <details className="crew-menu">
+      <summary>Options<span className="sr-only"> for {name}</span></summary>
+      <div className="crew-menu-body">
+        <label>Report reason
+          <select value={reason} onChange={(e) => setReason(e.target.value)}>
+            <option value="abuse">Abuse</option><option value="spam">Spam</option><option value="impersonation">Impersonation</option><option value="other">Other</option>
+          </select>
+        </label>
+        <button type="button" className="crew-small" onClick={() => act(() => send(`/api/crews/${crewId}/reports`, "POST", { userId, reason }), "Reported to the crew owner.")}>Report</button>
+        <button type="button" className="crew-small" onClick={() => window.confirm(`Block ${name}? You won’t see their name, and they can’t join crews you own.`) && act(() => send("/api/blocks", "POST", { userId }), "Blocked.")}>Block</button>
+        {canHandOver && <button type="button" className="crew-small" onClick={() => window.confirm(`Make ${name} the owner?`) && act(() => send(`/api/crews/${crewId}/transfer`, "POST", { userId }), "Crew handed over.")}>Make owner</button>}
+        <p aria-live="polite" className="crew-note">{note}</p>
+      </div>
+    </details>
+  );
+}
+
+export function ResolveReportButton({ crewId, reportId }: { crewId: string; reportId: string }): React.JSX.Element {
+  const router = useRouter();
+  return <button type="button" className="crew-small" onClick={async () => { if ((await send(`/api/crews/${crewId}/reports/${reportId}/resolve`, "POST")).ok) router.refresh(); }}>Mark resolved</button>;
+}

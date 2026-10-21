@@ -59,3 +59,11 @@ export function setInviteCode(crewId: string, inviteCode: string) {
 export function setOwner(crewId: string, ownerId: string) {
   return prisma.crew.update({ where: { id: crewId }, data: { ownerId }, select: { id: true } });
 }
+
+export function isBlockedBy(blockerId: string, blockedId: string): Promise<boolean> {
+  return prisma.userBlock.count({ where: { blockerId, blockedId } }).then((n) => n > 0);
+}
+
+export function blockedIdsFor(blockerId: string): Promise<string[]> {
+  return prisma.userBlock.findMany({ where: { blockerId }, select: { blockedId: true } }).then((r) => r.map((b) => b.blockedId));
+}
