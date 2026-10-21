@@ -134,3 +134,15 @@ model PlayerStats {
 
   @@unique([playerId, season])
 }
+
+/// Server-side product analytics (docs/product-specs/admin-and-scoreboards.md). No personal data in props.
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  name      String
+  props     Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([name, createdAt])
+  @@index([userId, createdAt])
+}
