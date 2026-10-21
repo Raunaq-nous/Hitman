@@ -54,3 +54,11 @@ build_log.txt
 data/raw/
 harness/.agent-heartbeat
 
+
+# local embedded-postgres data
+.data/
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/

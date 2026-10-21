@@ -37,6 +37,8 @@ jobs:
         run: if [ -f prisma/schema.prisma ]; then npx prisma generate; fi
       - name: Playwright browsers
         run: if grep -q '"@playwright/test"' package.json; then npx playwright install --with-deps chromium; fi
+      - name: Database migrations
+        run: if grep -q "\"db:migrate\"" package.json; then npm run db:migrate; fi
       - run: node harness/verify.mjs --ci
       - uses: actions/upload-artifact@v4
         if: always()
