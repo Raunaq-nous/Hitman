@@ -19,6 +19,8 @@ const baseSchema = z.object({
   ADMIN_EMAILS: z.string().default("").transform((s) => s.split(",").map((e) => e.trim().toLowerCase()).filter(Boolean)),
   CRON_SECRET: optionalText,
   ALLOW_SEED: flag(false),
+  // Component gallery at /design: always on outside production, opt-in in production.
+  DESIGN_GALLERY: flag(false),
   LIVE_CALLS: flag(false),
   PROTOTYPE_DATA: flag(true),
   CRICKET_API_KEY: optionalText,

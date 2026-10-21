@@ -42,7 +42,7 @@ describe("tokens: light and dark per DESIGN.md", () => {
 
   for (const [name, theme] of [["light", light], ["dark", dark]] as const) {
     it(`meets WCAG AA contrast in the ${name} theme`, () => {
-      for (const fg of ["text", "text-2", "receipt-ink", "brick"]) for (const bg of ["bg", "surface"]) expect(contrast(theme, fg, bg), `${fg} on ${bg}`).toBeGreaterThanOrEqual(4.5);
+      for (const fg of ["text", "text-2", "receipt-ink", "brick", "win-ink", "architect-ink", "professor-ink"]) for (const bg of ["bg", "surface"]) expect(contrast(theme, fg, bg), `${fg} on ${bg}`).toBeGreaterThanOrEqual(4.5);
       expect(contrast(theme, "call-ink", "call"), "call-ink on call").toBeGreaterThanOrEqual(4.5);
       // persona colours are used for marks, bands and large text: 3:1 against the page
       for (const p of ["opener", "closer", "architect", "professor", "iceman"]) expect(contrast(theme, p, "bg"), p).toBeGreaterThanOrEqual(3);
