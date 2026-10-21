@@ -320,8 +320,8 @@
       "depends_on": [
         "F-F-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: tests/audit/money-terms.ts (payment, QR, UPI, wallet, entry fee, prize, cash, deposit, payout, voucher, withdraw, betting, odds, ₹, PSP names; 'no …' disclaimers allowed). tests/unit/no-money.test.ts scans src, public, prisma (schema + migrations), config, scripts (docs excluded) -> 0 hits; 'the schema has no fee, prize, wallet or payment fields' (legacy fee/prize fields were dropped in Phase 0; none remain); self-test of the matcher. tests/e2e/no-money.spec.ts scans rendered text of 7 routes and checks for QR/payment elements. npm test -- no-money -> 3 passed; npm run test:e2e -- no-money -> 7 passed. Runs in CI via verify --ci."
     },
     {
       "id": "F-F-12",
