@@ -105,8 +105,8 @@
       "depends_on": [
         "F-H-05"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: vitest.config.ts (v8 coverage, 100% threshold on src/engine/**, dot reporter). tests/unit/engine/legalBalls.test.ts: 'parses 10.4 overs as 64 legal balls', 'computes run rate on legal balls: 85 off 64 ≈ 7.97', formatOvers/round-trip/required rate. npm test -> 6 passed, coverage 100% statements/branches/functions/lines."
     },
     {
       "id": "F-H-07",
