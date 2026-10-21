@@ -32,6 +32,11 @@ const eslintConfig = defineConfig([
     "build/**",
     "scripts/**",
     "_incoming/**",
+    "playwright-report/**",
+    "test-results/**",
+    "coverage/**",
+    ".data/**",
+    ".worktrees/**",
     // deliberately bad code used to prove the architecture checks catch it
     "tests/fixtures/arch-bad/**",
     "next-env.d.ts",

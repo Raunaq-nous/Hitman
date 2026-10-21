@@ -88,7 +88,8 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
-              placeholder="Create a strong password"
+              placeholder="At least 10 characters"
+              minLength={10}
             />
           </div>
 

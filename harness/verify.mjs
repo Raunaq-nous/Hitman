@@ -14,7 +14,7 @@ const run = (cmd, opts = {}) => {
   const r = spawnSync(cmd, { shell: true, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: verbose ? 'inherit' : 'pipe', ...opts });
   return { status: r.status ?? 1, out: `${r.stdout ?? ''}${r.stderr ?? ''}` };
 };
-const tail = (text) => text.replace(/\x1b\[[0-9;]*m/g, '').trimEnd().split('\n').slice(-MAX_LINES).join('\n');
+const tail = (text) => text.replace(/\x1b\[[0-9;]*m/g, '').trimEnd().split('\n').slice(-MAX_LINES).map((l) => (l.length > 300 ? `${l.slice(0, 300)}…` : l)).join('\n');
 if (args.has('--clean')) {
   const dir = `.worktrees/verify-${Date.now()}`;
   let status = 1;
