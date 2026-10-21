@@ -4,8 +4,8 @@
   --ink:#13233A; --ink-2:#4A5A70; --line:#D6DFEA;
   --opener:#1E9A55; --closer:#E06A10; --architect:#2C58D4; --professor:#7540CC; --iceman:#1F8FC4;
   --call:#FFD23F; --call-ink:#13233A; --on-band:#FFFFFF; --minus:#B4462F; --focus:#13233A;
-  --font-text:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --font-display:"Archivo","Arial Narrow","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
+  --font-text:"Archivo Variable","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-display:"Archivo Variable","Arial Narrow","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);}
