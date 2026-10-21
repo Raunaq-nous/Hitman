@@ -16,6 +16,15 @@ const eslintConfig = defineConfig([
     },
   },
   {
+    files: ["src/app/**/*.{ts,tsx}", "src/components/**/*.{ts,tsx}", "src/ui/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": ["error",
+        { selector: "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]", message: "No raw hex colours in components: use a token from src/ui/tokens.css, e.g. var(--text) or the Tailwind class bg-[var(--surface)]." },
+        { selector: "TemplateElement[value.raw=/#[0-9a-fA-F]{3,8}\\b/]", message: "No raw hex colours in components: use a token from src/ui/tokens.css, e.g. var(--text) or the Tailwind class bg-[var(--surface)]." },
+      ],
+    },
+  },
+  {
     files: ["src/ui/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": ["error", { patterns: [{

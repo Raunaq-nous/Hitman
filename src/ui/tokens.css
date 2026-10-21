@@ -1,0 +1,95 @@
+/* ALTER EGO design tokens: Dossier × Munich '72 (docs/DESIGN.md). The only place raw colour values live.
+   No pure black, no pure red. Call yellow is the one hero colour: only where a decision is made or graded. */
+:root {
+  color-scheme: light;
+  /* palette */
+  --alpine: #8CC6E8;
+  --snow: #F5F7FA;
+  --ink: #13233A;
+  --opener: #1E9A55;
+  --closer: #E06A10;
+  --architect: #2C58D4;
+  --professor: #7540CC;
+  --iceman: #1F8FC4;
+  --call: #FFD23F;
+  --receipt: #A9B4C2;
+  --brick: #B5523B;
+  /* fixed shades (same in both themes): the legacy dark shell and Tailwind's black/red utilities map onto these */
+  --ink-night: #0C1626;
+  --brick-100: #F6DED7;
+  --brick-300: #F2A08C;
+  --brick-400: #E07A61;
+  --brick-500: #C9603F;
+  --brick-600: #B5523B;
+  --brick-700: #94402C;
+  --brick-900: #5A2518;
+  /* semantic */
+  --bg: var(--snow);
+  --surface: #FFFFFF;
+  --surface-2: #EAF0F6;
+  --text: var(--ink);
+  --text-2: #4A5A70;
+  --line: #D6DFEA;
+  --receipt-ink: #56657A;
+  --call-ink: #13233A;
+  --on-accent: #FFFFFF;
+  --focus: #13233A;
+  --win: var(--opener);
+  --loss: var(--brick);
+  /* type */
+  --font-display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-text: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-reading: "Literata", Georgia, "Times New Roman", serif;
+  --font-receipt: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* shape */
+  --radius: 4px;
+  --radius-lg: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --alpine: #8CC6E8;
+    --ink: #13233A;
+    --opener: #2FB96B;
+    --closer: #FF8A3A;
+    --architect: #7E9CFF;
+    --professor: #B08CFF;
+    --iceman: #4FC0EC;
+    --call: #FFD95A;
+    --receipt: #6B7A8F;
+    --brick: #FF8C75;
+    --bg: #0C1626;
+    --surface: #122136;
+    --surface-2: #182A42;
+    --text: #EDF2F9;
+    --text-2: #A6B4C8;
+    --line: #27394F;
+    --receipt-ink: #9AA8BB;
+    --call-ink: #13233A;
+    --on-accent: #0C1626;
+    --focus: #EDF2F9;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --opener: #2FB96B;
+  --closer: #FF8A3A;
+  --architect: #7E9CFF;
+  --professor: #B08CFF;
+  --iceman: #4FC0EC;
+  --call: #FFD95A;
+  --receipt: #6B7A8F;
+  --brick: #FF8C75;
+  --bg: #0C1626;
+  --surface: #122136;
+  --surface-2: #182A42;
+  --text: #EDF2F9;
+  --text-2: #A6B4C8;
+  --line: #27394F;
+  --receipt-ink: #9AA8BB;
+  --call-ink: #13233A;
+  --on-accent: #0C1626;
+  --focus: #EDF2F9;
+}

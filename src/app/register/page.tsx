@@ -63,7 +63,7 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-[var(--ink)] placeholder:text-gray-500 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="John Doe"
             />
           </div>
@@ -75,7 +75,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-[var(--ink)] placeholder:text-gray-500 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="you@example.com"
             />
           </div>
@@ -87,7 +87,7 @@ export default function RegisterPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-[var(--ink)] placeholder:text-gray-500 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="At least 10 characters"
               minLength={10}
             />
