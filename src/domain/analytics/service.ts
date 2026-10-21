@@ -10,3 +10,11 @@ export async function track<N extends EventName>(name: N, props: EventProps<N>, 
   if (!parsed.success) throw new DomainError("INVALID", `Invalid props for ${name}: ${parsed.error.issues[0]?.message ?? "invalid"}`);
   return repo.insertEvent({ userId, name, props: parsed.data });
 }
+
+/** KPIs for the ISO week containing `day`, computed from the event log. */
+export async function kpisForWeek(day: Date, now: Date = new Date()): Promise<import("./kpi").WeeklyKpis> {
+  const { weekStart, weeklyKpis } = await import("./kpi");
+  const start = weekStart(day);
+  const rows = await repo.eventsUntil(new Date(Math.min(now.getTime(), start.getTime() + 44 * 86_400_000)));
+  return weeklyKpis(rows.map((r) => ({ ...r, props: (r.props ?? {}) as Record<string, unknown> })), start, now);
+}
