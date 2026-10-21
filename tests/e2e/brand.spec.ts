@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 // Internal codenames (and the old product names) must never reach anything a user can see.
 const CODENAMES = /\b(hitman|mamba|architetto|iceborg|ice-borg|pitch ?11)\b/i;
-const PUBLIC_PAGES = ["/", "/login", "/register", "/schedule", "/teams", "/commentary", "/leaderboard"];
+const PUBLIC_PAGES = ["/", "/login", "/register", "/commentary", "/onboarding", "/design"];
 
 test.describe("brand: ALTER EGO everywhere users can see", () => {
   for (const path of PUBLIC_PAGES) {

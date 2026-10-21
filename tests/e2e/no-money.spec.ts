@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { findMoneyTerms } from "../audit/money-terms";
 
-const ROUTES = ["/", "/login", "/register", "/schedule", "/teams", "/commentary", "/leaderboard"];
+const ROUTES = ["/", "/login", "/register", "/commentary", "/onboarding", "/design"];
 
 test.describe("no-money audit on rendered routes", () => {
   for (const path of ROUTES) {

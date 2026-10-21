@@ -1030,8 +1030,8 @@
       "depends_on": [
         "F-U-04"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: token-based AppShell and Navbar (mobile-first Menu disclosure, skip link, aria-current, sign in/out, Auto/Light/Dark theme toggle persisted and applied before paint), global prefers-reduced-motion rule, honest Scores page copy; legacy contest screens on an AA-lifted .legacy-dark surface; unverifiable legacy routes removed (D-017). tests/e2e/a11y.spec.ts: axe wcag2a/aa/21a/21aa on every page route — public (/, /login, /register, /onboarding, /commentary, /design, /crews/join/[code]) and signed-in (/crews, /crews/[id], /crews/[id]/leaderboard, /crews/[id]/match/[matchId]) in light and dark; keyboard mobile menu + skip link; theme toggle; reduced motion leaves no running animation -> 7 passed; node harness/verify.mjs -> PASS. Screenshots docs/evidence/F-U-05/{login,scores,onboarding}-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-U-06",

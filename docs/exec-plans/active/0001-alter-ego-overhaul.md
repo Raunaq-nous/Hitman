@@ -64,6 +64,8 @@ Features: F-Z-01, F-Z-02, F-Z-03
 | D-014 | 2026-10-21 | `db:seed` inserts nothing until ingest exists; legacy `scripts/seed*.ts` (hand-typed rosters, random playing XIs) are not wired to any npm script | No fabricated data |
 | D-015 | 2026-10-21 | Playwright pinned to 1.56.1 (playwright-core overridden for @axe-core/playwright) to match the VM's preinstalled Chromium; CI installs the same version | Tests run offline, no browser download |
 | D-016 | 2026-10-21 | cricsheet.org and api.openf1.org are denied by the VM network policy; no in-scope mirror exists. Data-dependent features wait (HUMAN_TODO); work continues on features whose dependencies pass and need no external data | Never fabricate data or fixtures |
+| D-017 | 2026-10-21 | Removed /schedule, /teams, /leaderboard, /api/scraper/points, /api/seed, src/constants/iplData.ts, the IPL team logos and the hand-typed seed scripts | They showed or seeded hand-typed, unverifiable 2026 fixtures, rosters and a points-table "snapshot" (fabricated-data rule); logos are third-party marks |
+| D-018 | 2026-10-21 | Legacy fantasy contest screens (team builder) stay, wrapped in a `.legacy-dark` surface with AA-lifted colours, until the Decision Lab replaces them | Keeps crews' existing contests working without fabricating anything |
 | D-012 | 2026-10-21 | Cloud session has no working `gh` login; CI status, PRs and merges go through the GitHub API (MCP) instead | Same effect, no interactive auth needed |
 
 ## Progress log

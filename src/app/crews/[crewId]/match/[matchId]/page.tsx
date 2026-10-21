@@ -16,7 +16,7 @@ export default async function MatchContestPage({
   // If team already submitted, show tabbed view with commentary
   if (existingTeam) {
     return (
-      <div className="py-8 max-w-5xl mx-auto space-y-6 px-4">
+      <div className="legacy-dark py-8 max-w-5xl mx-auto space-y-6 px-4">
         <div className="glass-panel p-6 rounded-sm text-center relative overflow-hidden border-green-500/30">
           <div className="absolute -right-10 -bottom-10 text-[150px] text-green-500/5 rotate-12 select-none font-bold">✓</div>
           <div className="text-green-500 mb-3 text-4xl font-bold font-mono tracking-widest relative z-10">LOCKED IN</div>
@@ -43,7 +43,7 @@ export default async function MatchContestPage({
   const allPlayers = await builderPlayers(userId, crewId, matchId);
 
   return (
-    <div className="py-6 px-4 max-w-7xl mx-auto">
+    <div className="legacy-dark py-6 px-4 max-w-7xl mx-auto">
       <div className="text-center mb-8 mt-4 border-b border-white/10 pb-6">
         <h1 className="text-4xl font-black text-white font-mono tracking-widest uppercase">
           <span className="text-gray-500 mr-4">MATCH:</span>
