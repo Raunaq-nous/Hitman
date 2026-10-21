@@ -163,7 +163,7 @@ export async function POST(req: Request) {
           where: { team: { in: [fixture.team1, fixture.team2] } }
         });
 
-        const playing11Data = matchSquad.map((p: any) => ({
+        const playing11Data = matchSquad.map((p) => ({
           matchId: match.id,
           playerId: p.id,
           isPlaying: Math.random() > 0.3 
@@ -173,7 +173,7 @@ export async function POST(req: Request) {
       }
 
       return NextResponse.json({ success: true, message: "Successfully synced with original IPL 2026 schedule." });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Seeding failed", error);
       return NextResponse.json({ success: false, message: "Seeding failed", error: String(error) }, { status: 500 });
     }
