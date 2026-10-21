@@ -164,3 +164,117 @@ Server-side product analytics (docs/product-specs/admin-and-scoreboards.md). No 
 
 - `@@index([name, createdAt])`
 - `@@index([userId, createdAt])`
+
+## Sport
+
+The five sports. Seeded by migration; slugs are stable identifiers.
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id |
+| name | String |  |
+| competitions | Competition[] |  |
+| participants | Participant[] |  |
+
+## Competition
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id @default(cuid()) |
+| sportId | String |  |
+| slug | String |  |
+| name | String |  |
+| sport | Sport | @relation(fields: [sportId], references: [id]) |
+| seasons | Season[] |  |
+
+- `@@unique([sportId, slug])`
+
+## Season
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id @default(cuid()) |
+| competitionId | String |  |
+| label | String |  |
+| competition | Competition | @relation(fields: [competitionId], references: [id]) |
+| events | Event[] |  |
+
+- `@@unique([competitionId, label])`
+
+## Event
+
+One match, race or game. sourceRef identifies it in its source (e.g. a Cricsheet match id).
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id @default(cuid()) |
+| seasonId | String |  |
+| sourceId | String |  |
+| sourceRef | String |  |
+| name | String |  |
+| startsAt | DateTime |  |
+| venue | String? |  |
+| rightsPolicyId | String |  |
+| season | Season | @relation(fields: [seasonId], references: [id]) |
+| incidents | Incident[] |  |
+| participants | EventParticipant[] |  |
+
+- `@@unique([sourceId, sourceRef])`
+
+## Participant
+
+A team or player as named by the source. Never a likeness, voice or nickname feature.
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id @default(cuid()) |
+| sportId | String |  |
+| kind | String |  |
+| name | String |  |
+| sourceId | String |  |
+| sourceRef | String |  |
+| sport | Sport | @relation(fields: [sportId], references: [id]) |
+| events | EventParticipant[] |  |
+
+- `@@unique([sourceId, sourceRef])`
+
+## EventParticipant
+
+| Field | Type | Attributes |
+|---|---|---|
+| eventId | String |  |
+| participantId | String |  |
+| role | String |  |
+| event | Event | @relation(fields: [eventId], references: [id]) |
+| participant | Participant | @relation(fields: [participantId], references: [id]) |
+
+- `@@id([eventId, participantId, role])`
+
+## Incident
+
+Append-only, bitemporal facts. t is the sport clock (legal ball, lap, minute, point) as an ordered integer. Corrections are new rows with supersedesId; a database trigger rejects UPDATE and DELETE.
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id @default(cuid()) |
+| eventId | String |  |
+| t | Int |  |
+| seq | Int | @default(0) |
+| actor | String? |  |
+| type | String |  |
+| payload | Json |  |
+| sourceId | String |  |
+| sourceRef | String |  |
+| sourceClass | String |  |
+| rightsPolicyId | String |  |
+| effectiveAt | DateTime |  |
+| observedAt | DateTime |  |
+| supersedesId | String? | @unique |
+| createdAt | DateTime | @default(now()) |
+| event | Event | @relation(fields: [eventId], references: [id]) |
+| supersedes | Incident? | @relation("Supersedes", fields: [supersedesId], references: [id]) |
+| supersededBy | Incident? | @relation("Supersedes") |
+
+- `@@unique([sourceId, sourceRef])`
+- `@@index([eventId, observedAt])`
+- `@@index([eventId, t, seq])`
