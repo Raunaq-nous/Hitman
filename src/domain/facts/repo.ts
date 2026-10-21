@@ -10,3 +10,12 @@ export async function appendIncidents(eventId: string, incidents: IncidentInput[
   const data: Prisma.IncidentCreateManyInput[] = incidents.map((i) => ({ ...i, eventId, payload: i.payload as Prisma.InputJsonValue }));
   return (await prisma.incident.createMany({ data, skipDuplicates: true })).count;
 }
+
+/** Incidents for an event as known at `observedCutoff`, optionally up to `effectiveAt`, in sport-clock order. */
+export function incidentsObservedBy(eventId: string, observedCutoff: Date, effectiveAt?: Date) {
+  return prisma.incident.findMany({
+    where: { eventId, observedAt: { lte: observedCutoff }, ...(effectiveAt ? { effectiveAt: { lte: effectiveAt } } : {}) },
+    orderBy: [{ t: "asc" }, { seq: "asc" }, { observedAt: "asc" }],
+    select: { id: true, t: true, seq: true, type: true, actor: true, payload: true, sourceId: true, sourceClass: true, observedAt: true, effectiveAt: true, supersedesId: true },
+  });
+}
