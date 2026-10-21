@@ -13,7 +13,7 @@ export default defineConfig({
     reporters: process.env.VITEST_VERBOSE ? ["default"] : ["dot"],
     coverage: {
       provider: "v8",
-      include: ["src/engine/**", "src/rights/**", "src/llm/**"],
+      include: ["src/engine/**", "src/rights/**", "src/llm/**", "src/ui/charts/**"],
       reporter: ["text-summary", "json-summary"],
       thresholds: { "src/engine/**": { branches: 100, functions: 100, lines: 100, statements: 100 } },
     },

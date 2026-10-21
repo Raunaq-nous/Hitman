@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { env } from "@/providers/env";
-import { DataStateBadge, Meter, PersonaChip, Receipt, ShareCard, Stamp, TimingTowerRow } from "@/ui";
+import { DataStateBadge, SwingSeismograph, Meter, PersonaChip, Receipt, ShareCard, Stamp, TimingTowerRow } from "@/ui";
 import { PERSONA_SLUGS } from "@/personas";
 import { TicketDemo } from "./TicketDemo";
 
@@ -41,6 +41,9 @@ export default function DesignGallery(): React.JSX.Element {
           <Meter label="Leverage" value={0.2} valueText="Low (p20)" />
           <Meter label="Leverage" value={0.9} valueText="Very high (p90)" />
         </div>
+      </Section>
+      <Section id="seismograph" title="Swing Seismograph">
+        <SwingSeismograph title="Illustrative trace (not match data)" points={[{ t: 0, wp: 0.5 }, { t: 1, wp: 0.54 }, { t: 2, wp: 0.31 }, { t: 3, wp: 0.36 }, { t: 4, wp: 0.62 }, { t: 5, wp: 0.58 }]} ghost={[{ t: 2, wp: 0.31 }, { t: 3, wp: 0.42 }, { t: 4, wp: 0.47 }, { t: 5, wp: 0.5 }]} />
       </Section>
       <Section id="tower" title="Timing Tower row">
         <ol className="ui-tower">

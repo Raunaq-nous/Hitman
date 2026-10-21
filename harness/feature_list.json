@@ -781,8 +781,8 @@
       "depends_on": [
         "F-U-04"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/ui/charts/geometry.ts (scale, linePath, swings ≥ threshold, windowSwing) + SwingSeismograph.tsx (SVG, tokens only, role=img summary, call-yellow swing markers, dashed ghost labelled 'scenario model estimate (not what happened)', data-table fallback, honest empty state); Leverage Meter in src/ui/components/Meter.tsx. tests/unit/ui/charts.test.tsx (6 tests: geometry, path, swings, rendered markup incl. no raw hex, empty state, meter clamping) -> pass via npm test -- charts; both shown in /design (e2e design.spec 5 passed incl. axe light/dark). Visual check: docs/evidence/F-L-08/{seismograph,meter}-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-C-01",

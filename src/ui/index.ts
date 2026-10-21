@@ -1,4 +1,5 @@
 export { DataStateBadge } from "./components/DataStateBadge";
+export { SwingSeismograph } from "./charts/SwingSeismograph";
 export { Meter } from "./components/Meter";
 export { PersonaChip } from "./components/PersonaChip";
 export { Receipt } from "./components/Receipt";
