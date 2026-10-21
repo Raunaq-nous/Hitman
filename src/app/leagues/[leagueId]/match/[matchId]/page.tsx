@@ -1,8 +1,5 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
-import Link from "next/link";
+import { pageUserId, orNotFound } from "@/providers/page";
+import { builderPlayers, getContest } from "@/domain/contests/service";
 import TeamBuilderClient from "@/components/TeamBuilderClient";
 import LiveMatchCenter from "@/components/LiveMatchCenter";
 import MatchContestTabs from "@/components/MatchContestTabs";
@@ -13,31 +10,9 @@ export default async function MatchContestPage({
   params: Promise<{ leagueId: string; matchId: string }>
 }) {
   const { leagueId, matchId } = await params;
-  const session = await getServerSession(authOptions);
-  if (!session?.user) redirect("/login");
-
-  const match = await prisma.match.findUnique({
-    where: { id: matchId }
-  });
-
-  if (!match) redirect(`/leagues/${leagueId}`);
-
-  const existingTeam = await prisma.fantasyTeam.findFirst({
-    where: {
-      userId: session.user.id,
-      matchId: match.id
-    },
-    include: {
-      players: {
-        include: { player: true }
-      }
-    }
-  });
-
-  const leagueCheck = await prisma.league.findUnique({
-    where: { id: leagueId },
-    include: { _count: { select: { members: true } } }
-  });
+  const userId = await pageUserId();
+  const { match, myTeam: existingTeam, memberCount } = await orNotFound(getContest(userId, leagueId, matchId));
+  const leagueCheck = { _count: { members: memberCount } };
 
   // If team already submitted, show tabbed view with commentary
   if (existingTeam) {
@@ -56,7 +31,7 @@ export default async function MatchContestPage({
           matchId={match.id}
           team1={match.team1}
           team2={match.team2}
-          existingTeam={JSON.parse(JSON.stringify(existingTeam))}
+          existingTeam={existingTeam}
           leagueId={leagueId}
           membersCount={leagueCheck?._count.members || 2}
           captainId={existingTeam.captainId}
@@ -66,32 +41,7 @@ export default async function MatchContestPage({
     );
   }
 
-  // Fetch players for team building
-  const allPlayersRaw = await prisma.player.findMany({
-    where: {
-      team: { in: [match.team1, match.team2] }
-    },
-    include: {
-      matchAppearances: { where: { matchId: match.id } },
-      stats: { orderBy: { season: 'desc' } }
-    }
-  });
-
-  const allPlayers = allPlayersRaw.map(p => ({
-    id: p.id,
-    name: p.name,
-    team: p.team,
-    role: p.role,
-    credits: p.credits,
-    isPlaying: p.matchAppearances[0]?.isPlaying || false,
-    stats: p.stats.map(s => ({
-      season: s.season,
-      matches: s.matchesPlayed,
-      runs: s.runs,
-      wickets: s.wickets,
-      avg: s.avgPoints
-    }))
-  }));
+  const allPlayers = await builderPlayers(userId, leagueId, matchId);
 
   return (
     <div className="py-6 px-4 max-w-7xl mx-auto">

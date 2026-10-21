@@ -198,8 +198,8 @@
       "depends_on": [
         "F-F-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/domain/{users,crews,contests} return DTOs built from explicit selects (PUBLIC_USER_SELECT has no password/email); league pages, APIs and LeagueTabsClient now receive CrewDetailDTO/MatchDTO instead of Prisma rows (previously full user rows incl. password hashes reached a client component). tests/unit/dto.test.ts: 'toPublicUser drops password and email even when given a full row', 'crew detail, crew list, contest entries and standings never contain password fields' (DB-backed), 'no route or component selects whole user rows'. npm test -- dto -> 3 passed; node harness/verify.mjs -> RESULT: PASS."
     },
     {
       "id": "F-F-04",

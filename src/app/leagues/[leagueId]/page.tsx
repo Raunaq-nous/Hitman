@@ -1,35 +1,13 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { Users, Calendar, Trophy } from "lucide-react";
+import { pageUserId, orNotFound } from "@/providers/page";
+import { getCrewForMember } from "@/domain/crews/service";
+import { openMatchesForCrew } from "@/domain/contests/service";
 import LeagueTabsClient from "@/components/LeagueTabsClient";
 
 export default async function LeaguePage({ params }: { params: Promise<{ leagueId: string }> }) {
   const { leagueId } = await params;
-  const session = await getServerSession(authOptions);
-  if (!session?.user) redirect("/login");
-
-  // Verify membership and fetch league
-  const league = await prisma.league.findUnique({
-    where: { id: leagueId },
-    include: {
-      members: {
-        include: { user: true }
-      }
-    }
-  });
-
-  if (!league) redirect("/dashboard");
-  const isMember = league.members.some(m => m.userId === session.user.id);
-  if (!isMember) redirect("/dashboard");
-
-  // Fetch upcoming + live matches for the lobby
-  const upcomingMatches = await prisma.match.findMany({
-    where: { status: { in: ["UPCOMING", "IN_PROGRESS"] } },
-    orderBy: { date: "asc" }
-  });
+  const userId = await pageUserId();
+  const league = await orNotFound(getCrewForMember(userId, leagueId));
+  const upcomingMatches = await openMatchesForCrew(userId, leagueId);
 
   return (
     <div className="py-8">
