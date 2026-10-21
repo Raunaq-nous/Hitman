@@ -839,8 +839,8 @@
       "depends_on": [
         "F-C-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: CrewReport and UserBlock models (migration *_moderation); src/domain/moderation: reportMember (members only, reasons abuse/spam/impersonation/other), owner-only listReports/resolveReport, blockUser (hides the blocked name as 'Blocked member', removes them from crews the blocker owns, blocks rejoining by code), unblock, owner transfer (handOver); remove member from F-C-01. APIs /api/crews/[id]/reports(+resolve), /api/crews/[id]/transfer, /api/blocks; member Options menu and owner Reports panel on the crew page. tests/unit/moderation.test.ts (5 tests) -> pass via npm test -- moderation; node harness/verify.mjs -> PASS."
     },
     {
       "id": "F-G-01",

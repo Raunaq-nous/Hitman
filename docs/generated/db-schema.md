@@ -280,3 +280,33 @@ Append-only, bitemporal facts. t is the sport clock (legal ball, lap, minute, po
 - `@@unique([sourceId, sourceRef])`
 - `@@index([eventId, observedAt])`
 - `@@index([eventId, t, seq])`
+
+## CrewReport
+
+A member's report about another member of the same crew; the crew owner reviews it.
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id @default(cuid()) |
+| crewId | String |  |
+| reporterId | String |  |
+| reportedId | String |  |
+| reason | String |  |
+| note | String? |  |
+| status | String | @default("OPEN") |
+| createdAt | DateTime | @default(now()) |
+
+- `@@index([crewId, status])`
+
+## UserBlock
+
+blocker never sees blocked's name or activity, and blocked can't join crews the blocker owns.
+
+| Field | Type | Attributes |
+|---|---|---|
+| blockerId | String |  |
+| blockedId | String |  |
+| createdAt | DateTime | @default(now()) |
+
+- `@@id([blockerId, blockedId])`
+- `@@index([blockedId])`

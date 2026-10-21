@@ -106,3 +106,7 @@
 .crew-member-name{font-weight:700;flex:1}
 .crew-matches li{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 
+.crew-menu summary{cursor:pointer;font-size:var(--step--1);color:var(--text-2)}
+.crew-menu-body{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding-top:.4rem}
+.crew-menu select{font:inherit;margin-left:.3rem;padding:.25rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);color:var(--text)}
+.crew-members li{flex-wrap:wrap}
