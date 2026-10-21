@@ -21,3 +21,5 @@ export async function generateWithFallback<T>(provider: LlmProvider, req: Genera
     return record(await new TemplateProvider().generate(req), e instanceof Error ? e.message.slice(0, 120) : "error");
   }
 }
+export { CLAIM_KINDS, claimSchema, claimsSchema, type Claim, type ClaimKind, type Claims, type Fact } from "./contract";
+export { verifyClaims, type Rejection, type Verdict } from "./verifier";
