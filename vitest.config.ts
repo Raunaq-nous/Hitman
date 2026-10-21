@@ -6,6 +6,8 @@ export default defineConfig({
   test: {
     include: ["tests/unit/**/*.test.ts", "tests/unit/**/*.test.tsx"],
     environment: "node",
+    globalSetup: ["tests/setup/db.global.ts"],
+    fileParallelism: false,
     reporters: process.env.VITEST_VERBOSE ? ["default"] : ["dot"],
     coverage: {
       provider: "v8",

@@ -1,36 +1,13 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+import { pageUserId, orNotFound } from "@/providers/page";
+import { contestEntries } from "@/domain/contests/service";
 import { Trophy, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default async function MatchLeaderboardPage({ params }: { params: Promise<{ leagueId: string; matchId: string }> }) {
   const { leagueId, matchId } = await params;
-  const session = await getServerSession(authOptions);
-  if (!session?.user) redirect("/login");
-
-  const match = await prisma.match.findUnique({ where: { id: matchId } });
-  if (!match) redirect(`/leagues/${leagueId}`);
-
-  // Get league to filter teams only for users in this league
-  const league = await prisma.league.findUnique({
-    where: { id: leagueId },
-    include: { members: true }
-  });
-  const memberIds = league?.members.map(m => m.userId) || [];
-
-  const teams = await prisma.fantasyTeam.findMany({
-    where: { 
-      matchId: matchId,
-      userId: { in: memberIds }
-    },
-    include: {
-      user: true,
-      players: { include: { player: true } }
-    },
-    orderBy: { totalPoints: 'desc' }
-  });
+  const userId = await pageUserId();
+  const { match, entries } = await orNotFound(contestEntries(userId, leagueId, matchId));
+  const teams = entries.map((e) => ({ ...e.team, user: e.user }));
 
   return (
     <div className="py-8">

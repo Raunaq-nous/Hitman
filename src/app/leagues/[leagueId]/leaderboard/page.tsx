@@ -1,55 +1,14 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+import { pageUserId, orNotFound } from "@/providers/page";
+import { getCrewForMember } from "@/domain/crews/service";
+import { crewStandings } from "@/domain/contests/service";
 import { Trophy, Medal, User } from "lucide-react";
 import Link from "next/link";
 
 export default async function LeagueLeaderboardPage({ params }: { params: Promise<{ leagueId: string }> }) {
   const { leagueId } = await params;
-  const session = await getServerSession(authOptions);
-  if (!session?.user) redirect("/login");
-
-  const league = await prisma.league.findUnique({
-    where: { id: leagueId },
-    include: { members: { include: { user: true } } }
-  });
-  if (!league) redirect("/dashboard");
-
-  // Sum up all fantasy team points across all COMPLETED matches per user, filtered for this league?
-  // Wait, FantasyTeams are per Match, and Match is global. 
-  // If users are in multiple leagues, we just sum their FantasyTeam points for all matches in the platform.
-  // Standard fantasy way: League points = Sum of user's points across all matches.
-
-  const memberIds = league.members.map(m => m.userId);
-
-  const aggregates = await prisma.fantasyTeam.groupBy({
-    by: ['userId'],
-    where: {
-      userId: { in: memberIds },
-      match: { status: "COMPLETED" }
-    },
-    _sum: {
-      totalPoints: true
-    }
-  });
-
-  const memberMap = new Map(league.members.map(m => [m.userId, m.user]));
-  
-  const leaderboard = aggregates
-    .map(agg => ({
-      userId: agg.userId,
-      user: memberMap.get(agg.userId)!,
-      points: agg._sum.totalPoints || 0
-    }))
-    .sort((a, b) => b.points - a.points);
-
-  // Users with 0 points
-  league.members.forEach(m => {
-    if (!leaderboard.some(l => l.userId === m.userId)) {
-      leaderboard.push({ userId: m.userId, user: m.user, points: 0 });
-    }
-  });
+  const userId = await pageUserId();
+  const league = await orNotFound(getCrewForMember(userId, leagueId));
+  const leaderboard = (await crewStandings(userId, leagueId)).map((s) => ({ userId: s.user.id, user: s.user, points: s.points }));
 
   return (
     <div className="py-8">

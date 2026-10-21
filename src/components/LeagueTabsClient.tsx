@@ -4,15 +4,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Calendar, Trophy, List, Users, Loader2, RefreshCw, Radio } from "lucide-react";
 import LiveMatchCenter from "@/components/LiveMatchCenter";
+import type { CrewDetailDTO } from "@/domain/crews/types";
+import type { MatchDTO } from "@/domain/contests/types";
 
 export default function LeagueTabsClient({
   league,
   matches,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
-  league: any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
-  matches: any[],
+  league: CrewDetailDTO,
+  matches: MatchDTO[],
 }) {
   const [activeTab, setActiveTab] = useState<"LOBBY" | "LIVE" | "SCHEDULE" | "POINTS">("LOBBY");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
@@ -218,8 +218,8 @@ export default function LeagueTabsClient({
             MEMBERS ({league.members.length})
           </h3>
           <ul className="space-y-4">
-            {league.members.map((m: { id: string; user: { name: string; xp: number } }) => (
-              <li key={m.id} className="flex items-center space-x-3 bg-black/50 p-3 rounded-sm border border-white/10">
+            {league.members.map((m) => (
+              <li key={m.user.id} className="flex items-center space-x-3 bg-black/50 p-3 rounded-sm border border-white/10">
                 <div className="h-10 w-10 bg-white/10 border border-white/20 rounded-full flex items-center justify-center text-red-500 font-bold font-mono">
                   {m.user.name[0]}
                 </div>

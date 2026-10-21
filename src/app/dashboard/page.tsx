@@ -5,13 +5,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PlusCircle, Search, Trophy, Loader2 } from "lucide-react";
+import type { CrewSummaryDTO } from "@/domain/crews/types";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
-  const [leagues, setLeagues] = useState<any[]>([]);
+  const [leagues, setLeagues] = useState<CrewSummaryDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [newLeagueName, setNewLeagueName] = useState("");
@@ -32,7 +32,7 @@ export default function Dashboard() {
       if (res.ok) {
         const data = await res.json();
         // Since members are also fetched, we just display joined leagues
-        setLeagues(data.joinedLeagues);
+        setLeagues(data.crews);
       }
     } catch (err) {
       console.error(err);
@@ -125,7 +125,7 @@ export default function Dashboard() {
                     <div>
                       <div className="flex justify-between items-start mb-4">
                         <div className="bg-red-600/10 border border-red-500/30 text-red-500 px-3 py-1 text-sm font-mono tracking-widest rounded-sm">
-                          {lg.inviteCode}
+                          {lg.memberCount} {lg.memberCount === 1 ? "MEMBER" : "MEMBERS"}
                         </div>
                         <Trophy className="text-gray-500 group-hover:text-red-500 transition" size={24} />
                       </div>
