@@ -14,7 +14,8 @@
     "db:local": "node scripts/db-up.mjs",
     "db:migrate": "node scripts/with-env.mjs prisma migrate deploy",
     "db:seed": "node scripts/with-env.mjs tsx scripts/db-seed.ts",
-    "data:cricsheet": "node scripts/data-cricsheet.mjs"
+    "data:cricsheet": "node scripts/data-cricsheet.mjs && node scripts/with-env.mjs tsx scripts/ingest-cricsheet.ts",
+    "data:fixtures": "node scripts/select-cricsheet-fixtures.mjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",
