@@ -3,9 +3,11 @@ import { expect, test, type Page } from "@playwright/test";
 import { seedTestMatch } from "./helpers/db";
 import { newUser, signInUi } from "./helpers/users";
 
-const PUBLIC = ["/", "/login", "/register", "/onboarding", "/commentary", "/design", "/crews/join/ZZZZZZ", "/roster", "/roster/opener"];
+const PUBLIC = ["/", "/login", "/register", "/onboarding", "/commentary", "/design", "/crews/join/ZZZZZZ", "/roster", "/roster/opener", "/terms", "/privacy", "/attributions", "/ai"];
 
 async function axe(page: Page): Promise<string[]> {
+  // Next streams metadata: wait for the title to land after client-side navigation
+  await page.waitForFunction(() => document.title.length > 0);
   await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running" || a.effect?.getTiming().iterations === Infinity));
   const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   return r.violations.map((v) => `${v.id}: ${v.nodes.slice(0, 3).map((n) => n.target.join(" ")).join(", ")}`);

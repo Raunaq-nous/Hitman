@@ -1146,8 +1146,8 @@
       "depends_on": [
         "F-D-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: /terms (free to play: no deposits, entry fees, cash, prizes or rewards of value; 18+ beta; acceptable use), /privacy (what is stored, why, retention, export and deletion), /attributions (generated from src/rights/policies via listPolicies: attribution text, permitted uses, prototype flag, commercial status, notes, plus font licences), /ai (deterministic maths, AI-labelled analysts, claim verifier, error reporting); legal footer on every app page and the landing. tests/e2e/legal.spec.ts (3 tests incl. 'attributions are generated from every rights policy') -> pass; pages in axe a11y and no-money route scans; full gate PASS. Screenshots docs/evidence/F-T-01/{terms,privacy,attributions,ai}-{390,1280}-{light,dark}.png. Counsel review tracked in docs/HUMAN_TODO.md."
     },
     {
       "id": "F-T-02",

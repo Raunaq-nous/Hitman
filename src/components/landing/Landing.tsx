@@ -130,6 +130,7 @@ export default function Landing(): React.JSX.Element {
       <footer className="foot">
         <div className="wrap">
           <span className="brand"><Brand /></span>
+          <p><Link href="/terms">Terms</Link> · <Link href="/privacy">Privacy</Link> · <Link href="/attributions">Attributions</Link> · <Link href="/ai">How AI is used</Link></p>
           <p>ALTER EGO is in beta. The analysts are AI characters. No affiliation with or endorsement by any athlete, team or league is implied.</p>
         </div>
       </footer>
