@@ -290,8 +290,8 @@
       "depends_on": [
         "F-F-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: ScoringEvent ledger (migration 20261021214700_scoring_ledger) with unique idempotencyKey match:team:player:vN, configVersion, statLine, points; Postgres trigger rejects UPDATE/DELETE. src/domain/scoring.service.scoreMatch appends with skipDuplicates in one transaction, derives FantasyTeam.totalPoints from the latest version's events, awards XP only when new events were written; /api/score uses it. tests/unit/scoring/scoring.test.ts: 'writes one versioned event per scored pick…', 're-running scoring produces no duplicates and awards XP once' (incl. concurrent reruns), 'a new config version appends new events…', 'the database refuses to update or delete ledger rows'. npm test -- scoring -> 6 passed."
     },
     {
       "id": "F-F-10",

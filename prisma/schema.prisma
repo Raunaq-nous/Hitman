@@ -76,8 +76,29 @@ model FantasyTeam {
   match         Match               @relation(fields: [matchId], references: [id])
   user          User                @relation(fields: [userId], references: [id])
   players       FantasyTeamPlayer[]
+  scoringEvents ScoringEvent[]
 
   @@unique([userId, matchId])
+}
+
+/// Append-only scoring ledger: one row per (team, player, scoring version). Never updated or deleted
+/// (a database trigger rejects UPDATE and DELETE). Team totals are the sum of the latest version's rows.
+model ScoringEvent {
+  id             String      @id @default(cuid())
+  idempotencyKey String      @unique
+  matchId        String
+  fantasyTeamId  String
+  userId         String
+  playerId       String
+  armband        String
+  statLine       Json
+  points         Float
+  configVersion  Int
+  createdAt      DateTime    @default(now())
+  fantasyTeam    FantasyTeam @relation(fields: [fantasyTeamId], references: [id])
+
+  @@index([fantasyTeamId, configVersion])
+  @@index([matchId])
 }
 
 model FantasyTeamPlayer {
