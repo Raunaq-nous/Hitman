@@ -16,6 +16,7 @@
   --brick: #B5523B;
   /* fixed shades (same in both themes): the legacy dark shell and Tailwind's black/red utilities map onto these */
   --ink-night: #0C1626;
+  --mist: #C7D2E0;
   --brick-100: #F6DED7;
   --brick-300: #F2A08C;
   --brick-400: #E07A61;
@@ -35,6 +36,10 @@
   --on-accent: #FFFFFF;
   --focus: #13233A;
   --win: var(--opener);
+  /* text-safe (4.5:1) variants of accent colours for small text */
+  --win-ink: #177A43;
+  --architect-ink: #2C58D4;
+  --professor-ink: #6A37BD;
   --loss: var(--brick);
   /* type */
   /* self-hosted via fontsource (imported in src/app/layout.tsx); no font network at build or run time */
@@ -49,6 +54,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    --win-ink: #4FD089;
+    --architect-ink: #9BB3FF;
+    --professor-ink: #C4A8FF;
     color-scheme: dark;
     --alpine: #8CC6E8;
     --ink: #13233A;
@@ -74,6 +82,9 @@
 }
 
 :root[data-theme="dark"] {
+    --win-ink: #4FD089;
+    --architect-ink: #9BB3FF;
+    --professor-ink: #C4A8FF;
   color-scheme: dark;
   --opener: #2FB96B;
   --closer: #FF8A3A;

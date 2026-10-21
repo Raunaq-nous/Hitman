@@ -380,8 +380,8 @@
       "depends_on": [
         "F-U-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/ui components (tokens only): Ticket (options, confidence 50–99 default 60, Lock, LOCKED stamp, keyboard + screen-reader), Stamp, Receipt (source/class/observedAt), Meter (role=meter), TimingTowerRow, PersonaChip (always 'AI analyst'), DataStateBadge, ShareCard; src/personas cards. /design gallery (on outside production, DESIGN_GALLERY=true opt-in in production). tests/e2e/design.spec.ts: 'shows every component', 'ticket: pick, set confidence, lock with the keyboard', 'receipt opens…', axe light + dark -> 5 passed. Screenshots docs/evidence/F-U-04/design-{390,1280}-{light,dark}.png (full page)."
     },
     {
       "id": "F-A-01",

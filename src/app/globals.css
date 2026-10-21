@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../ui/tokens.css";
+@import "../ui/components.css";
 
 :root {
   --background: var(--ink-night);

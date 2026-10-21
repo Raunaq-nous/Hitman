@@ -11,7 +11,7 @@ if (!feature || pages.length === 0) { console.error('usage: node scripts/screens
 const base = process.env.BASE_URL ?? 'http://localhost:3300';
 let server;
 if (!process.env.BASE_URL) {
-  server = spawn('node', ['scripts/with-env.mjs', 'npx', 'next', 'start', '-p', '3300'], { stdio: 'ignore', detached: true });
+  server = spawn('node', ['scripts/with-env.mjs', 'npx', 'next', 'start', '-p', '3300'], { stdio: 'ignore', detached: true, env: { ...process.env, DESIGN_GALLERY: 'true' } });
   for (let i = 0; i < 60; i++) { try { if ((await fetch(base)).status < 500) break; } catch { /* starting */ } await new Promise((r) => setTimeout(r, 500)); }
 }
 const local = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';

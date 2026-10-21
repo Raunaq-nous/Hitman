@@ -1,0 +1,77 @@
+/* ALTER EGO components. Tokens only (src/ui/tokens.css). Call yellow appears only where a decision is made or graded. */
+.ui-card{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-lg);font-family:var(--font-text)}
+.ui-focus:focus-visible,.ui-card :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Data-state badge */
+.ui-badge{display:inline-flex;align-items:center;gap:.4em;font:600 var(--step--1)/1.2 var(--font-text);padding:.2em .6em;border-radius:999px;border:1px solid var(--line);color:var(--text-2);background:var(--surface)}
+.ui-badge::before{content:"";width:.5em;height:.5em;border-radius:50%;background:currentColor}
+.ui-badge[data-state="live"]{color:var(--win-ink)}
+.ui-badge[data-state="stale"]{color:var(--brick)}
+.ui-badge[data-state="historical-replay"]{color:var(--architect-ink)}
+.ui-badge[data-state="simulation"],.ui-badge[data-state="projection"]{color:var(--professor-ink)}
+
+/* Receipt */
+.ui-receipt{display:inline-block;font:400 var(--step--1)/1.4 var(--font-receipt);color:var(--receipt-ink)}
+.ui-receipt summary{cursor:pointer;list-style:none;text-decoration:underline dotted;text-underline-offset:.2em}
+.ui-receipt summary::-webkit-details-marker{display:none}
+.ui-receipt dl{display:grid;grid-template-columns:auto 1fr;gap:.15em .8em;margin:.4em 0 0;padding:.5em .7em;border:1px dashed var(--receipt);border-radius:var(--radius)}
+.ui-receipt dt{color:var(--text-2)} .ui-receipt dd{margin:0;color:var(--text)}
+
+/* Stamp */
+.ui-stamp{display:inline-block;font:800 var(--step-1)/1 var(--font-display);font-stretch:75%;letter-spacing:.08em;text-transform:uppercase;padding:.25em .55em;border:3px solid currentColor;border-radius:var(--radius);transform:rotate(-6deg);color:var(--text)}
+.ui-stamp[data-kind="graded"]{background:var(--call);color:var(--call-ink);border-color:var(--call-ink)}
+.ui-stamp[data-kind="classified"]{color:var(--brick)}
+.ui-stamp[data-kind="coin-flip"]{color:var(--text-2)}
+@media (prefers-reduced-motion:no-preference){.ui-stamp[data-animate]{animation:ui-stamp .35s cubic-bezier(.2,.8,.2,1) both}}
+@keyframes ui-stamp{from{transform:rotate(-6deg) scale(1.6);opacity:0}to{transform:rotate(-6deg) scale(1);opacity:1}}
+
+/* Meter */
+.ui-meter{display:grid;gap:.35em;font-family:var(--font-text)}
+.ui-meter-head{display:flex;justify-content:space-between;gap:1em;font-size:var(--step--1);color:var(--text-2)}
+.ui-meter-value{font-weight:700;color:var(--text)}
+.ui-meter-track{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+.ui-meter-seg{height:10px;border-radius:2px;background:var(--surface-2);border:1px solid var(--line)}
+.ui-meter-seg[data-on]{background:var(--text);border-color:var(--text)}
+
+/* Ticket (call card) */
+.ui-ticket{position:relative;padding:1rem;display:grid;gap:.9rem;max-width:34rem}
+.ui-ticket-context{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:var(--step--1);color:var(--text-2)}
+.ui-ticket-context b{color:var(--text)}
+.ui-ticket h3{margin:0;font:800 var(--step-2)/1.15 var(--font-display);font-stretch:80%}
+.ui-ticket fieldset{border:0;margin:0;padding:0;display:grid;gap:.5rem}
+.ui-option{display:flex;gap:.6rem;align-items:flex-start;padding:.7rem .8rem;border:2px solid var(--line);border-radius:var(--radius-lg);cursor:pointer;background:var(--surface)}
+.ui-option:has(input:checked){border-color:var(--text);box-shadow:inset 0 0 0 1px var(--text)}
+.ui-option input{margin-top:.2rem;accent-color:var(--text)}
+.ui-option small{display:block;color:var(--text-2)}
+.ui-confidence{display:grid;gap:.3rem}
+.ui-confidence label{display:flex;justify-content:space-between;font-weight:600}
+.ui-confidence input{width:100%;accent-color:var(--text)}
+.ui-lock{font:800 var(--step-0)/1 var(--font-display);letter-spacing:.06em;text-transform:uppercase;padding:.9rem 1rem;border-radius:var(--radius-lg);border:2px solid var(--call-ink);background:var(--call);color:var(--call-ink);cursor:pointer}
+.ui-lock:disabled{opacity:.55;cursor:not-allowed}
+.ui-ticket-stamp{position:absolute;top:.8rem;right:.8rem}
+
+/* Timing tower */
+.ui-tower{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-family:var(--font-text)}
+.ui-tower-row{display:grid;grid-template-columns:2.2rem 1fr auto auto;align-items:center;gap:.6rem;padding:.5rem .7rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.ui-tower-rank{font:800 var(--step-1)/1 var(--font-display);text-align:center}
+.ui-tower-name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ui-tower-meta{font-size:var(--step--1);color:var(--text-2)}
+.ui-tower-rating{font:800 var(--step-1)/1 var(--font-display)}
+.ui-tower-change[data-dir="up"]{color:var(--win-ink)} .ui-tower-change[data-dir="down"]{color:var(--brick)} .ui-tower-change{font-size:var(--step--1);color:var(--text-2)}
+.ui-form{display:inline-flex;gap:2px}
+.ui-form span{width:.95rem;height:.95rem;display:grid;place-items:center;font-size:.625rem;font-weight:800;border-radius:2px;background:var(--surface-2);color:var(--text-2)}
+.ui-form span[data-r="good"]{background:var(--opener);color:var(--on-accent)} .ui-form span[data-r="poor"]{background:var(--brick);color:var(--on-accent)}
+@media (min-width:640px){.ui-tower-row{grid-template-columns:2.6rem 1fr 7rem 5rem 4rem}}
+
+/* Persona chip */
+.ui-chip{display:inline-flex;align-items:center;gap:.5rem;padding:.25rem .7rem .25rem .25rem;border-radius:999px;border:1px solid var(--line);background:var(--surface);font:600 var(--step--1)/1.2 var(--font-text);color:var(--text)}
+.ui-chip-mark{width:1.8rem;height:1.8rem;border-radius:50%;display:grid;place-items:center;color:var(--on-accent)}
+.ui-chip-mark svg{width:1.3rem;height:1.3rem}
+.ui-chip-ai{font-size:.6875rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-2);border:1px solid var(--line);border-radius:3px;padding:.05em .3em}
+
+/* Share card */
+.ui-share{width:min(100%,24rem);aspect-ratio:1200/630;display:grid;grid-template-rows:auto 1fr auto;padding:1rem;border-radius:var(--radius-lg);background:var(--ink-night);color:var(--snow);border:1px solid var(--line);overflow:hidden;font-family:var(--font-text)}
+.ui-share-brand{font:800 var(--step-0)/1 var(--font-display);font-stretch:70%;letter-spacing:.04em}
+.ui-share-title{align-self:center;margin:0;font:800 var(--step-2)/1.1 var(--font-display);font-stretch:80%}
+.ui-share-foot{display:flex;justify-content:space-between;align-items:end;gap:.5rem;font-size:var(--step--1);color:var(--mist)}
+.ui-share-grade{background:var(--call);color:var(--call-ink);font-weight:800;padding:.15em .5em;border-radius:var(--radius)}

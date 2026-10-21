@@ -22,6 +22,7 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: { DESIGN_GALLERY: "true" },
     stdout: "ignore",
     stderr: "pipe",
   },
