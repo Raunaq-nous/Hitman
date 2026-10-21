@@ -1,0 +1,16 @@
+{
+  "source_id": "statsbomb",
+  "display_name": "StatsBomb open data",
+  "may_display_raw": true,
+  "may_store_history": true,
+  "may_create_derivatives": true,
+  "may_embed_for_retrieval": false,
+  "may_train_models": false,
+  "may_show_video": false,
+  "commercial_use": "unconfirmed",
+  "territories": ["*"],
+  "attribution_required": true,
+  "attribution_text": "Event data provided by StatsBomb (open data)",
+  "prototype_only": false,
+  "notes": "Use under the StatsBomb open data user agreement in its repository; attribution with logo required on public use; review terms before commercial launch."
+}

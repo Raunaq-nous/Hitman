@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { env } from "@/providers/env";
 import { namedCache } from "@/providers/cache";
+import { canUse } from "@/providers/rights";
 import { log } from "@/providers/log";
 import { tryParseOvers, runRate as legalRunRate } from "@/engine/legalBalls";
 import { present } from "@/domain/sources/service";
@@ -133,7 +134,7 @@ function respond(s: Sourced<Payload>) {
 
 export async function GET() {
   const apiKey = env().CRICKET_API_KEY;
-  if (!apiKey) {
+  if (!apiKey || !canUse(SOURCE_ID, "display")) {
     return NextResponse.json({ success: false, error: "Live scores aren’t configured: CRICKET_API_KEY is missing.", presentation: present(null, { now: Date.now(), context: "live", liveEnabled: false }) }, { status: 503 });
   }
 
