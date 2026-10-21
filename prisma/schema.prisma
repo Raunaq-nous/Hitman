@@ -275,3 +275,20 @@ model UserBlock {
   @@id([blockerId, blockedId])
   @@index([blockedId])
 }
+
+/// One LLM generation (or template fallback). No prompt or output text is stored.
+model LlmCall {
+  id           String   @id @default(cuid())
+  task         String
+  provider     String
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  latencyMs    Int
+  costUsd      Float?
+  fallback     String?
+  verified     Boolean?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+}

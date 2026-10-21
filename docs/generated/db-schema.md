@@ -14,6 +14,7 @@ Generated from `prisma/schema.prisma` by `node scripts/gen-db-schema.mjs`. Do no
 | xp | Int | @default(0) |
 | favouriteSports | String[] | @default([]) |
 | language | String | @default("en") |
+| ageConfirmedAt | DateTime? |  |
 | createdAt | DateTime | @default(now()) |
 | updatedAt | DateTime | @updatedAt |
 | fantasyTeams | FantasyTeam[] |  |
@@ -312,3 +313,23 @@ blocker never sees blocked's name or activity, and blocked can't join crews the 
 
 - `@@id([blockerId, blockedId])`
 - `@@index([blockedId])`
+
+## LlmCall
+
+One LLM generation (or template fallback). No prompt or output text is stored.
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id @default(cuid()) |
+| task | String |  |
+| provider | String |  |
+| model | String |  |
+| inputTokens | Int |  |
+| outputTokens | Int |  |
+| latencyMs | Int |  |
+| costUsd | Float? |  |
+| fallback | String? |  |
+| verified | Boolean? |  |
+| createdAt | DateTime | @default(now()) |
+
+- `@@index([createdAt])`
