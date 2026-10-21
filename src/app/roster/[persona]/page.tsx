@@ -27,7 +27,7 @@ export default async function PersonaPage({ params }: { params: Promise<{ person
         </dl>
       </section>
       {voice && (
-        <section className="ui-card crew-members" aria-labelledby="voice-h">
+        <section className="ui-card crew-members" aria-labelledby="voice-h" data-persona-voice={persona}>
           <h2 id="voice-h">How {p.name} reads the example</h2>
           <p className="roster-note">{sb.label}</p>
           <p className="roster-who">{p.name} <span className="ui-chip-ai">AI analyst</span></p>

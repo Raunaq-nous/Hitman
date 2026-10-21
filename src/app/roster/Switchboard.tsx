@@ -20,7 +20,7 @@ export function Switchboard({ voicings, label }: { voicings: Voicing[]; label: s
           </label>
         ))}
       </fieldset>
-      <blockquote className="roster-voice" aria-live="polite" data-testid="voicing">
+      <blockquote className="roster-voice" aria-live="polite" data-testid="voicing" data-persona-voice={v.persona}>
         <p className="roster-who">{v.name} <span className="ui-chip-ai">AI analyst</span></p>
         {v.sentences.map((s) => <p key={s}>{s}</p>)}
         <p className="ui-receipt">src engine:tennis-iid · model estimate on the example state</p>
