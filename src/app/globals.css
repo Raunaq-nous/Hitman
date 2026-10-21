@@ -8,7 +8,7 @@
   --accent-dim: color-mix(in srgb, var(--brick-500) 15%, transparent);
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --font-archivo: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-archivo: var(--font-text);
 }
 
 @theme inline {

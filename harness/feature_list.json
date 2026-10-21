@@ -365,8 +365,8 @@
       "depends_on": [
         "F-U-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: Archivo (variable wdth+wght), Literata and JetBrains Mono self-hosted via @fontsource-variable/* imported in src/app/layout.tsx; Google Fonts links and CSP hosts removed; tokens --font-display/text/reading/receipt, fluid type scale --step--1..4, .tabular/[data-num] tabular-nums. npm run build with HTTP(S)_PROXY pointed at a dead port (no network) -> exit 0, 16 woff2 files in .next/static/media. tests/unit/ui/fonts.test.ts (4) + tests/e2e/fonts.spec.ts ('fonts load from our own origin and numerals are tabular'). Screenshots docs/evidence/F-U-02/{landing,login}-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-U-04",
