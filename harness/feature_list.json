@@ -854,8 +854,8 @@
       "depends_on": [
         "F-F-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/llm/provider.ts interface generate({task, system, input, schema, model tier, maxTokens, template}); GeminiProvider (@google/genai, structured JSON output with the Zod schema as responseJsonSchema, model ids from GEMINI_MODEL_FAST/DEEP, tokens from usageMetadata, cost from configured prices or null); TemplateProvider default without a key; generateWithFallback falls back to templates and logs task/provider/model/tokens/latency/cost (never content); src/providers/llm.ts never builds Gemini under NODE_ENV=test. tests/unit/llm/provider.test.ts (6 tests with an injected fake client; fetch spy proves no network) -> pass."
     },
     {
       "id": "F-G-02",
