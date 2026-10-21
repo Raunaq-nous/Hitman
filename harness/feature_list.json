@@ -243,8 +243,8 @@
       "depends_on": [
         "F-F-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/providers/cache.ts TtlCache (keyed, TTL, LRU-bounded maxEntries, peek() for honest stale age) + namedCache registry; live-score's module-level 'let cache' replaced by namedCache('live-score', ttl 30s, max 8) keyed per feed query. tests/unit/providers/cache.test.ts: expiry, 'isolates keys', bounded LRU eviction, config guards, named-cache isolation, 'no module-level cache variables remain'. npm test -- cache -> 6 passed."
     },
     {
       "id": "F-F-07",

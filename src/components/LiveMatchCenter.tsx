@@ -19,7 +19,7 @@ type InningsData = {
 };
 type MatchData = {
   source: string; matchId: string; matchName: string; matchType: string;
-  score: string; status: string; overs: string; isLive: boolean;
+  score: string; status: string; overs: string; isLive: boolean; dataLabel?: string;
   matchStarted: boolean; matchEnded: boolean;
   teams: TeamData[]; scores: ScoreEntry[];
   target: number | null; currentInnings: number;
@@ -124,7 +124,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
             {match.isLive ? (
               <>
                 <Radio size={12} className="text-red-500 animate-pulse" />
-                <span className="text-red-500 text-[10px] font-mono font-bold tracking-[0.3em]">LIVE</span>
+                <span className="text-red-500 text-[10px] font-mono font-bold tracking-[0.3em] uppercase">{match.dataLabel ?? "In progress"}</span>
               </>
             ) : match.matchEnded ? (
               <>
@@ -407,7 +407,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
                         ? "bg-green-500/20 text-green-400"
                         : "bg-yellow-500/20 text-yellow-400"
                     }`}>
-                      {m.isLive ? "LIVE" : m.matchEnded ? "COMPLETED" : "UPCOMING"}
+                      {m.isLive ? (m.dataLabel ?? "IN PROGRESS").toUpperCase() : m.matchEnded ? "COMPLETED" : "UPCOMING"}
                     </span>
                   </div>
                   {m.scores.map((s, si) => (

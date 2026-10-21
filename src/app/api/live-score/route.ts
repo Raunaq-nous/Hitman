@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { env } from "@/providers/env";
+import { namedCache } from "@/providers/cache";
+import { log } from "@/providers/log";
+import { parseOvers, runRate as legalRunRate } from "@/engine/legalBalls";
+import { present } from "@/domain/sources/service";
+import type { Sourced } from "@/domain/sources/types";
 
 export const dynamic = "force-dynamic";
 
@@ -28,20 +33,31 @@ type ApiMatch = {
   id: string; name?: string; matchType?: string; status?: string; venue?: string; date?: string; series_id?: string;
   teams?: string[]; teamInfo?: ApiTeamInfo[]; score?: ApiScore[]; matchStarted?: boolean; matchEnded?: boolean;
 };
-type Innings = { runs: number; wickets: number; overs: string; balls: number; inning: string };
+type Innings = { runs: number; wickets: number; overs: string; balls: number | null; inning: string };
 
-// Per-instance cache to protect the API quota. Moves to Redis with the ingestion worker in Phase 1.
-let cache: { at: number; payload: Record<string, unknown> } | null = null;
+// CricketData.org is a third-party aggregator without a licence for live use: VERIFIED_DELAYED, never "live".
+const SOURCE_ID = "cricketdata";
+const SOURCE_CLASS = "VERIFIED_DELAYED" as const;
+type Payload = { primary: ReturnType<typeof buildMatch> | null; iplMatches: ReturnType<typeof buildMatch>[]; allMatches: never[]; source: string; fetchedAt: string; apiInfo: Record<string, unknown> };
+// Keyed, bounded cache to protect the API quota (one key per feed query).
+const cache = namedCache<Sourced<Payload>>("live-score", { ttlMs: CACHE_TTL_MS, maxEntries: 8 });
+const CACHE_KEY = `currentMatches:${IPL_SERIES_ID}`;
 
 const shortName = (team: string) => SHORT_NAMES[team] ?? team.split(" ").map((w) => w[0]).join("");
 
-// "10.4" overs is 10 overs and 4 balls, i.e. 64 balls, not 10.4 overs.
-function ballsFromOvers(overs: string | number | undefined): number {
-  const [whole, part = "0"] = String(overs ?? "0").split(".");
-  return (parseInt(whole, 10) || 0) * 6 + (parseInt(part, 10) || 0);
+// Overs go through the legal-ball primitives ("10.4" = 64 balls). A malformed feed value gives null, not a guess.
+function ballsFromOvers(overs: string | number | undefined): number | null {
+  try {
+    return parseOvers(overs ?? "0");
+  } catch {
+    return null;
+  }
 }
 
-const runRate = (runs: number, balls: number) => (balls > 0 ? Number(((runs * 6) / balls).toFixed(2)) : 0);
+const runRate = (runs: number, balls: number | null): number | null => {
+  const rr = balls === null ? null : legalRunRate(runs, balls);
+  return rr === null ? null : Number(rr.toFixed(2));
+};
 const ballsPerInnings = (matchType?: string) => (matchType === "t20" ? 120 : matchType === "odi" ? 300 : null);
 
 // Match the full team name, longest first, so "Royal" can never stand in for two different teams.
@@ -79,7 +95,7 @@ function buildMatch(m: ApiMatch, fetchedAt: string) {
     const perInnings = ballsPerInnings(m.matchType);
     if (isLive && innings.length >= 2 && first && perInnings) {
       const needed = first.runs + 1 - latest.runs;
-      const ballsLeft = perInnings - latest.balls;
+      const ballsLeft = latest.balls === null ? 0 : perInnings - latest.balls;
       if (needed > 0 && ballsLeft > 0) status = `${batting} need ${needed} runs from ${ballsLeft} balls`;
     }
   }
@@ -112,16 +128,23 @@ function buildMatch(m: ApiMatch, fetchedAt: string) {
 const isIpl = (m: ApiMatch) =>
   m.series_id === IPL_SERIES_ID || /indian premier league|\bipl\b/i.test(m.name ?? "");
 
+const label = (s: Sourced<Payload>) => present(s, { now: Date.now(), context: "live", liveEnabled: env().LIVE_CALLS });
+
+function respond(s: Sourced<Payload>) {
+  const presentation = label(s);
+  const withLabel = (m: ReturnType<typeof buildMatch>) => ({ ...m, dataLabel: presentation.label });
+  const data = { ...s.value, primary: s.value.primary && withLabel(s.value.primary), iplMatches: s.value.iplMatches.map(withLabel), presentation };
+  return NextResponse.json({ success: true, data, stale: presentation.state === "stale" });
+}
+
 export async function GET() {
   const apiKey = env().CRICKET_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ success: false, error: "Live scores aren’t configured: CRICKET_API_KEY is missing." }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Live scores aren’t configured: CRICKET_API_KEY is missing.", presentation: present(null, { now: Date.now(), context: "live", liveEnabled: false }) }, { status: 503 });
   }
 
-  const now = Date.now();
-  if (cache && now - cache.at < CACHE_TTL_MS) {
-    return NextResponse.json({ success: true, data: cache.payload, cached: true });
-  }
+  const fresh = cache.get(CACHE_KEY);
+  if (fresh) return respond(fresh);
 
   try {
     const res = await fetch(`https://api.cricapi.com/v1/currentMatches?apikey=${encodeURIComponent(apiKey)}&offset=0`, { cache: "no-store" });
@@ -131,7 +154,7 @@ export async function GET() {
 
     const fetchedAt = new Date().toISOString();
     const live = (json.data as ApiMatch[]).filter((m) => isIpl(m) && m.matchStarted && !m.matchEnded).map((m) => buildMatch(m, fetchedAt));
-    const payload = {
+    const payload: Payload = {
       primary: live[0] ?? null,
       iplMatches: live,
       allMatches: [],
@@ -139,11 +162,13 @@ export async function GET() {
       fetchedAt,
       apiInfo: { hitsToday: json.info?.hitsToday, hitsLimit: json.info?.hitsLimit, hitsUsed: json.info?.hitsUsed },
     };
-    cache = { at: now, payload };
-    return NextResponse.json({ success: true, data: payload });
+    const sourced: Sourced<Payload> = { value: payload, sourceId: SOURCE_ID, sourceClass: SOURCE_CLASS, observedAt: fetchedAt };
+    cache.set(CACHE_KEY, sourced);
+    return respond(sourced);
   } catch (error) {
-    console.error("Live score API error:", error);
-    if (cache) return NextResponse.json({ success: true, data: { ...cache.payload, stale: true }, stale: true });
+    log.error("live score fetch failed", { error: error instanceof Error ? error.message : String(error) });
+    const stale = cache.peek(CACHE_KEY);
+    if (stale) return respond(stale.value);
     return NextResponse.json({ success: false, error: "Live scores are unavailable right now." }, { status: 503 });
   }
 }
