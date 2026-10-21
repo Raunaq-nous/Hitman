@@ -1016,8 +1016,8 @@
       "depends_on": [
         "F-U-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/ui/UiPictogram.tsx (decide, lock, grade, receipt, crew, language) on the same 48-unit grid and 4.2 stroke as the five sport pictograms; /onboarding three screens (how a call works, grading on the decision not the outcome, pick sports and language) with progress, keyboard and focus management; choices saved via POST /api/me/preferences (User.favouriteSports/language migration; cookies for guests); new accounts are sent through onboarding. tests/unit/ui/pictograms.test.tsx + tests/e2e/onboarding.spec.ts (axe on every screen, keyboard-only flow, cookie and account persistence) -> 2 passed. Screenshots docs/evidence/F-U-03/onboarding-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-U-05",

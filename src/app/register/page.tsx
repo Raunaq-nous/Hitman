@@ -30,7 +30,8 @@ export default function RegisterPage() {
         // sign straight in and continue where the visitor was heading (e.g. an invite link)
         await signIn("credentials", { email, password, redirect: false });
         const next = new URLSearchParams(window.location.search).get("callbackUrl");
-        router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/crews");
+        const dest = next && next.startsWith("/") && !next.startsWith("//") ? next : "/crews";
+        router.push(`/onboarding?next=${encodeURIComponent(dest)}`);
         router.refresh();
       } else {
         const data = await res.json();
