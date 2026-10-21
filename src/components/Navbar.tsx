@@ -1,54 +1,77 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { LogOut, User, Radio } from "lucide-react";
+import { useState } from "react";
 
-export default function Navbar() {
-  const { data: session } = useSession();
+const LINKS = [
+  { href: "/crews", label: "Crews", auth: true },
+  { href: "/commentary", label: "Scores", auth: false },
+  { href: "/onboarding", label: "How it works", auth: false },
+];
 
+type Theme = "light" | "dark" | "system";
+
+function ThemeToggle(): React.JSX.Element {
+  // the inline script in layout.tsx has already applied any saved theme to <html data-theme>
+  const [theme, setTheme] = useState<Theme>(() => (typeof document === "undefined" ? "system" : ((document.documentElement.getAttribute("data-theme") as Theme | null) ?? "system")));
+  function choose(next: Theme): void {
+    setTheme(next);
+    if (next === "system") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("ae_theme", next); } catch { /* storage blocked */ }
+  }
+  const order: Theme[] = ["system", "light", "dark"];
+  const next = order[(order.indexOf(theme) + 1) % order.length];
   return (
-    <nav className="glass-panel text-white sticky top-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
-          <Link href="/" className="flex items-center space-x-2 shrink-0">
-            <img src="/icons/icon-192.png" alt="" aria-hidden="true" className="h-8 w-8 rounded-sm" />
-            <span className="font-black text-xl tracking-wide text-white" style={{ fontStretch: "62%" }}>ALTER EGO</span>
-          </Link>
+    <button type="button" className="nav-theme" onClick={() => choose(next)} title={`Switch to ${next}`} suppressHydrationWarning>
+      Theme: {theme === "dark" ? "Dark" : theme === "light" ? "Light" : "Auto"}
+    </button>
+  );
+}
 
-          <div className="flex items-center justify-between w-full ml-6 lg:ml-10">
-            <div className="hidden md:flex space-x-6 shrink-0">
-              <Link href="/commentary" className="text-red-400 hover:text-white font-mono text-xs tracking-widest transition uppercase flex items-center space-x-1.5">
-                <Radio size={10} className="animate-pulse" />
-                <span>Live</span>
-              </Link>
-              <Link href="/schedule" className="text-gray-400 hover:text-white font-mono text-xs tracking-widest transition uppercase">Schedule</Link>
-              <Link href="/leaderboard" className="text-gray-400 hover:text-white font-mono text-xs tracking-widest transition uppercase">Leaderboard</Link>
-              <Link href="/teams" className="text-gray-400 hover:text-white font-mono text-xs tracking-widest transition uppercase">Teams</Link>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              {session ? (
-                <>
-                  <Link href="/crews" className="text-red-500 hover:text-white font-mono text-xs transition tracking-widest hidden sm:block">DASHBOARD</Link>
-                  <div className="flex items-center space-x-2 bg-white/5 px-3 py-1 rounded-sm border border-white/10 cursor-default">
-                    <User size={14} className="text-red-500" />
-                    <span className="text-xs font-mono text-gray-400 hidden sm:block">{session.user?.name}</span>
-                  </div>
-                  <button onClick={() => signOut()} className="p-1.5 hover:bg-red-500/10 text-gray-500 hover:text-red-500 rounded-sm transition" title="Sign Out">
-                    <LogOut size={16} />
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link href="/login" className="text-gray-400 hover:text-white font-mono text-xs uppercase transition hidden sm:block">Login</Link>
-                  <Link href="/register" className="neo-brutal bg-red-600 text-white px-4 py-1.5 rounded-sm font-bold font-mono hover:bg-red-700 transition text-xs">REGISTER</Link>
-                </>
-              )}
-            </div>
+export default function Navbar(): React.JSX.Element {
+  const { data: session } = useSession();
+  const pathname = usePathname();
+  // the menu is open only on the page where it was opened, so navigating closes it
+  const [openOn, setOpenOn] = useState<string | null>(null);
+  const open = openOn === pathname;
+  const setOpen = (v: boolean): void => setOpenOn(v ? pathname : null);
+  const links = LINKS.filter((l) => !l.auth || session);
+  return (
+    <header className="nav">
+      <a className="skip-link" href="#main">Skip to content</a>
+      <div className="nav-bar">
+        <Link href="/" className="nav-brand" aria-label="ALTER EGO home">
+          <span className="nav-mark" aria-hidden="true"><i /><i /><i /><i /><i /></span>
+          ALTER EGO
+        </Link>
+        <button type="button" className="nav-menu-btn" aria-expanded={open} aria-controls="nav-links" onClick={() => setOpen(!open)}>
+          Menu
+        </button>
+        <nav id="nav-links" className="nav-links" data-open={open ? "" : undefined} aria-label="Main">
+          <ul>
+            {links.map((l) => (
+              <li key={l.href}><Link href={l.href} aria-current={pathname === l.href || pathname.startsWith(`${l.href}/`) ? "page" : undefined}>{l.label}</Link></li>
+            ))}
+          </ul>
+          <div className="nav-account">
+            <ThemeToggle />
+            {session ? (
+              <>
+                <span className="nav-user">{session.user?.name}</span>
+                <button type="button" className="nav-btn" onClick={() => signOut({ callbackUrl: "/" })}>Sign out</button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="nav-btn nav-btn-ghost">Sign in</Link>
+                <Link href="/register" className="nav-btn">Join free</Link>
+              </>
+            )}
           </div>
-        </div>
+        </nav>
       </div>
-    </nav>
+    </header>
   );
 }

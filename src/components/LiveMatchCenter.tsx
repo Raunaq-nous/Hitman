@@ -81,7 +81,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
   }, [autoRefresh]);
 
   const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
-    { key: "LIVE", label: "LIVE SCORE", icon: Zap },
+    { key: "LIVE", label: "SCORE", icon: Zap },
     { key: "SCORECARD", label: "SCORECARD", icon: BarChart3 },
     { key: "MATCHES", label: "ALL MATCHES", icon: Users2 },
     { key: "INFO", label: "INFO", icon: Info },
@@ -93,7 +93,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
         <div className="flex items-center justify-center space-x-3">
           <Radio size={16} className="text-red-500 animate-pulse" />
           <span className="text-gray-400 font-mono text-sm animate-pulse tracking-widest">
-            CONNECTING TO LIVE FEED...
+            LOADING SCORES…
           </span>
         </div>
       </div>
@@ -437,7 +437,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
 
             {/* Other matches */}
             <h4 className="text-[10px] text-gray-500 font-mono tracking-[0.3em] mt-6 mb-3">
-              OTHER LIVE MATCHES
+              OTHER MATCHES IN PROGRESS
             </h4>
             {data.allMatches.filter(m => !m.name?.includes("Indian Premier League")).slice(0, 5).map((m, i) => (
               <div key={i} className="p-3 rounded-sm border border-white/5 bg-black/30">

@@ -132,3 +132,47 @@
 .onb button.onb-back{background:transparent;color:var(--text)}
 .onb button:disabled{opacity:.5;cursor:not-allowed}
 .onb :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* App shell and navigation (mobile-first) */
+.shell{min-height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--text);font-family:var(--font-text)}
+.shell-main{flex:1;width:100%;max-width:72rem;margin:0 auto;padding:1rem 0 3rem;outline:none}
+.skip-link{position:absolute;left:-999px;top:.5rem;z-index:100;background:var(--text);color:var(--bg);padding:.6rem .9rem;border-radius:var(--radius)}
+.skip-link:focus{left:.5rem}
+.nav{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--line)}
+.nav-bar{max-width:72rem;margin:0 auto;padding:.6rem 1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.nav-brand{display:inline-flex;align-items:center;gap:.5rem;font:800 1.25rem/1 var(--font-display);font-stretch:62%;letter-spacing:.02em;color:var(--text);text-decoration:none;margin-right:auto}
+.nav-mark{display:inline-flex;gap:2px}
+.nav-mark i{width:4px;height:18px;border-radius:1px;background:var(--opener)}
+.nav-mark i:nth-child(2){background:var(--closer)} .nav-mark i:nth-child(3){background:var(--architect)} .nav-mark i:nth-child(4){background:var(--professor)} .nav-mark i:nth-child(5){background:var(--iceman)}
+.nav-menu-btn,.nav-theme,.nav-btn{font:700 var(--step--1)/1 var(--font-text);padding:.55rem .8rem;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;text-decoration:none;display:inline-block}
+.nav-btn{background:var(--text);color:var(--bg);border-color:var(--text)}
+.nav-btn-ghost{background:transparent;color:var(--text);border-color:var(--line)}
+.nav-links{display:none;width:100%;gap:.75rem;flex-direction:column}
+.nav-links[data-open]{display:flex}
+.nav-links ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.25rem}
+.nav-links a{color:var(--text);text-decoration:none;font-weight:600;padding:.45rem .2rem;display:inline-block}
+.nav-links a[aria-current="page"]{text-decoration:underline;text-underline-offset:.35em;text-decoration-thickness:2px}
+.nav-account{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.nav-user{font-size:var(--step--1);color:var(--text-2)}
+.nav :focus-visible,.shell :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+@media (min-width:768px){
+  .nav-menu-btn{display:none}
+  .nav-links,.nav-links[data-open]{display:flex;width:auto;flex-direction:row;align-items:center;gap:1.5rem}
+  .nav-links ul{flex-direction:row;gap:1.25rem}
+}
+/* legacy screens that still use the old dark styling keep their own dark surface */
+.legacy-dark{background:var(--ink-night);color:var(--snow);border-radius:var(--radius-lg);padding:1rem}
+
+/* Motion: everything respects prefers-reduced-motion */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+}
+.crew-standings{list-style:none;margin:0;padding:0;display:grid;gap:.25rem}
+.crew-standings li{display:flex;gap:.8rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--line)}
+.crew-rank{width:1.6rem;font:800 var(--step-1)/1 var(--font-display)}
+/* legacy Tailwind greys are too faint on the dark surface: lift them to AA */
+.legacy-dark .text-gray-500,.legacy-dark .text-gray-600,.legacy-dark .text-gray-700{color:var(--mist)}
+.legacy-dark .text-gray-400{color:var(--mist)}
+.legacy-dark .text-red-500,.legacy-dark .text-red-600{color:var(--brick-300)}
+.nav-links a.nav-btn{color:var(--bg);padding:.55rem .8rem}
+.nav-links a.nav-btn-ghost{color:var(--text)}

@@ -1,5 +1,10 @@
 import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
+import { config } from "dotenv";
+
+// e2e helpers that seed test rows need the same DATABASE_URL as the server
+config({ path: ".env.local", quiet: true });
+config({ quiet: true });
 
 const PORT = Number(process.env.E2E_PORT ?? 3100);
 // Cloud sandboxes ship a preinstalled Chromium; CI installs its own with `npx playwright install`.
