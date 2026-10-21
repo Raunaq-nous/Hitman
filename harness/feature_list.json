@@ -274,8 +274,8 @@
       "depends_on": [
         "F-H-06"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: all overs arithmetic goes through src/engine/legalBalls.ts (parseOvers/tryParseOvers/completedOvers/runRate): live-score route and LiveMatchCenter no longer use parseFloat(overs) (which treated 10.4 as 10.4 overs); simulation engine removed. tests/unit/engine/legalBalls.usage.test.ts 'no decimal-overs arithmetic outside src/engine/legalBalls.ts' greps src for parseFloat/Number(overs), overs*/÷ and split('.') -> none; npm test -- legalBalls -> 8 passed, engine coverage 100%."
     },
     {
       "id": "F-F-09",

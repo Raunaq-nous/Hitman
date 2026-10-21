@@ -3,6 +3,14 @@
 import { useState, useEffect, useRef } from "react";
 import { Radio, RefreshCw, Zap, BarChart3, Users2, Info, Trophy, Clock, MapPin, Wifi, WifiOff } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { completedOvers, runRate, tryParseOvers } from "@/engine/legalBalls";
+
+// Run rates use legal balls: "10.4" overs is 64 balls, never 10.4 overs.
+const rateOf = (runs: number, overs: string): number | null => {
+  const balls = tryParseOvers(overs);
+  return balls === null ? null : runRate(runs, balls);
+};
+const formatRate = (runs: number, overs: string): string => rateOf(runs, overs)?.toFixed(2) ?? "–";
 
 type ScoreEntry = {
   runs: number; wickets: number; overs: string; inning: string;
@@ -267,20 +275,20 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
                       ({s.overs} overs)
                     </span>
                     <span className="text-gray-400 font-mono text-xs">
-                      RR: {(s.runs / Math.max(0.1, parseFloat(s.overs))).toFixed(2)}
+                      RR: {formatRate(s.runs, s.overs)}
                     </span>
                   </div>
                   {/* Run rate bar */}
                   <div className="mt-3 w-full bg-gray-800 rounded-full h-1.5">
                     <div
                       className={`h-1.5 rounded-full transition-all duration-500 ${
-                        s.runs / Math.max(0.1, parseFloat(s.overs)) > 10
+                        (rateOf(s.runs, s.overs) ?? 0) > 10
                           ? "bg-red-500"
-                          : s.runs / Math.max(0.1, parseFloat(s.overs)) > 7
+                          : (rateOf(s.runs, s.overs) ?? 0) > 7
                           ? "bg-yellow-500"
                           : "bg-green-500"
                       }`}
-                      style={{ width: `${Math.min(100, (parseFloat(s.overs) / 20) * 100)}%` }}
+                      style={{ width: `${Math.min(100, ((tryParseOvers(s.overs) ?? 0) / 120) * 100)}%` }}
                     />
                   </div>
                   <div className="flex justify-between mt-1.5 text-[9px] text-gray-600 font-mono">
@@ -321,7 +329,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
             ) : (
               match.scores.map((s, i) => {
                 const teamName = s.inning.split(" Inning")[0].replace(/,.*/, "");
-                const rr = (s.runs / Math.max(0.1, parseFloat(s.overs))).toFixed(2);
+                const rr = formatRate(s.runs, s.overs);
                 return (
                   <div key={i} className="bg-black/50 border border-white/10 rounded-sm p-4">
                     <div className="flex items-center justify-between mb-3">
@@ -360,9 +368,9 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
                         <div
                           key={oi}
                           className={`flex-1 h-2 rounded-sm ${
-                            oi < Math.floor(parseFloat(s.overs))
+                            oi < completedOvers(tryParseOvers(s.overs) ?? 0)
                               ? "bg-green-500/70"
-                              : oi === Math.floor(parseFloat(s.overs))
+                              : oi === completedOvers(tryParseOvers(s.overs) ?? 0)
                               ? "bg-yellow-500/70"
                               : "bg-gray-800"
                           }`}
