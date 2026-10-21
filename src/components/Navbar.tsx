@@ -30,7 +30,7 @@ export default function Navbar() {
             <div className="flex items-center space-x-3">
               {session ? (
                 <>
-                  <Link href="/dashboard" className="text-red-500 hover:text-white font-mono text-xs transition tracking-widest hidden sm:block">DASHBOARD</Link>
+                  <Link href="/crews" className="text-red-500 hover:text-white font-mono text-xs transition tracking-widest hidden sm:block">DASHBOARD</Link>
                   <div className="flex items-center space-x-2 bg-white/5 px-3 py-1 rounded-sm border border-white/10 cursor-default">
                     <User size={14} className="text-red-500" />
                     <span className="text-xs font-mono text-gray-400 hidden sm:block">{session.user?.name}</span>

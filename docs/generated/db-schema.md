@@ -15,10 +15,12 @@ Generated from `prisma/schema.prisma` by `node scripts/gen-db-schema.mjs`. Do no
 | createdAt | DateTime | @default(now()) |
 | updatedAt | DateTime | @updatedAt |
 | fantasyTeams | FantasyTeam[] |  |
-| ownedLeagues | League[] | @relation("LeagueOwner") |
-| leagueMembers | LeagueMember[] |  |
+| ownedCrews | Crew[] | @relation("CrewOwner") |
+| crewMembers | CrewMember[] |  |
 
-## League
+## Crew
+
+A private group of fans. Replaces the legacy fantasy "leagues" (renamed in place; no fee or prize fields).
 
 | Field | Type | Attributes |
 |---|---|---|
@@ -27,21 +29,21 @@ Generated from `prisma/schema.prisma` by `node scripts/gen-db-schema.mjs`. Do no
 | inviteCode | String | @unique |
 | ownerId | String |  |
 | createdAt | DateTime | @default(now()) |
-| owner | User | @relation("LeagueOwner", fields: [ownerId], references: [id]) |
-| members | LeagueMember[] |  |
+| owner | User | @relation("CrewOwner", fields: [ownerId], references: [id]) |
+| members | CrewMember[] |  |
 
-## LeagueMember
+## CrewMember
 
 | Field | Type | Attributes |
 |---|---|---|
 | id | String | @id @default(cuid()) |
 | userId | String |  |
-| leagueId | String |  |
+| crewId | String |  |
 | joinedAt | DateTime | @default(now()) |
-| league | League | @relation(fields: [leagueId], references: [id]) |
+| crew | Crew | @relation(fields: [crewId], references: [id], onDelete: Cascade) |
 | user | User | @relation(fields: [userId], references: [id]) |
 
-- `@@unique([userId, leagueId])`
+- `@@unique([userId, crewId])`
 
 ## Match
 

@@ -30,7 +30,7 @@ describe("dto: no Prisma model or password hash crosses the server boundary", ()
       await resetDb();
       a = await makeUser("Asha"); b = await makeUser("Bilal");
       crewId = (await createCrew(a.id, "Night Owls")).id;
-      const code = (await prisma.league.findUniqueOrThrow({ where: { id: crewId } })).inviteCode;
+      const code = (await prisma.crew.findUniqueOrThrow({ where: { id: crewId } })).inviteCode;
       await joinCrew(b.id, code);
       const match = await prisma.match.create({ data: { team1: "AAA", team2: "BBB", date: new Date("2024-04-01T14:00:00Z"), status: "COMPLETED" } });
       matchId = match.id;

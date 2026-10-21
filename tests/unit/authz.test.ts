@@ -20,7 +20,7 @@ beforeAll(async () => {
   await resetDb();
   owner = await makeUser("Owner"); member = await makeUser("Member"); outsider = await makeUser("Outsider");
   crewId = (await createCrew(owner.id, "Crew A")).id;
-  code = (await prisma.league.findUniqueOrThrow({ where: { id: crewId } })).inviteCode;
+  code = (await prisma.crew.findUniqueOrThrow({ where: { id: crewId } })).inviteCode;
   await joinCrew(member.id, code);
   matchId = (await prisma.match.create({ data: { team1: "AAA", team2: "BBB", date: new Date("2024-04-01T14:00:00Z") } })).id;
 });
@@ -62,14 +62,14 @@ describe("authz: crew and contest membership", () => {
   });
 
   it("route handlers require a session and scope results to the caller", async () => {
-    const { GET, POST } = await import("@/app/api/leagues/route");
+    const { GET, POST } = await import("@/app/api/crews/route");
     current = null;
     expect((await GET()).status).toBe(401);
     current = outsider.id;
     expect(await (await GET()).json()).toEqual({ crews: [] });
-    const bad = await POST(new Request("http://x/api/leagues", { method: "POST", body: JSON.stringify({ name: "" }) }));
+    const bad = await POST(new Request("http://x/api/crews", { method: "POST", body: JSON.stringify({ name: "" }) }));
     expect(bad.status).toBe(400);
-    const made = await POST(new Request("http://x/api/leagues", { method: "POST", body: JSON.stringify({ name: "Outsiders" }) }));
+    const made = await POST(new Request("http://x/api/crews", { method: "POST", body: JSON.stringify({ name: "Outsiders" }) }));
     expect(made.status).toBe(201);
     current = member.id;
     expect((await (await GET()).json()).crews.map((c: { name: string }) => c.name)).toEqual(["Crew A"]);

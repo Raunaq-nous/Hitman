@@ -8,38 +8,39 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String
-  email         String         @unique
-  password      String
-  avatar        String?
-  xp            Int            @default(0)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  fantasyTeams  FantasyTeam[]
-  ownedLeagues  League[]       @relation("LeagueOwner")
-  leagueMembers LeagueMember[]
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  password     String
+  avatar       String?
+  xp           Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  fantasyTeams FantasyTeam[]
+  ownedCrews   Crew[]        @relation("CrewOwner")
+  crewMembers  CrewMember[]
 }
 
-model League {
-  id         String         @id @default(cuid())
+/// A private group of fans. Replaces the legacy fantasy "leagues" (renamed in place; no fee or prize fields).
+model Crew {
+  id         String       @id @default(cuid())
   name       String
-  inviteCode String         @unique
+  inviteCode String       @unique
   ownerId    String
-  createdAt  DateTime       @default(now())
-  owner      User           @relation("LeagueOwner", fields: [ownerId], references: [id])
-  members    LeagueMember[]
+  createdAt  DateTime     @default(now())
+  owner      User         @relation("CrewOwner", fields: [ownerId], references: [id])
+  members    CrewMember[]
 }
 
-model LeagueMember {
+model CrewMember {
   id       String   @id @default(cuid())
   userId   String
-  leagueId String
+  crewId   String
   joinedAt DateTime @default(now())
-  league   League   @relation(fields: [leagueId], references: [id])
+  crew     Crew     @relation(fields: [crewId], references: [id], onDelete: Cascade)
   user     User     @relation(fields: [userId], references: [id])
 
-  @@unique([userId, leagueId])
+  @@unique([userId, crewId])
 }
 
 model Match {

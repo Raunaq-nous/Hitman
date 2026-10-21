@@ -429,7 +429,7 @@ export default function Landing() {
       <footer className="foot">
         <div className="wrap">
           <span className="brand">{brand}</span>
-          <p>Working title. This page uses illustrative data and a toy model. The cricket leagues already in the app are free to play: <Link href="/dashboard">open your leagues</Link>.</p>
+          <p>Working title. This page uses illustrative data and a toy model. The cricket leagues already in the app are free to play: <Link href="/crews">open your leagues</Link>.</p>
           <p>Athlete names and nicknames appear as editorial references to sporting history. No affiliation with or endorsement by any athlete, estate, team or league is implied.</p>
         </div>
       </footer>

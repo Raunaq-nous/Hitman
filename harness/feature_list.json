@@ -796,8 +796,8 @@
       "depends_on": [
         "F-F-04"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: League/LeagueMember renamed in place to Crew/CrewMember (migration *_leagues_to_crews keeps all rows; no fee/prize columns); routes /crews, /crews/[crewId], /crews/join/[code] (invite link; sign-in then join, idempotent), APIs /api/crews, /api/crews/join, /api/crews/[id]/leave|rotate-code|members/[userId]; /leagues/* and /dashboard redirect to /crews. Private by default (non-members 404), owner can rotate code and remove members, owner must hand over before leaving. tests/unit/crews.test.ts (6) + authz/dto updated; tests/e2e/crews.spec.ts 'crews: create, invite by link, join, rotate code, leave; outsiders get 404' -> passed; node harness/verify.mjs -> PASS. Screenshots docs/evidence/F-C-01/{crews,crew}-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-C-02",
