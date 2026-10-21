@@ -1001,8 +1001,8 @@
       "depends_on": [
         "F-G-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/domain/planner: deterministic rule-based plan() (crew_members, crew_leader, my_crews → structured; other questions → retrieval; empty/over-long → unsupported); structured answers built from crews/contests services scoped to the asking user; phrasing via generateClaims (verified contract, template fallback); open questions return an honest 'not indexed yet' instead of model improvisation; POST /api/ask (auth, rate-limited). tests/unit/planner/planner.test.ts (5 tests) -> pass via npm test -- planner."
     },
     {
       "id": "F-U-03",
