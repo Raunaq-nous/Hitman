@@ -21,7 +21,7 @@ const GENERIC_REGISTER_ERROR = "Couldn’t create an account with those details.
 export async function register(input: RegisterInput, ip: string): Promise<{ id: string }> {
   if (!limits.registerByIp.hit(ip).ok) throw new DomainError("RATE_LIMITED", "Too many sign-ups from this network. Try again later.");
   try {
-    return await repo.insertUser({ name: input.name, email: input.email, password: await bcrypt.hash(input.password, 12) });
+    return await repo.insertUser({ name: input.name, email: input.email, password: await bcrypt.hash(input.password, 12), ageConfirmedAt: new Date() });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") throw new DomainError("CONFLICT", GENERIC_REGISTER_ERROR);
     throw e;

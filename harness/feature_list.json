@@ -1174,8 +1174,8 @@
       "depends_on": [
         "F-F-12"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: sign-up requires an 'I am 18 or over' checkbox with an explanation (adults-only beta while safety/legal reviews finish; free, no money); submit disabled until checked; registerInput requires ageConfirmed === true (server message 'ALTER EGO’s beta is for people aged 18 and over…'); User.ageConfirmedAt recorded (migration *_age_confirmation). tests/unit/auth/auth.test.ts 'age: 18+ beta gate' (2 tests) + tests/e2e/age.spec.ts (form requires confirmation; API refuses without it) -> pass; full gate PASS. Screenshots docs/evidence/F-T-03/register-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-T-04",
