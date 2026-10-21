@@ -305,8 +305,8 @@
       "depends_on": [
         "F-H-07"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: package name alter-ego, manifest ALTER EGO (description no longer promises live calls), vercel.json name alter-ego, metadata title template '%s | ALTER EGO', navbar logo alt no longer 'Hitman'; athlete nicknames removed from roster lineage copy (verified facts kept). tests/e2e/brand.spec.ts scans rendered text, title, meta content and img alt on /, /login, /register, /schedule, /teams, /commentary, /leaderboard for HITMAN|MAMBA|ARCHITETTO|ICEBORG|PITCH11 and checks the manifest. npm run test:e2e -- brand -> 8 passed (full e2e 10 passed)."
     },
     {
       "id": "F-F-11",
