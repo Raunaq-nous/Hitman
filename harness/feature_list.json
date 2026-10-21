@@ -151,8 +151,8 @@
       "depends_on": [
         "F-H-06"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: tests/architecture/layering.ts checks types→config→repo→service→api|ui inside src/domain/<area>, pure src/engine, no Prisma/repo in src/ui, cross-cutting via src/providers, no cross-domain repo/config; every message says how to fix. tests/unit/architecture.test.ts: 'src/ has no layering violations', 'catches the deliberately bad imports in the fixture, with fix-it messages' (tests/fixtures/arch-bad: types→service, engine→node:fs, ui→@prisma/client). eslint.config.mjs no-restricted-imports for src/engine and src/ui (probe file importing node:fs in src/engine -> error with remediation). npm run lint && npm test -> PASS."
     },
     {
       "id": "F-F-01",
