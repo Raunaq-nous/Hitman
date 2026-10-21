@@ -183,8 +183,8 @@
       "depends_on": [
         "F-F-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: prisma provider postgresql; baseline prisma/migrations/20261021000000_init committed with migration_lock.toml; docker-compose.yml db (postgres:16) + embedded-postgres fallback in scripts/db-up.mjs; build = prisma generate && next build (no migrate). npm run db:migrate -> No pending migrations; tests/unit/infra/postgres.test.ts (4 tests incl. 'never runs migrations during build or install') pass in npm test."
     },
     {
       "id": "F-F-03",
