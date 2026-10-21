@@ -10,8 +10,8 @@ vi.mock("@/providers/auth", () => ({ currentUserId: async () => current }));
 beforeAll(async () => { await resetDb(); });
 
 describe("analytics events", () => {
-  it("covers exactly the events in the spec", () => {
-    expect([...EVENT_NAMES].sort()).toEqual(["alter_ego_revealed", "call_locked", "depth_changed", "language_changed", "moment_viewed", "next_read_started", "receipt_opened", "review_viewed", "share_clicked"]);
+  it("covers exactly the events in the spec (plus server-side call_graded)", () => {
+    expect([...EVENT_NAMES].sort()).toEqual(["alter_ego_revealed", "call_graded", "call_locked", "depth_changed", "language_changed", "moment_viewed", "next_read_started", "receipt_opened", "review_viewed", "share_clicked"]);
   });
 
   it("stores a valid event with user and props", async () => {

@@ -7,6 +7,8 @@ const depth = z.enum(["quick", "tactical", "analyst"]);
 export const EVENT_SCHEMAS = {
   moment_viewed: z.object({ momentId: id }).strict(),
   call_locked: z.object({ momentId: id, callId: id, confidence: z.number().int().min(50).max(99) }).strict(),
+  // server-side: the call's outcome is known and its grade is available (needed for the north star's denominator)
+  call_graded: z.object({ callId: id, coinFlip: z.boolean() }).strict(),
   review_viewed: z.object({ callId: id }).strict(),
   next_read_started: z.object({ fromCallId: id, momentId: id }).strict(),
   share_clicked: z.object({ callId: id.optional(), kind: z.enum(["call", "alter_ego"]) }).strict(),
