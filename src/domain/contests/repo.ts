@@ -20,3 +20,9 @@ export const listBuilderPlayers = (teams: string[], matchId: string) =>
     where: { team: { in: teams } },
     select: { id: true, name: true, team: true, role: true, credits: true, matchAppearances: { where: { matchId }, select: { isPlaying: true } }, stats: { orderBy: { season: "desc" }, select: { season: true, matchesPlayed: true, runs: true, wickets: true, avgPoints: true } } },
   });
+export const listRulePlayers = (ids: string[]) => prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, team: true, role: true, credits: true } });
+export const insertTeam = (userId: string, t: { matchId: string; captainId: string; viceCaptainId: string; playerIds: string[] }) =>
+  prisma.fantasyTeam.create({
+    data: { userId, matchId: t.matchId, captainId: t.captainId, viceCaptainId: t.viceCaptainId, players: { create: t.playerIds.map((playerId) => ({ playerId })) } },
+    select: { id: true },
+  });
