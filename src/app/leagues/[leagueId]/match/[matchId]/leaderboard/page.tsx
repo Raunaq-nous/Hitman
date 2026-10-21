@@ -71,7 +71,7 @@ export default async function MatchLeaderboardPage({ params }: { params: Promise
                   <div className="flex items-center space-x-4">
                     <div className="text-2xl font-black text-gray-300 w-8 text-center">{idx + 1}</div>
                     <div>
-                      <div className="font-bold text-gray-900 text-lg">{team.user.name}'s Team</div>
+                      <div className="font-bold text-gray-900 text-lg">{team.user.name}&apos;s Team</div>
                       <div className="text-xs text-gray-500">
                         {team.players.length} Players Picked
                       </div>

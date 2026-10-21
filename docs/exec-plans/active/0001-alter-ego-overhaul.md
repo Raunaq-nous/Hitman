@@ -58,9 +58,15 @@ Features: F-Z-01, F-Z-02, F-Z-03
 | D-007 | kit | Rights control plane enforced in code | Data licences differ by source and use |
 | D-008 | kit | Work on `overhaul`, fast-forward default branch at gates, never squash | Safe production deploys; every commit counts on the contribution graph |
 | D-009 | kit | Self-hosted fonts | Builds need no network |
+| D-010 | 2026-10-21 | F-H-00 audit failed: the earlier fix downgraded lint errors to warnings; reverted to eslint-config-next defaults and fixed the 20 errors in code. `any` on legacy untyped payloads carries a justifying disable comment until F-F-03 replaces them with DTOs | Acceptance says fix errors, not relax rules |
+| D-011 | 2026-10-21 | `harness/verify.mjs` captures output and prints a summary plus the last 60 lines of the first failure (`--verbose` streams everything) | Owner asked for token-cheap gate output |
+| D-012 | 2026-10-21 | Cloud session has no working `gh` login; CI status, PRs and merges go through the GitHub API (MCP) instead | Same effect, no interactive auth needed |
 
 ## Progress log
 <!-- newest first: date, feature, plan, result -->
+### 2026-10-21 — Audit F-H-00..F-H-04
+- F-H-01, F-H-03, F-H-04 re-verified (8 Phase 0 commits on main, 0 handle/dev.db hits in `git log --all -p`, owner-authored). F-H-00 redone (D-010). verify.mjs quieted (D-011).
+
 ### 2026-10-18 — F-H-04: Commits are authored by the owner
 - Plan: Inspect git log -10 --format="%an <%ae>" to verify owner author and email on recent commits.
 - Scope: Commit authorship verification.

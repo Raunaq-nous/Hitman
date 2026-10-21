@@ -33,6 +33,7 @@ export default function LiveScoreWidget({ matchId, onExpand }: { matchId: string
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetchLive sets state only after an awaited fetch, never synchronously
     fetchLive();
     if (autoRefresh) {
       intervalRef.current = setInterval(fetchLive, 10000);

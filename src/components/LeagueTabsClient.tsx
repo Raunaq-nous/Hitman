@@ -9,10 +9,13 @@ export default function LeagueTabsClient({
   league,
   matches,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
   league: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
   matches: any[],
 }) {
   const [activeTab, setActiveTab] = useState<"LOBBY" | "LIVE" | "SCHEDULE" | "POINTS">("LOBBY");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
   const [teamPoints, setTeamPoints] = useState<any[]>([]);
   const [isScraping, setIsScraping] = useState(false);
 
@@ -215,7 +218,7 @@ export default function LeagueTabsClient({
             MEMBERS ({league.members.length})
           </h3>
           <ul className="space-y-4">
-            {league.members.map((m: any) => (
+            {league.members.map((m: { id: string; user: { name: string; xp: number } }) => (
               <li key={m.id} className="flex items-center space-x-3 bg-black/50 p-3 rounded-sm border border-white/10">
                 <div className="h-10 w-10 bg-white/10 border border-white/20 rounded-full flex items-center justify-center text-red-500 font-bold font-mono">
                   {m.user.name[0]}

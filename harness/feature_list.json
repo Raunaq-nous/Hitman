@@ -13,7 +13,7 @@
       "verify": "node harness/verify.mjs --ci",
       "depends_on": [],
       "passes": true,
-      "evidence": "node harness/verify.mjs --ci passed: feature list, lint, build clean with no errors"
+      "evidence": "Redone 2026-10-21 after audit: reverted the rule downgrades (no-explicit-any, set-state-in-effect, no-unescaped-entities etc. back to eslint-config-next defaults) and fixed all 20 lint errors in code (typed icons/members, escaped entities, justified any on legacy payloads pending F-F-03). node harness/verify.mjs --ci -> RESULT: PASS (feature list, lint, build PASS). CI run on overhaul green."
     },
     {
       "id": "F-H-01",
@@ -29,7 +29,7 @@
         "F-H-00"
       ],
       "passes": true,
-      "evidence": "git log verified (8 commits); 0 failed patches; _incoming removed; node harness/verify.mjs --ci passed"
+      "evidence": "Audit 2026-10-21: git log main shows the 8 Phase 0 commits (541b4f1..e460de1) authored Raunaq-nous noreply; test ! -d _incoming -> true; CI run 39077633057 success."
     },
     {
       "id": "F-H-02",
@@ -60,7 +60,7 @@
         "F-H-02"
       ],
       "passes": true,
-      "evidence": "git log --all -p | grep -i -E '[a-z0-9._-]+@okicici' -> empty; git log --all --name-only --format= | grep -E '(^|/)dev\\.db$' -> empty"
+      "evidence": "Audit 2026-10-21 (non-shallow clone): git log --all -p | grep -i -E -c '<handle pattern from harness/prepare-repo.sh>' -> 0; git log --all --name-only --format= | grep -E '(^|/)dev\\.db$' | wc -l -> 0."
     },
     {
       "id": "F-H-04",
@@ -75,7 +75,7 @@
         "F-H-03"
       ],
       "passes": true,
-      "evidence": "git log -10 --format=\"%an <%ae>\" verified: all recent commits authored by Raunaq-nous (verified email & noreply address)"
+      "evidence": "Audit 2026-10-21: git log main..overhaul --format='%an <%ae>' -> all Raunaq-nous (raunaq1509 / 164249000+Raunaq-nous noreply); git config user.email set to the noreply address for future commits."
     },
     {
       "id": "F-H-05",

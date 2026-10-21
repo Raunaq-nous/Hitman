@@ -10,6 +10,7 @@ export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
   const [leagues, setLeagues] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);

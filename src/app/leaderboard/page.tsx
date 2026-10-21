@@ -5,6 +5,7 @@ import { Loader2, RefreshCw } from "lucide-react";
 import { IPL_TEAMS } from "@/constants/iplData";
 
 export default function LeaderboardPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
   const [teamPoints, setTeamPoints] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

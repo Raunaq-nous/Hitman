@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Trophy, Radio, Users2 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import LiveMatchCenter from "@/components/LiveMatchCenter";
 
 type PlayerInfo = {
@@ -45,7 +46,7 @@ export default function MatchContestTabs({
 }) {
   const [activeTab, setActiveTab] = useState<TabKey>("LIVE");
 
-  const tabs: { key: TabKey; label: string; icon: any }[] = [
+  const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
     { key: "TEAM", label: "YOUR TEAM", icon: Users2 },
     { key: "LIVE", label: "LIVE MATCH", icon: Radio },
   ];

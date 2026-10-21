@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Radio, RefreshCw, Zap, BarChart3, Users2, Info, Trophy, Clock, MapPin, Wifi, WifiOff } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 type ScoreEntry = {
   runs: number; wickets: number; overs: string; inning: string;
@@ -13,6 +14,7 @@ type InningsData = {
   battingTeam: string; bowlingTeam: string; totalRuns: number; totalWickets: number;
   overs: string; runRate: number; isCompleted: boolean;
   extras: { wides: number; noBalls: number; byes: number; legByes: number; total: number; };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
   batsmen: any[]; bowlers: any[]; fallOfWickets: any[]; partnerships: any[];
 };
 type MatchData = {
@@ -28,6 +30,7 @@ type MatchData = {
 type APIResponse = {
   primary: MatchData | null;
   iplMatches: MatchData[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
   allMatches: any[];
   apiInfo: { hitsToday: number; hitsLimit: number; hitsUsed: number; };
 };
@@ -69,7 +72,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [autoRefresh]);
 
-  const tabs: { key: TabKey; label: string; icon: any }[] = [
+  const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
     { key: "LIVE", label: "LIVE SCORE", icon: Zap },
     { key: "SCORECARD", label: "SCORECARD", icon: BarChart3 },
     { key: "MATCHES", label: "ALL MATCHES", icon: Users2 },
@@ -434,7 +437,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
                   {m.isLive && <Radio size={8} className="text-red-500 animate-pulse" />}
                   <span className="text-gray-300 font-mono text-xs">{m.name}</span>
                 </div>
-                {m.score?.map((s: any, si: number) => (
+                {m.score?.map((s: ScoreEntry, si: number) => (
                   <div key={si} className="text-gray-500 font-mono text-[10px]">
                     {s.inning?.split(" Inning")[0].replace(/,.*/, "")}: {s.runs}/{s.wickets} ({s.overs} ov)
                   </div>
