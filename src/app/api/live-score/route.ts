@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { env } from "@/providers/env";
 
 export const dynamic = "force-dynamic";
 
@@ -112,7 +113,7 @@ const isIpl = (m: ApiMatch) =>
   m.series_id === IPL_SERIES_ID || /indian premier league|\bipl\b/i.test(m.name ?? "");
 
 export async function GET() {
-  const apiKey = process.env.CRICKET_API_KEY;
+  const apiKey = env().CRICKET_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ success: false, error: "Live scores aren’t configured: CRICKET_API_KEY is missing." }, { status: 500 });
   }

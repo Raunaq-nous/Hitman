@@ -11,12 +11,11 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 
+import { env } from "@/providers/env";
+
+/** Parsed env refuses to start in production without a 32+ character secret. */
 function sessionSecret(): string | undefined {
-  const secret = process.env.NEXTAUTH_SECRET;
-  if (!secret && process.env.NODE_ENV === "production") {
-    throw new Error("NEXTAUTH_SECRET is not set. Refusing to start without a session secret.");
-  }
-  return secret;
+  return env().NEXTAUTH_SECRET;
 }
 
 export const authOptions: NextAuthOptions = {
