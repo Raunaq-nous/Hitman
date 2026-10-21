@@ -7,6 +7,7 @@ import { useState } from "react";
 
 const LINKS = [
   { href: "/crews", label: "Crews", auth: true },
+  { href: "/roster", label: "Roster", auth: false },
   { href: "/commentary", label: "Scores", auth: false },
   { href: "/onboarding", label: "How it works", auth: false },
 ];

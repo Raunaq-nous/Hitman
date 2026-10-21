@@ -1,0 +1,16 @@
+{
+  "slug": "iceman",
+  "name": "The Iceman",
+  "sport": "Tennis",
+  "sportKey": "tennis",
+  "skillDomain": "ANGLES",
+  "colorToken": "--iceman",
+  "signatureTool": "Pressure Index",
+  "skillWords": [
+    "angles",
+    "big points",
+    "serve",
+    "composure",
+    "pressure"
+  ]
+}

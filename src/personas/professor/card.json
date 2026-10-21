@@ -1,0 +1,16 @@
+{
+  "slug": "professor",
+  "name": "The Professor",
+  "sport": "Formula 1",
+  "sportKey": "f1",
+  "skillDomain": "RACECRAFT",
+  "colorToken": "--professor",
+  "signatureTool": "Pit window",
+  "skillWords": [
+    "racecraft",
+    "tyre life",
+    "track position",
+    "undercut",
+    "risk"
+  ]
+}

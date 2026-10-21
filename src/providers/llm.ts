@@ -37,3 +37,4 @@ export async function generateClaims(req: import("@/llm/verified").VerifiedReque
   const { generateVerified } = await import("@/llm/verified");
   return generateVerified(llmProvider(), req, (entry) => log.info("llm call", { ...entry }));
 }
+export { verifyClaims } from "@/llm/verifier";

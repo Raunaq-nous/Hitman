@@ -1074,8 +1074,8 @@
         "F-G-02",
         "F-U-04"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/personas/<slug>/card.json (Zod-validated: public name, sport, skill domain, colour token, pictogram, signature tool, skill words) and PLAYBOOK.md (voice rules, vocabulary, never-list incl. no real athletes, no money, AI label) for all five; /roster and /roster/[persona] pages; Persona Switchboard re-voices the same facts (tennis engine point importance on a labelled illustrative example state, MODEL_ESTIMATE with receipt) with deterministic per-persona templates, each voicing checked by verifyClaims; AI analyst label on every persona voice. tests/unit/roster.test.ts (2) + tests/e2e/roster.spec.ts ('…switchboard keeps the facts', 'persona pages show the card and an AI label; unknown personas 404') -> pass; roster pages added to axe a11y list; full gate PASS. Screenshots docs/evidence/F-R-01/{roster,persona}-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-R-02",
