@@ -869,8 +869,8 @@
       "depends_on": [
         "F-G-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/llm/contract.ts (claims typed OBSERVED/DERIVED/MODEL_ESTIMATE/EDITORIAL with source_ids, strict Zod), src/llm/verifier.ts verifyClaims rejects OBSERVED/DERIVED without source_ids, unknown ids, any number (incl. ordinals) not in the cited facts (rounding tolerance at written precision; 0–1 values as %), facts observed after SNAPSHOT_CUTOFF and dates/years after it; src/llm/verified.ts generateVerified falls back to the deterministic template when model claims fail, and throws if the template itself fails. tests/unit/llm/verifier.test.ts (8 tests incl. 'rejects fabricated numbers…', 'rejects claims about events after SNAPSHOT_CUTOFF', 'falls back to the template when the model fabricates a number') -> pass."
     },
     {
       "id": "F-G-03",
