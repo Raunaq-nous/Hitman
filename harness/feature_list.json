@@ -658,8 +658,8 @@
       "depends_on": [
         "F-H-06"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/engine/tennis.ts (pure): holdProbability with closed-form deuce (p=0.65 -> 0.830), tiebreak with correct serve rotation and closed-form ties, full best-of-3/5 match win probability with memoised game-level recursion, pointImportance = P(win|win point) − P(win|lose point), pressureIndex = importance in percentage points. tests/unit/engine/tennis.test.ts (7 tests incl. 'p = 0.65 gives hold ≈ 0.83', 'point importance is higher on big points than early points') -> pass; src/engine coverage 100% lines/branches/functions."
     },
     {
       "id": "F-L-01",

@@ -87,3 +87,11 @@ describe("rights enforced by retrieval", () => {
     expect(embeddable(docs).map((d) => d.id)).toEqual(["1"]);
   });
 });
+
+describe("rights lookups", () => {
+  it("getPolicy returns a policy or undefined", async () => {
+    const { getPolicy } = await import("@/rights");
+    expect(getPolicy("cricsheet")?.attribution_text).toBe("Data from Cricsheet (cricsheet.org)");
+    expect(getPolicy("nope")).toBeUndefined();
+  });
+});
