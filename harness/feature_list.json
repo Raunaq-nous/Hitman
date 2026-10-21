@@ -120,8 +120,8 @@
       "depends_on": [
         "F-H-05"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: playwright.config.ts (webServer next start :3100) + tests/e2e/smoke.spec.ts: 'landing page renders with no console errors', 'landing page passes axe accessibility checks' (wcag2a/aa, after entrance animations settle). Fixed axe link-in-text-block by underlining in-text links in src/app/landing.css. npm run test:e2e -> 2 passed; node harness/verify.mjs -> RESULT: PASS."
     },
     {
       "id": "F-H-08",
