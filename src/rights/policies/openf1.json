@@ -1,0 +1,16 @@
+{
+  "source_id": "openf1",
+  "display_name": "OpenF1 (historical)",
+  "may_display_raw": true,
+  "may_store_history": true,
+  "may_create_derivatives": true,
+  "may_embed_for_retrieval": false,
+  "may_train_models": false,
+  "may_show_video": false,
+  "commercial_use": "unconfirmed",
+  "territories": ["*"],
+  "attribution_required": true,
+  "attribution_text": "Historical timing data from OpenF1 (openf1.org), an unofficial project not associated with Formula 1 companies",
+  "prototype_only": true,
+  "notes": "Unofficial project; historical endpoints only (live data needs a paid subscription and is not used). Off when PROTOTYPE_DATA=false."
+}

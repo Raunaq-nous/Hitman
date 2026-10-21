@@ -426,8 +426,8 @@
       "depends_on": [
         "F-D-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/rights/policies/{cricsheet,openf1,statsbomb,cricketdata}.json validated by a strict Zod schema matching data-and-rights.md; assertRight/checkRight (unknown source denied; prototype_only off when PROTOTYPE_DATA=false) exposed to domains via src/providers/rights.ts. Used by the incident repo (store, src/domain/facts/repo.ts), the live-score service (display) and retrieval (embed, src/domain/retrieval/service.ts). tests/unit/rights/rights.test.ts (8 tests: schema+registry, allow/deny of each of 6 actions for every policy, prototype flag, unknown source, repo refuses before writing, live-score refuses without fetching, retrieval filter) -> pass. Also enabled TypeScript strict (0 errors)."
     },
     {
       "id": "F-D-03",
