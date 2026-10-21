@@ -138,7 +138,7 @@
 .shell-main{flex:1;width:100%;max-width:72rem;margin:0 auto;padding:1rem 0 3rem;outline:none}
 .skip-link{position:absolute;left:-999px;top:.5rem;z-index:100;background:var(--text);color:var(--bg);padding:.6rem .9rem;border-radius:var(--radius)}
 .skip-link:focus{left:.5rem}
-.nav{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--line)}
+.appnav{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--line)}
 .nav-bar{max-width:72rem;margin:0 auto;padding:.6rem 1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
 .nav-brand{display:inline-flex;align-items:center;gap:.5rem;font:800 1.25rem/1 var(--font-display);font-stretch:62%;letter-spacing:.02em;color:var(--text);text-decoration:none;margin-right:auto}
 .nav-mark{display:inline-flex;gap:2px}
@@ -154,7 +154,7 @@
 .nav-links a[aria-current="page"]{text-decoration:underline;text-underline-offset:.35em;text-decoration-thickness:2px}
 .nav-account{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .nav-user{font-size:var(--step--1);color:var(--text-2)}
-.nav :focus-visible,.shell :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.appnav :focus-visible,.shell :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 @media (min-width:768px){
   .nav-menu-btn{display:none}
   .nav-links,.nav-links[data-open]{display:flex;width:auto;flex-direction:row;align-items:center;gap:1.5rem}

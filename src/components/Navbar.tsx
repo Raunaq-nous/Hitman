@@ -40,7 +40,7 @@ export default function Navbar(): React.JSX.Element {
   const setOpen = (v: boolean): void => setOpenOn(v ? pathname : null);
   const links = LINKS.filter((l) => !l.auth || session);
   return (
-    <header className="nav">
+    <header className="appnav">
       <a className="skip-link" href="#main">Skip to content</a>
       <div className="nav-bar">
         <Link href="/" className="nav-brand" aria-label="ALTER EGO home">
