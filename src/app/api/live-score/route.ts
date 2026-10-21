@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { env } from "@/providers/env";
 import { namedCache } from "@/providers/cache";
 import { log } from "@/providers/log";
-import { parseOvers, runRate as legalRunRate } from "@/engine/legalBalls";
+import { tryParseOvers, runRate as legalRunRate } from "@/engine/legalBalls";
 import { present } from "@/domain/sources/service";
 import type { Sourced } from "@/domain/sources/types";
 
@@ -46,13 +46,7 @@ const CACHE_KEY = `currentMatches:${IPL_SERIES_ID}`;
 const shortName = (team: string) => SHORT_NAMES[team] ?? team.split(" ").map((w) => w[0]).join("");
 
 // Overs go through the legal-ball primitives ("10.4" = 64 balls). A malformed feed value gives null, not a guess.
-function ballsFromOvers(overs: string | number | undefined): number | null {
-  try {
-    return parseOvers(overs ?? "0");
-  } catch {
-    return null;
-  }
-}
+const ballsFromOvers = (overs: string | number | undefined): number | null => tryParseOvers(overs ?? "0");
 
 const runRate = (runs: number, balls: number | null): number | null => {
   const rr = balls === null ? null : legalRunRate(runs, balls);

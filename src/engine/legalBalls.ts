@@ -36,3 +36,18 @@ export function requiredRunRate(runsRequired: number, legalBallsLeft: number): n
   if (legalBallsLeft === 0) return null;
   return (Math.max(0, runsRequired) * BALLS_PER_OVER) / legalBallsLeft;
 }
+
+/** Like parseOvers, but returns null for malformed feed values instead of throwing. */
+export function tryParseOvers(overs: string | number | null | undefined): number | null {
+  if (overs === null || overs === undefined) return null;
+  try {
+    return parseOvers(overs);
+  } catch {
+    return null;
+  }
+}
+
+/** Completed overs (whole overs bowled) for a legal-ball count: 64 → 10. */
+export function completedOvers(legalBalls: number): number {
+  return Math.floor(legalBalls / BALLS_PER_OVER);
+}
