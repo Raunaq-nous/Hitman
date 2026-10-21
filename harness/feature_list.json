@@ -410,8 +410,8 @@
       "depends_on": [
         "F-F-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: Prisma models Sport, Competition, Season, Event, Participant, EventParticipant, Incident (t, seq, actor, type, payload, sourceId/sourceRef, sourceClass, rightsPolicyId, effectiveAt, observedAt, supersedesId unique) in migration 20261021221114_multi_sport_facts, which seeds the five sports and adds an append-only trigger on Incident. src/domain/facts/types.ts incidentInput Zod. tests/unit/facts/schema.test.ts (5 tests: seeds five sports, both clocks, append-only + supersede, unique source record, boundary parse) -> pass."
     },
     {
       "id": "F-D-02",

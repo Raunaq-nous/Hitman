@@ -146,3 +146,102 @@ model AnalyticsEvent {
   @@index([name, createdAt])
   @@index([userId, createdAt])
 }
+
+// ---------- Multi-sport facts (docs/design-docs/bitemporal-store.md) ----------
+
+/// The five sports. Seeded by migration; slugs are stable identifiers.
+model Sport {
+  id           String        @id
+  name         String
+  competitions Competition[]
+  participants Participant[]
+}
+
+model Competition {
+  id      String   @id @default(cuid())
+  sportId String
+  slug    String
+  name    String
+  sport   Sport    @relation(fields: [sportId], references: [id])
+  seasons Season[]
+
+  @@unique([sportId, slug])
+}
+
+model Season {
+  id            String      @id @default(cuid())
+  competitionId String
+  label         String
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  events        Event[]
+
+  @@unique([competitionId, label])
+}
+
+/// One match, race or game. sourceRef identifies it in its source (e.g. a Cricsheet match id).
+model Event {
+  id             String             @id @default(cuid())
+  seasonId       String
+  sourceId       String
+  sourceRef      String
+  name           String
+  startsAt       DateTime
+  venue          String?
+  rightsPolicyId String
+  season         Season             @relation(fields: [seasonId], references: [id])
+  incidents      Incident[]
+  participants   EventParticipant[]
+
+  @@unique([sourceId, sourceRef])
+}
+
+/// A team or player as named by the source. Never a likeness, voice or nickname feature.
+model Participant {
+  id        String             @id @default(cuid())
+  sportId   String
+  kind      String
+  name      String
+  sourceId  String
+  sourceRef String
+  sport     Sport              @relation(fields: [sportId], references: [id])
+  events    EventParticipant[]
+
+  @@unique([sourceId, sourceRef])
+}
+
+model EventParticipant {
+  eventId       String
+  participantId String
+  role          String
+  event         Event       @relation(fields: [eventId], references: [id])
+  participant   Participant @relation(fields: [participantId], references: [id])
+
+  @@id([eventId, participantId, role])
+}
+
+/// Append-only, bitemporal facts. t is the sport clock (legal ball, lap, minute, point) as an ordered integer.
+/// Corrections are new rows with supersedesId; a database trigger rejects UPDATE and DELETE.
+model Incident {
+  id             String    @id @default(cuid())
+  eventId        String
+  t              Int
+  seq            Int       @default(0)
+  actor          String?
+  type           String
+  payload        Json
+  sourceId       String
+  sourceRef      String
+  sourceClass    String
+  rightsPolicyId String
+  effectiveAt    DateTime
+  observedAt     DateTime
+  supersedesId   String?   @unique
+  createdAt      DateTime  @default(now())
+  event          Event     @relation(fields: [eventId], references: [id])
+  supersedes     Incident? @relation("Supersedes", fields: [supersedesId], references: [id])
+  supersededBy   Incident? @relation("Supersedes")
+
+  @@unique([sourceId, sourceRef])
+  @@index([eventId, observedAt])
+  @@index([eventId, t, seq])
+}
