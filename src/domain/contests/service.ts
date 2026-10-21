@@ -1,8 +1,10 @@
 // Contest reads, always scoped to a crew the caller belongs to.
+import { Prisma } from "@prisma/client";
 import { DomainError } from "@/domain/shared/types";
+import { validateFantasyTeam } from "@/lib/fantasyRules";
 import { toPublicUser } from "@/domain/users/types";
 import { memberIds, requireMembership } from "@/domain/crews/service";
-import type { ContestEntryDTO, FantasyTeamDTO, MatchDTO, StandingDTO } from "./types";
+import type { ContestEntryDTO, FantasyTeamDTO, MatchDTO, StandingDTO, SubmitTeamInput } from "./types";
 import * as repo from "./repo";
 
 type MatchRow = NonNullable<Awaited<ReturnType<typeof repo.findMatch>>>;
@@ -47,4 +49,23 @@ export async function builderPlayers(userId: string, crewId: string, matchId: st
     isPlaying: p.matchAppearances[0]?.isPlaying ?? false,
     stats: p.stats.map((s) => ({ season: s.season, matches: s.matchesPlayed, runs: s.runs, wickets: s.wickets, avg: s.avgPoints })),
   }));
+}
+
+/** One team per user per match: enforced by a unique index; a second submit is a 409 CONFLICT, even when two race. */
+export async function submitTeam(userId: string, input: SubmitTeamInput): Promise<{ teamId: string }> {
+  const match = await repo.findMatch(input.matchId);
+  if (!match) throw new DomainError("NOT_FOUND", "Match not found.");
+  // Selection closes once an admin moves the match out of UPCOMING at the first ball.
+  if (match.status !== "UPCOMING") throw new DomainError("CLOSED", "Team selection has closed for this match.");
+  const players = await repo.listRulePlayers(input.playerIds);
+  const check = validateFantasyTeam(input, players, [match.team1, match.team2]);
+  if (!check.ok) throw new DomainError("INVALID", check.error);
+  try {
+    return { teamId: (await repo.insertTeam(userId, input)).id };
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      throw new DomainError("CONFLICT", "You’ve already submitted a team for this match. Each fan gets one team per match.");
+    }
+    throw e;
+  }
 }

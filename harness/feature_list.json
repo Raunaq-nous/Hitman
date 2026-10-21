@@ -228,8 +228,8 @@
       "depends_on": [
         "F-F-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: prisma FantasyTeam @@unique([userId, matchId]) + migration 20261021214246_one_team_per_user_per_match (removes pre-existing duplicates, keeps earliest). contests.service.submitTeam maps P2002 to DomainError CONFLICT (409, 'You’ve already submitted a team for this match…'); /api/team goes through it. tests/unit/unique.test.ts: 'the database rejects a second team…', 'the service turns a duplicate into a clear 409 conflict', 'two concurrent submits produce exactly one team', 'the API returns 409 with a readable message'. npm test -- unique -> 4 passed."
     },
     {
       "id": "F-F-06",

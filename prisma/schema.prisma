@@ -76,6 +76,8 @@ model FantasyTeam {
   match         Match               @relation(fields: [matchId], references: [id])
   user          User                @relation(fields: [userId], references: [id])
   players       FantasyTeamPlayer[]
+
+  @@unique([userId, matchId])
 }
 
 model FantasyTeamPlayer {
