@@ -3,10 +3,11 @@
 STATUS: IN PROGRESS
 CURRENT PHASE: 1
 LAST GATE: none
-NEXT PROMPT: Run feature F-F-10 (Public brand is ALTER EGO everywhere users can see). Pushes are blocked (403): commit locally, retry `git push origin overhaul` each feature; F-H-08 needs a real CI run.
+NEXT PROMPT: Continue the loop with the next eligible feature (F-U-06 landing refresh, then F-R-01, F-T-01..03, F-A-02). Blocked: F-H-08 (pushes 403), F-D-03+ data chain (cricsheet.org denied). Retry `git push origin overhaul` each feature.
 
 ## Session log
 <!-- Append newest first: date (UTC), features touched, commits, verification results, blockers, NEXT PROMPT -->
+- 2026-10-21 (UTC) | F-U-01/02/04, F-A-01, F-D-01/02, F-E-10, F-L-08, F-C-01/04, F-G-01..03, F-K-07, F-U-03/05 + gardening | verify PASS | blockers unchanged | NEXT: F-U-06
 - 2026-10-21 (UTC) | F-H-05..07, F-H-09, F-F-01..09 + doc gardening | verify PASS each | BLOCKER: git push 403 (HUMAN_TODO) | NEXT: F-F-10
 - 2026-10-21 (UTC) | audit F-H-00..04 | F-H-00 redone (real lint fixes), others re-verified; verify.mjs quiet | verify --ci PASS | NEXT: F-H-05
 - 2026-10-17 (UTC) | F-H-04 | chore(git): verify author identity on overhaul commits [F-H-04] | git log -10 author verified: Raunaq-nous | NEXT: F-H-05
