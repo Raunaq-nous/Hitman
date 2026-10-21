@@ -36,8 +36,9 @@ This file is a map, not a manual. The repository is the system of record: if it 
 | Clean-clone gate (release) | `node harness/verify.mjs --clean` |
 | Validate the feature list | `node harness/check-features.mjs` |
 | Dev server | `npm run dev` (http://localhost:3000) |
-| Unit / e2e tests | `npm test` / `npm run test:e2e` |
-| Local Postgres | `npm run db:local` (Docker if present, else embedded-postgres) |
+| Unit / e2e tests | `npm test` (needs Postgres: uses a private `vitest` schema) / `npm run test:e2e` |
+| Local Postgres | `npm run db:up` / `npm run db:local` (Docker if a daemon answers, else embedded-postgres in `.data/`) |
+| Regenerate schema doc | `node scripts/gen-db-schema.mjs` |
 | Cricket data | `npm run data:cricsheet` |
 
 Scripts that don't exist yet are features in `harness/feature_list.json`; create them, don't skip them. CI (`.github/workflows/ci.yml`) runs `node harness/verify.mjs --ci` on every push and pull request.

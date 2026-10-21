@@ -2,6 +2,7 @@
 
 The agent keeps this list current and never blocks on it. Each item has a safe fallback in code.
 
+- [ ] **GitHub write access for the agent session**: pushes to `overhaul` and GitHub API writes return 403 ("Resource not accessible by integration"). Reconnect GitHub at https://claude.ai/connect-github and make sure the Claude GitHub App is installed on `Raunaq-nous/Hitman` with contents, pull requests and workflows write access. Until then commits stay local to the agent's VM.
 - [ ] Rotate `NEXTAUTH_SECRET` in Vercel (Production and Preview) and set `ADMIN_EMAILS` and `CRON_SECRET`.
 - [ ] Check `NEXTAUTH_URL` in Vercel: either unset or the full site URL (an empty value breaks builds).
 - [ ] Provision or confirm the production PostgreSQL database and set `DATABASE_URL`; run `npx prisma migrate deploy` deliberately after reviewing migrations (never automatic in Vercel builds).
