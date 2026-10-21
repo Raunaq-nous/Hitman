@@ -1045,8 +1045,8 @@
         "F-U-04",
         "F-F-10"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: landing rewritten as a server component: describes only what ships (Crews, How it works, labelled-delayed scores), lists Decision Lab/Desk/Alter Ego under 'In development — not available yet', no statistics or illustrative/toy-model numbers, roster as original AI characters with no athlete names or nicknames (D-019), footer no-affiliation note; illustrative brief/scenario/dossier widgets removed. tests/e2e/landing.spec.ts ('copy matches what ships: no statistics, no illustrative data, no athlete names', 'every call to action leads to a working page') -> 2 passed; full gate PASS. Screenshots docs/evidence/F-U-06/landing-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-U-07",

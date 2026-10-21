@@ -66,6 +66,7 @@ Features: F-Z-01, F-Z-02, F-Z-03
 | D-016 | 2026-10-21 | cricsheet.org and api.openf1.org are denied by the VM network policy; no in-scope mirror exists. Data-dependent features wait (HUMAN_TODO); work continues on features whose dependencies pass and need no external data | Never fabricate data or fixtures |
 | D-017 | 2026-10-21 | Removed /schedule, /teams, /leaderboard, /api/scraper/points, /api/seed, src/constants/iplData.ts, the IPL team logos and the hand-typed seed scripts | They showed or seeded hand-typed, unverifiable 2026 fixtures, rosters and a points-table "snapshot" (fabricated-data rule); logos are third-party marks |
 | D-018 | 2026-10-21 | Legacy fantasy contest screens (team builder) stay, wrapped in a `.legacy-dark` surface with AA-lifted colours, until the Decision Lab replaces them | Keeps crews' existing contests working without fabricating anything |
+| D-019 | 2026-10-21 | Landing names no real athletes (persona lineage removed from the landing); the roster is presented as original AI characters | Personality rights are actively enforced in India; "no likeness" is safest; lineage, if ever shown, belongs on reviewed roster pages |
 | D-012 | 2026-10-21 | Cloud session has no working `gh` login; CI status, PRs and merges go through the GitHub API (MCP) instead | Same effect, no interactive auth needed |
 
 ## Progress log
