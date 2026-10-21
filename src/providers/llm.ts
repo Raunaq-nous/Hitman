@@ -27,3 +27,13 @@ export function llmProvider(): LlmProvider {
 export function generate<T>(req: GenerateRequest<T>): Promise<GenerateResult<T>> {
   return generateWithFallback(llmProvider(), req, (entry) => log.info("llm call", { ...entry }));
 }
+
+export type { Claims, Fact } from "@/llm";
+export type { VerifiedRequest, VerifiedResult } from "@/llm/verified";
+export { PRODUCTION_PROMPT } from "@/llm/prompts/production";
+
+/** Verified, sourced claims for the given facts (model phrasing when enabled, deterministic template otherwise). */
+export async function generateClaims(req: import("@/llm/verified").VerifiedRequest): Promise<import("@/llm/verified").VerifiedResult> {
+  const { generateVerified } = await import("@/llm/verified");
+  return generateVerified(llmProvider(), req, (entry) => log.info("llm call", { ...entry }));
+}
