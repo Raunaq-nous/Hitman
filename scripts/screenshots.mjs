@@ -3,6 +3,7 @@
 //   node scripts/screenshots.mjs <feature-id> <name>=<path> [<name>=<path> ...]
 // Saves docs/evidence/<feature-id>/<name>-<width>-<theme>.png. Starts `next start` on :3300 unless BASE_URL is set
 // (run `npm run build` first). Uses the VM's preinstalled Chromium when present.
+// SHOT_EMAIL/SHOT_PASSWORD: sign in first (for pages behind auth).
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync } from 'node:fs';
 import { chromium } from '@playwright/test';
@@ -23,6 +24,13 @@ try {
     for (const width of [390, 1280]) for (const theme of ['light', 'dark']) {
       const ctx = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : 800 }, colorScheme: theme, reducedMotion: 'reduce' });
       const page = await ctx.newPage();
+      if (process.env.SHOT_EMAIL) {
+        await page.goto(`${base}/login`);
+        await page.getByLabel('Email').fill(process.env.SHOT_EMAIL);
+        await page.getByLabel('Password').fill(process.env.SHOT_PASSWORD ?? '');
+        await page.getByRole('button', { name: /sign in/i }).click();
+        await page.waitForURL((u) => !u.pathname.startsWith('/login'));
+      }
       await page.goto(base + path, { waitUntil: 'networkidle' });
       const file = `${dir}/${name}-${width}-${theme}.png`;
       await page.screenshot({ path: file, fullPage: process.env.FULL_PAGE === '1' });

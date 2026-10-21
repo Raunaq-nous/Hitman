@@ -7,12 +7,11 @@ import MatchContestTabs from "@/components/MatchContestTabs";
 export default async function MatchContestPage({
   params
 }: {
-  params: Promise<{ leagueId: string; matchId: string }>
+  params: Promise<{ crewId: string; matchId: string }>
 }) {
-  const { leagueId, matchId } = await params;
+  const { crewId, matchId } = await params;
   const userId = await pageUserId();
-  const { match, myTeam: existingTeam, memberCount } = await orNotFound(getContest(userId, leagueId, matchId));
-  const leagueCheck = { _count: { members: memberCount } };
+  const { match, myTeam: existingTeam, memberCount } = await orNotFound(getContest(userId, crewId, matchId));
 
   // If team already submitted, show tabbed view with commentary
   if (existingTeam) {
@@ -32,8 +31,8 @@ export default async function MatchContestPage({
           team1={match.team1}
           team2={match.team2}
           existingTeam={existingTeam}
-          leagueId={leagueId}
-          membersCount={leagueCheck?._count.members || 2}
+          crewId={crewId}
+          membersCount={memberCount}
           captainId={existingTeam.captainId}
           viceCaptainId={existingTeam.viceCaptainId}
         />
@@ -41,7 +40,7 @@ export default async function MatchContestPage({
     );
   }
 
-  const allPlayers = await builderPlayers(userId, leagueId, matchId);
+  const allPlayers = await builderPlayers(userId, crewId, matchId);
 
   return (
     <div className="py-6 px-4 max-w-7xl mx-auto">
@@ -65,9 +64,9 @@ export default async function MatchContestPage({
       <TeamBuilderClient
         players={allPlayers}
         matchId={match.id}
-        leagueId={leagueId}
+        crewId={crewId}
         tossCompleted={match.tossCompleted}
-        membersCount={leagueCheck?._count.members || 2}
+        membersCount={memberCount}
         team1={match.team1}
         team2={match.team2}
       />

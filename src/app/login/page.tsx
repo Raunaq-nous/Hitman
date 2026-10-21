@@ -25,10 +25,12 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      setError("Invalid credentials");
+      setError(/too many/i.test(res.error) ? res.error : "Invalid credentials");
       setLoading(false);
     } else {
-      router.push("/dashboard");
+      // only same-site paths, never an external redirect
+      const next = new URLSearchParams(window.location.search).get("callbackUrl");
+      router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/crews");
       router.refresh();
     }
   };
@@ -52,8 +54,9 @@ export default function LoginPage() {
           )}
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label htmlFor="f-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
+              id="f-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -64,8 +67,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label htmlFor="f-password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
+              id="f-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

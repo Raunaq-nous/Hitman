@@ -30,7 +30,7 @@ export default function MatchContestTabs({
   team1,
   team2,
   existingTeam,
-  leagueId,
+  crewId,
   membersCount,
   captainId,
   viceCaptainId,
@@ -39,7 +39,7 @@ export default function MatchContestTabs({
   team1: string;
   team2: string;
   existingTeam: ExistingTeam;
-  leagueId: string;
+  crewId: string;
   membersCount: number;
   captainId: string;
   viceCaptainId: string;

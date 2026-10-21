@@ -1,4 +1,4 @@
-// Crew rules. Membership is checked here, so every page and API that goes through the service is protected.
+// Crew rules: private by default, joined by invite code or link. Membership is checked here, so every page and API that goes through the service is protected.
 import { randomInt } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { DomainError } from "@/domain/shared/types";
@@ -36,15 +36,61 @@ export async function memberIds(userId: string, crewId: string): Promise<string[
   return repo.listMemberIds(crewId);
 }
 
-export async function createCrew(userId: string, name: string): Promise<{ id: string }> {
+/** Retry on the (rare) invite-code collision. */
+async function withFreshCode<T>(fn: (code: string) => Promise<T>): Promise<T> {
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
-      return await repo.insertCrew(userId, name, newInviteCode());
+      return await fn(newInviteCode());
     } catch (e) {
       if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")) throw e;
     }
   }
   throw new DomainError("CONFLICT", "Couldn’t create a unique invite code. Try again.");
+}
+
+export async function createCrew(userId: string, name: string): Promise<{ id: string }> {
+  return withFreshCode((code) => repo.insertCrew(userId, name, code));
+}
+
+async function requireOwner(userId: string, crewId: string): Promise<{ id: string; ownerId: string }> {
+  const crew = await repo.findCrew(crewId);
+  if (!crew || !(await repo.findMembership(userId, crewId))) throw new DomainError("NOT_FOUND", "Crew not found.");
+  if (crew.ownerId !== userId) throw new DomainError("FORBIDDEN", "Only the crew owner can do that.");
+  return crew;
+}
+
+/** Leave a crew. The owner must hand over first, unless they're the last member (then the crew is deleted). */
+export async function leaveCrew(userId: string, crewId: string): Promise<{ deleted: boolean }> {
+  const crew = await repo.findCrew(crewId);
+  if (!crew || !(await repo.findMembership(userId, crewId))) throw new DomainError("NOT_FOUND", "Crew not found.");
+  if (crew.ownerId === userId) {
+    if ((await repo.countMembers(crewId)) > 1) throw new DomainError("CONFLICT", "Hand the crew to another member before you leave.");
+    await repo.deleteCrew(crewId);
+    return { deleted: true };
+  }
+  await repo.deleteMember(userId, crewId);
+  return { deleted: false };
+}
+
+/** Owner removes a member. */
+export async function removeMember(ownerId: string, crewId: string, memberId: string): Promise<void> {
+  await requireOwner(ownerId, crewId);
+  if (memberId === ownerId) throw new DomainError("INVALID", "Owners can’t remove themselves; hand the crew over first.");
+  if (!(await repo.findMembership(memberId, crewId))) throw new DomainError("NOT_FOUND", "That person isn’t in this crew.");
+  await repo.deleteMember(memberId, crewId);
+}
+
+/** Owner rotates the invite code; old links and codes stop working. */
+export async function rotateInviteCode(ownerId: string, crewId: string): Promise<{ inviteCode: string }> {
+  await requireOwner(ownerId, crewId);
+  return withFreshCode((code) => repo.setInviteCode(crewId, code));
+}
+
+/** Owner hands the crew to another member. */
+export async function transferOwnership(ownerId: string, crewId: string, newOwnerId: string): Promise<void> {
+  await requireOwner(ownerId, crewId);
+  if (!(await repo.findMembership(newOwnerId, crewId))) throw new DomainError("NOT_FOUND", "That person isn’t in this crew.");
+  await repo.setOwner(crewId, newOwnerId);
 }
 
 export async function joinCrew(userId: string, inviteCode: string): Promise<{ id: string; name: string }> {
@@ -57,4 +103,12 @@ export async function joinCrew(userId: string, inviteCode: string): Promise<{ id
     throw e;
   }
   return { id: crew.id, name: crew.name };
+}
+
+/** For invite links: join, or just open the crew if already a member (links can be followed twice). */
+export async function joinOrOpen(userId: string, inviteCode: string): Promise<{ id: string; joined: boolean }> {
+  const crew = await repo.findCrewByCode(inviteCode);
+  if (!crew) throw new DomainError("NOT_FOUND", "No crew has that invite code.");
+  if (await repo.findMembership(userId, crew.id)) return { id: crew.id, joined: false };
+  return { id: (await joinCrew(userId, inviteCode)).id, joined: true };
 }

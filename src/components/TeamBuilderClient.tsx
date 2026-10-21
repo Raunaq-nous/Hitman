@@ -49,7 +49,7 @@ const ROLE_REQUIREMENTS = {
 export default function TeamBuilderClient({
   players,
   matchId,
-  leagueId,
+  crewId,
   tossCompleted,
   membersCount,
   team1,
@@ -57,7 +57,7 @@ export default function TeamBuilderClient({
 }: {
   players: Player[];
   matchId: string;
-  leagueId: string;
+  crewId: string;
   tossCompleted: boolean;
   membersCount: number;
   team1: string;
@@ -137,7 +137,7 @@ export default function TeamBuilderClient({
       });
 
       if (res.ok) {
-        router.push(`/leagues/${leagueId}`);
+        router.push(`/crews/${crewId}`);
         router.refresh();
       } else {
         const data = await res.json();

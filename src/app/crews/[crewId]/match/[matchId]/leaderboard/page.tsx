@@ -3,10 +3,10 @@ import { contestEntries } from "@/domain/contests/service";
 import { Trophy, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default async function MatchLeaderboardPage({ params }: { params: Promise<{ leagueId: string; matchId: string }> }) {
-  const { leagueId, matchId } = await params;
+export default async function MatchLeaderboardPage({ params }: { params: Promise<{ crewId: string; matchId: string }> }) {
+  const { crewId, matchId } = await params;
   const userId = await pageUserId();
-  const { match, entries } = await orNotFound(contestEntries(userId, leagueId, matchId));
+  const { match, entries } = await orNotFound(contestEntries(userId, crewId, matchId));
   const teams = entries.map((e) => ({ ...e.team, user: e.user }));
 
   return (
@@ -14,7 +14,7 @@ export default async function MatchLeaderboardPage({ params }: { params: Promise
       <div className="flex justify-between items-center mb-8">
         <div>
           <div className="flex items-center space-x-2 mb-2">
-            <Link href={`/leagues/${leagueId}`} className="text-gray-400 hover:text-indigo-600">
+            <Link href={`/crews/${crewId}`} className="text-gray-400 hover:text-indigo-600">
               <ArrowLeft size={20} />
             </Link>
             <span className="text-sm font-semibold uppercase tracking-widest text-indigo-600">

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { Trophy } from "lucide-react";
 
@@ -26,7 +27,11 @@ export default function RegisterPage() {
       });
 
       if (res.ok) {
-        router.push("/login?registered=true");
+        // sign straight in and continue where the visitor was heading (e.g. an invite link)
+        await signIn("credentials", { email, password, redirect: false });
+        const next = new URLSearchParams(window.location.search).get("callbackUrl");
+        router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/crews");
+        router.refresh();
       } else {
         const data = await res.json();
         setError(data.message || "Failed to register");
@@ -57,8 +62,9 @@ export default function RegisterPage() {
           )}
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <label htmlFor="f-full-name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
             <input
+              id="f-full-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -69,8 +75,9 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label htmlFor="f-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
+              id="f-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -81,8 +88,9 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label htmlFor="f-password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
+              id="f-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

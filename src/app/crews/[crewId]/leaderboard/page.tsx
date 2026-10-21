@@ -4,20 +4,20 @@ import { crewStandings } from "@/domain/contests/service";
 import { Trophy, Medal, User } from "lucide-react";
 import Link from "next/link";
 
-export default async function LeagueLeaderboardPage({ params }: { params: Promise<{ leagueId: string }> }) {
-  const { leagueId } = await params;
+export default async function CrewStandingsPage({ params }: { params: Promise<{ crewId: string }> }) {
+  const { crewId } = await params;
   const userId = await pageUserId();
-  const league = await orNotFound(getCrewForMember(userId, leagueId));
-  const leaderboard = (await crewStandings(userId, leagueId)).map((s) => ({ userId: s.user.id, user: s.user, points: s.points }));
+  const crew = await orNotFound(getCrewForMember(userId, crewId));
+  const leaderboard = (await crewStandings(userId, crewId)).map((s) => ({ userId: s.user.id, user: s.user, points: s.points }));
 
   return (
     <div className="py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">League Leaderboard</h1>
-          <p className="text-gray-500 mt-1">{league.name} - Universal Rankings</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Crew standings</h1>
+          <p className="text-gray-500 mt-1">{crew.name} · fantasy points from completed matches</p>
         </div>
-        <Link href={`/leagues/${league.id}`} className="text-indigo-600 font-semibold hover:underline">
+        <Link href={`/crews/${crew.id}`} className="text-indigo-600 font-semibold hover:underline">
           Back to Lobby
         </Link>
       </div>

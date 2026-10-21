@@ -6,6 +6,14 @@ if (process.env.NEXTAUTH_URL !== undefined && process.env.NEXTAUTH_URL.trim() ==
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    // Leagues became crews (F-C-01).
+    return [
+      { source: "/leagues", destination: "/crews", permanent: true },
+      { source: "/leagues/:path*", destination: "/crews/:path*", permanent: true },
+      { source: "/dashboard", destination: "/crews", permanent: true },
+    ];
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders(process.env.NODE_ENV !== "production") }];
   },
