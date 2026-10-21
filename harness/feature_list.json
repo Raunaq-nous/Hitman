@@ -1160,8 +1160,8 @@
       "depends_on": [
         "F-F-03"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: /settings with Download my data (GET /api/me/export: JSON of account, preferences, memberships, owned crews, reports, blocks, teams, scoring events, analytics events; no password hash) and Delete my account (type DELETE; POST /api/me/delete hard-deletes in one transaction: owned crews pass to the longest-standing member or are deleted, memberships/reports/blocks/teams/scoring events/analytics removed). The scoring ledger stays append-only except inside that erasure transaction (migration *_erasure_exception, SET LOCAL app.allow_erasure). tests/unit/account.test.ts (3) + tests/e2e/account.spec.ts (download JSON, confirmation gate, sign-in fails after delete; API refuses without confirmation) -> pass; /settings in axe list; full gate PASS. Screenshots docs/evidence/F-T-02/settings-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-T-03",

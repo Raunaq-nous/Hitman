@@ -61,8 +61,8 @@ export default function Navbar(): React.JSX.Element {
             <ThemeToggle />
             {session ? (
               <>
-                <span className="nav-user">{session.user?.name}</span>
-                <button type="button" className="nav-btn" onClick={() => signOut({ callbackUrl: "/" })}>Sign out</button>
+                <Link href="/settings" className="nav-user">{session.user?.name}<span className="sr-only"> (settings)</span></Link>
+                <button type="button" className="nav-btn" onClick={async () => { await signOut({ redirect: false }); window.location.assign("/"); }}>Sign out</button>
               </>
             ) : (
               <>

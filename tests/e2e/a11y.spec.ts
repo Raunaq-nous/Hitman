@@ -4,6 +4,7 @@ import { seedTestMatch } from "./helpers/db";
 import { newUser, signInUi } from "./helpers/users";
 
 const PUBLIC = ["/", "/login", "/register", "/onboarding", "/commentary", "/design", "/crews/join/ZZZZZZ", "/roster", "/roster/opener", "/terms", "/privacy", "/attributions", "/ai"];
+const SIGNED_IN_EXTRA = ["/settings"];
 
 async function axe(page: Page): Promise<string[]> {
   // Next streams metadata: wait for the title to land after client-side navigation
@@ -29,6 +30,11 @@ test.describe("a11y: every route", () => {
       await signInUi(page, user);
       await expect(page).toHaveURL(/\/crews$/);
       expect(await axe(page), "/crews").toEqual([]);
+      for (const path of SIGNED_IN_EXTRA) {
+        await page.goto(path);
+        expect(await axe(page), path).toEqual([]);
+      }
+      await page.goto("/crews");
       await page.getByLabel("Crew name").fill(`Axe ${scheme}`);
       await page.getByRole("button", { name: "Create crew" }).click();
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Axe ${scheme}`);
