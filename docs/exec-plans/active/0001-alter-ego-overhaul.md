@@ -60,10 +60,17 @@ Features: F-Z-01, F-Z-02, F-Z-03
 | D-009 | kit | Self-hosted fonts | Builds need no network |
 | D-010 | 2026-10-21 | F-H-00 audit failed: the earlier fix downgraded lint errors to warnings; reverted to eslint-config-next defaults and fixed the 20 errors in code. `any` on legacy untyped payloads carries a justifying disable comment until F-F-03 replaces them with DTOs | Acceptance says fix errors, not relax rules |
 | D-011 | 2026-10-21 | `harness/verify.mjs` captures output and prints a summary plus the last 60 lines of the first failure (`--verbose` streams everything) | Owner asked for token-cheap gate output |
+| D-013 | 2026-10-21 | `db:up` uses docker compose when a Docker daemon answers, else embedded-postgres (pinned to Postgres 16, runs as a `postgres` user when invoked as root) | No Docker daemon in the cloud VM; matches CI's postgres:16 |
+| D-014 | 2026-10-21 | `db:seed` inserts nothing until ingest exists; legacy `scripts/seed*.ts` (hand-typed rosters, random playing XIs) are not wired to any npm script | No fabricated data |
+| D-015 | 2026-10-21 | Playwright pinned to 1.56.1 (playwright-core overridden for @axe-core/playwright) to match the VM's preinstalled Chromium; CI installs the same version | Tests run offline, no browser download |
 | D-012 | 2026-10-21 | Cloud session has no working `gh` login; CI status, PRs and merges go through the GitHub API (MCP) instead | Same effect, no interactive auth needed |
 
 ## Progress log
 <!-- newest first: date, feature, plan, result -->
+### 2026-10-21 — F-H-05..F-H-07: scripts, Vitest, Playwright
+- Plan: npm scripts + docker-compose + `scripts/db-up.mjs` (Docker, else embedded-postgres); initial Prisma migration; Vitest with coverage and legal-ball tests; Playwright smoke + axe on `/`.
+- Result: PASS. `node harness/verify.mjs` all six steps PASS; `node harness/init.mjs` exit 0.
+
 ### 2026-10-21 — Audit F-H-00..F-H-04
 - F-H-01, F-H-03, F-H-04 re-verified (8 Phase 0 commits on main, 0 handle/dev.db hits in `git log --all -p`, owner-authored). F-H-00 redone (D-010). verify.mjs quieted (D-011).
 

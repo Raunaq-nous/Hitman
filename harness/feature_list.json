@@ -90,8 +90,8 @@
       "depends_on": [
         "F-H-04"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: package.json scripts dev, build (prisma generate && next build, no migrate), start, lint, typecheck, test, test:e2e, db:up, db:migrate, db:seed, data:cricsheet (+db:local). docker-compose.yml db service (postgres:16) used by scripts/db-up.mjs, which falls back to embedded-postgres when no Docker daemon (this VM). node harness/init.mjs -> exit 0 (npm ci, db:up, db:migrate applied prisma/migrations/20261021000000_init, db:seed, init complete). node harness/verify.mjs --quick -> RESULT: PASS."
     },
     {
       "id": "F-H-06",
