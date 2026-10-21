@@ -351,8 +351,8 @@
       "depends_on": [
         "F-H-09"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/ui/tokens.css with DESIGN.md palette (exact hex) + semantic tokens, light and dark (prefers-color-scheme and data-theme); imported by globals.css; Tailwind black/red utilities remapped to ink-night/brick so no pure black or red renders. ESLint no-restricted-syntax bans raw hex literals in src/app, src/components, src/ui (message names the token fix); theme-color literals live in src/providers/themeColor.ts and are checked against tokens. tests/unit/ui/tokens.test.ts (6 tests: DESIGN hex, dark parity, WCAG AA contrast light+dark, theme-color sync, no pure black/red in src). npm run lint && npm test -- tokens -> pass. Screenshots: docs/evidence/F-U-01/{landing,login}-{390,1280}-{light,dark}.png"
     },
     {
       "id": "F-U-02",

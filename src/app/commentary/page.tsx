@@ -4,7 +4,7 @@ import LiveMatchCenter from "@/components/LiveMatchCenter";
 
 export default function CommentaryPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#111] to-[#0a0a0a] py-20 px-4">
+    <main className="min-h-screen bg-gradient-to-b from-[var(--ink-night)] via-[var(--surface-2)] to-[var(--ink-night)] py-20 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

@@ -1,17 +1,30 @@
 @import "tailwindcss";
+@import "../ui/tokens.css";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #f5f5f5;
-  --accent: #dc2626;
-  --accent-dim: rgba(220, 38, 38, 0.15);
+  --background: var(--ink-night);
+  --foreground: #F5F7FA;
+  --accent: var(--brick-500);
+  --accent-dim: color-mix(in srgb, var(--brick-500) 15%, transparent);
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --surface: #141414;
   --font-archivo: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 @theme inline {
+  /* No pure black or pure red: Tailwind's black and red utilities render as ink and brick. */
+  --color-black: var(--ink-night);
+  --color-red-50: var(--brick-100);
+  --color-red-100: var(--brick-100);
+  --color-red-200: var(--brick-300);
+  --color-red-300: var(--brick-300);
+  --color-red-400: var(--brick-400);
+  --color-red-500: var(--brick-500);
+  --color-red-600: var(--brick-600);
+  --color-red-700: var(--brick-700);
+  --color-red-800: var(--brick-700);
+  --color-red-900: var(--brick-900);
+  --color-red-950: var(--brick-900);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
@@ -47,16 +60,13 @@ body {
   background-position: center top;
 }
 
-.auth-input {
-  color: #f5f5f5 !important;
-}
 
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 30px color-mix(in srgb, var(--ink-night) 60%, transparent);
 }
 
 .neo-brutal {
