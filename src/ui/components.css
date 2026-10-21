@@ -176,3 +176,16 @@
 .legacy-dark .text-red-500,.legacy-dark .text-red-600{color:var(--brick-300)}
 .nav-links a.nav-btn{color:var(--bg);padding:.55rem .8rem}
 .nav-links a.nav-btn-ghost{color:var(--text)}
+
+/* Roster */
+.roster-switch{padding:1rem;display:grid;gap:.75rem}
+.roster-switch h2{margin:0;font:800 var(--step-1)/1.2 var(--font-display)}
+.roster-note{margin:0;color:var(--text-2);font-size:var(--step--1)}
+.roster-pick{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
+.roster-pick-opt{display:inline-flex;gap:.35rem;align-items:center;padding:.45rem .7rem;border:2px solid var(--line);border-radius:999px;cursor:pointer;font-weight:600}
+.roster-pick-opt:has(input:checked){border-color:var(--c)}
+.roster-voice{margin:0;padding:.8rem 1rem;border-left:4px solid var(--line);background:var(--surface-2);border-radius:var(--radius)}
+.roster-voice p{margin:.3rem 0}
+.roster-who{font-weight:800;display:flex;gap:.5rem;align-items:center}
+.roster-dl{display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem;margin:0}
+.roster-dl dt{color:var(--text-2)} .roster-dl dd{margin:0}

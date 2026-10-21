@@ -32,6 +32,7 @@ test.describe("onboarding", () => {
     await page.getByLabel("Email").fill(user.email);
     await page.getByLabel("Password").fill(user.password);
     await page.getByRole("button", { name: /sign in/i }).click();
+    await expect(page).toHaveURL(/\/crews$/);
     await page.goto("/onboarding");
     for (let i = 0; i < 2; i++) await page.getByRole("button", { name: "Next" }).click();
     await page.getByLabel("Tennis").check();

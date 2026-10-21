@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { seedTestMatch } from "./helpers/db";
 import { newUser, signInUi } from "./helpers/users";
 
-const PUBLIC = ["/", "/login", "/register", "/onboarding", "/commentary", "/design", "/crews/join/ZZZZZZ"];
+const PUBLIC = ["/", "/login", "/register", "/onboarding", "/commentary", "/design", "/crews/join/ZZZZZZ", "/roster", "/roster/opener"];
 
 async function axe(page: Page): Promise<string[]> {
   await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running" || a.effect?.getTiming().iterations === Infinity));
