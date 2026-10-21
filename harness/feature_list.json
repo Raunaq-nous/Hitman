@@ -259,8 +259,8 @@
       "depends_on": [
         "F-F-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: src/domain/sources (SourceClass priority table OFFICIAL_LIVE 100 > LICENSED_LIVE 90 > VERIFIED_DELAYED 70 > EDITORIAL_PROJECTION 30 > SIMULATION 0; choose() picks highest-priority fresh source, else newest factual as 'Stale · N min', else source pending; present() never labels SIMULATION/EDITORIAL_PROJECTION or anything with LIVE_CALLS=false as live). live-score route labels CricketData.org VERIFIED_DELAYED with receipt and dataLabel; ad-hoc stale fallback now goes through the policy. Removed unused simulation engine src/lib/matchEngine.ts and random playing-XI in /api/seed. tests/unit/sources/authority.test.ts (10 tests incl. 'simulated or projected data is never labelled live…', 'skips a stale high-priority source…', route test with stubbed fetch). npm test -- authority -> 10 passed."
     },
     {
       "id": "F-F-08",
