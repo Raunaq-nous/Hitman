@@ -7,6 +7,7 @@ NEXT PROMPT: Continue the loop with the next eligible feature (F-U-06 landing re
 
 ## Session log
 <!-- Append newest first: date (UTC), features touched, commits, verification results, blockers, NEXT PROMPT -->
+- 2026-10-21 (UTC) | pre-built engine maths awaiting data (not marked passing; deps fail): F-E-02 exact WP + leverage (src/engine/chaseWp.ts), F-E-03 swing, F-E-04 isotonic + gate (calibration.ts), F-E-06 grader/Brier, F-E-07 Read Rating, F-E-09 DR estimator; tests pass on synthetic distributions/data, engine coverage 100%. Remaining for each: run on Cricsheet-fitted outcomes (F-E-01) and fixtures.
 - 2026-10-21 (UTC) | F-U-01/02/04, F-A-01, F-D-01/02, F-E-10, F-L-08, F-C-01/04, F-G-01..03, F-K-07, F-U-03/05 + gardening | verify PASS | blockers unchanged | NEXT: F-U-06
 - 2026-10-21 (UTC) | F-H-05..07, F-H-09, F-F-01..09 + doc gardening | verify PASS each | BLOCKER: git push 403 (HUMAN_TODO) | NEXT: F-F-10
 - 2026-10-21 (UTC) | audit F-H-00..04 | F-H-00 redone (real lint fixes), others re-verified; verify.mjs quiet | verify --ci PASS | NEXT: F-H-05
