@@ -159,7 +159,7 @@ export async function POST(req: Request) {
           }
         });
 
-        // Add dummy playing 11
+        // Squad rows only; nobody is marked playing until the real XI is known
         const matchSquad = await prisma.player.findMany({
           where: { team: { in: [fixture.team1, fixture.team2] } }
         });
@@ -167,7 +167,7 @@ export async function POST(req: Request) {
         const playing11Data = matchSquad.map((p) => ({
           matchId: match.id,
           playerId: p.id,
-          isPlaying: Math.random() > 0.3 
+          isPlaying: false
         }));
 
         await prisma.matchPlayer.createMany({ data: playing11Data });
