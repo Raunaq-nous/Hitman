@@ -17,6 +17,8 @@ model User {
   /// onboarding preferences
   favouriteSports String[]      @default([])
   language        String        @default("en")
+  /// when the user confirmed they are 18 or over (required for the beta)
+  ageConfirmedAt  DateTime?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   fantasyTeams    FantasyTeam[]
