@@ -115,19 +115,19 @@ export const SCENARIOS: Scenario[] = [
 export const ROSTER: { key: PersonaKey; mentality: string; tool: string; lineage: string }[] = [
   { key: "opener", mentality: "Timing over force. Turn a start into something enormous.",
     tool: "Over Call: call the next over before it’s bowled, then see how the numbers read it.",
-    lineage: "Rohit Sharma, “Hitman”. Bengaluru, 2 November 2013: 209 off 158 balls with 16 sixes. A broadcast crew member called him the Hitman that day, and the commentary box made it stick." },
+    lineage: "Rohit Sharma. Bengaluru, 2 November 2013: 209 off 158 balls with 16 sixes." },
   { key: "closer", mentality: "Study the film until nothing surprises you, then want the last shot.",
     tool: "Film Room: every possession broken down, and a daily drill that keeps your streak alive.",
-    lineage: "Kobe Bryant, “Black Mamba”. Los Angeles, 22 January 2006: 81 points against Toronto in a single game." },
+    lineage: "Kobe Bryant. Los Angeles, 22 January 2006: 81 points against Toronto in a single game." },
   { key: "architect", mentality: "See the pass before it exists.",
     tool: "Blueprint: the shape of the game drawn as it happens, with what-if set pieces.",
-    lineage: "Andrea Pirlo, “L’Architetto”. Dortmund, 4 July 2006: the no-look pass in the 119th minute that sent Italy to the World Cup final." },
+    lineage: "Andrea Pirlo. Dortmund, 4 July 2006: the no-look pass in the 119th minute that sent Italy to the World Cup final." },
   { key: "professor", mentality: "Take only the risk the race demands.",
     tool: "Pit Wall: make the strategy call, then watch the simulation race it out.",
-    lineage: "Alain Prost, “The Professor”. Adelaide, 1986: won the race and the championship by two points after his main rival’s tyre exploded." },
+    lineage: "Alain Prost. Adelaide, 1986: won the race and the championship by two points after his main rival’s tyre exploded." },
   { key: "iceman", mentality: "Nothing changes on the big points.",
     tool: "Pressure Index: who holds when the point matters most.",
-    lineage: "Björn Borg, “Ice-Borg”. Wimbledon, 5 July 1980: lost a fourth-set tiebreak 16–18, then won the fifth 8–6 for a fifth straight title." },
+    lineage: "Björn Borg. Wimbledon, 5 July 1980: lost a fourth-set tiebreak 16–18, then won the fifth 8–6 for a fifth straight title." },
 ];
 
 export const PRINCIPLES = [

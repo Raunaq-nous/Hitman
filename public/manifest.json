@@ -1,7 +1,7 @@
 {
   "name": "ALTER EGO",
   "short_name": "ALTER EGO",
-  "description": "A sports desk and a game in one: one brief across cricket, football, basketball, tennis and F1, and live calls at the moments that decide matches.",
+  "description": "Practise sporting judgement: make the call at moments from real matches, get graded on the decision, not the luck. Free, no money, ever.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F5F7FA",
