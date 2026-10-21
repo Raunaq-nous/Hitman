@@ -25,7 +25,8 @@ function allowedNumbers(facts: Fact[]): number[] {
 
 /** A quoted number matches a fact when equal at the precision it was written (rounding tolerance). */
 function matches(quoted: string, allowed: number[]): boolean {
-  const decimals = quoted.includes(".") ? quoted.split(".")[1].length : 0;
+  const dot = quoted.indexOf(".");
+  const decimals = dot < 0 ? 0 : quoted.length - dot - 1;
   const tol = 0.5 * 10 ** -decimals + 1e-9;
   const n = Number(quoted);
   return allowed.some((v) => Math.abs(v - n) <= tol);
