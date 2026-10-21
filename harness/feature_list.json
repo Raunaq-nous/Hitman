@@ -213,8 +213,8 @@
       "depends_on": [
         "F-F-03"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: crews/contests services check membership on every read and write (requireMembership/memberIds); non-members and unknown crews both get NOT_FOUND (404), pages render notFound() via providers/page.orNotFound, APIs map DomainError to status via providers/http.route. tests/unit/authz.test.ts (DB-backed, 7 tests): 'non-members get 404 on every crew and contest read', 'route handlers require a session and scope results to the caller', 'pages turn a non-member's request into a 404'. npm test -- authz -> 7 passed."
     },
     {
       "id": "F-F-05",
