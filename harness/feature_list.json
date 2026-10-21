@@ -1188,8 +1188,8 @@
       "depends_on": [
         "F-R-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: persona speech blocks carry data-persona-voice and always render the 'AI analyst' label (switchboard, persona pages); PersonaChip always labels. tests/e2e/ai-labels.spec.ts scans /, /roster, all five /roster/[persona] pages and /design: every [data-persona-voice] block, persona chip and speaker line has the AI label, and every switchboard voice is labelled -> passed (npm run test:e2e -- ai-label); tests/unit/ui/ai-label.test.tsx (chips; every voice-marking component renders the label) -> pass."
     },
     {
       "id": "F-T-05",
