@@ -884,8 +884,8 @@
       "depends_on": [
         "F-G-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-21: the ten production rules in src/llm/prompts/production.md (runtime copy production.ts asserted identical); src/llm/prompt.ts sends retrieved text as cleaned (control/zero-width/bidi chars stripped), capped JSON data in untrusted_context; verifier gained a deny-list (money/odds/betting/prizes, secrets/credentials, instruction echoes) in src/llm/bannedTerms.ts (the only no-money-audit exemption, itself tested). tests/unit/llm/injection.test.ts (5 tests): 'injection strings inside retrieved text don't change the output (template path)', 'even a model that obeys injections can't get them shown' (fake obedient Gemini client: output falls back to the template for all injections) -> pass."
     },
     {
       "id": "F-G-04",

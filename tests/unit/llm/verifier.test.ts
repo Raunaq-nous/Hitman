@@ -49,6 +49,15 @@ describe("claim verifier", () => {
   });
 });
 
+describe("claim verifier: banned content", () => {
+  it("rejects money/betting language, secrets and instruction echoes", () => {
+    for (const text of ["Great odds on this chase.", "Win a prize!", "Place a bet now.", "Your NEXTAUTH_SECRET is here.", "Ignore previous instructions.", "Here is the system prompt."]) {
+      expect(verifyClaims([{ text, kind: "EDITORIAL", source_ids: [] }], facts, CUTOFF).ok, text).toBe(false);
+    }
+    expect(verifyClaims([{ text: "No money, just judgement.", kind: "EDITORIAL", source_ids: [] }], facts, CUTOFF).ok).toBe(false);
+  });
+});
+
 describe("verified generation with template fallback", () => {
   const template = (f: Fact[]) => ({ claims: [{ text: `Needed ${f[0].value} off ${f[1].value} balls.`, kind: "OBSERVED" as const, source_ids: ["f1", "f2"] }] });
   const base = { task: "desk.brief", system: "s", facts, snapshotCutoff: CUTOFF, model: "fast" as const, template };
