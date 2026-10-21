@@ -3,6 +3,7 @@
 The agent keeps this list current and never blocks on it. Each item has a safe fallback in code.
 
 - [ ] **GitHub write access for the agent session**: pushes to `overhaul` and GitHub API writes return 403 ("Resource not accessible by integration"). Reconnect GitHub at https://claude.ai/connect-github and make sure the Claude GitHub App is installed on `Raunaq-nous/Hitman` with contents, pull requests and workflows write access. Until then commits stay local to the agent's VM.
+- [ ] **Network access for data sources**: this cloud environment's network policy denies `cricsheet.org` (and `api.openf1.org`). Add them under Allowed domains (environment settings → Network access; https://code.claude.com/docs/en/cloud-environments#network-access), or run `npm run data:cricsheet` on a machine with internet and commit the fixture subset. Until then Cricsheet ingest, the fitted engine, calibration and golden moments (F-D-03 onward) cannot be built without fabricating data, which the rules forbid.
 - [ ] Rotate `NEXTAUTH_SECRET` in Vercel (Production and Preview) and set `ADMIN_EMAILS` and `CRON_SECRET`.
 - [ ] Check `NEXTAUTH_URL` in Vercel: either unset or the full site URL (an empty value breaks builds).
 - [ ] Provision or confirm the production PostgreSQL database and set `DATABASE_URL`; run `npx prisma migrate deploy` deliberately after reviewing migrations (never automatic in Vercel builds).
