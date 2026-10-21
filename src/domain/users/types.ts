@@ -12,3 +12,14 @@ export function toPublicUser(u: { id: string; name: string; avatar?: string | nu
 
 /** Fields repos may select for a public user. Never add `password` or `email`. */
 export const PUBLIC_USER_SELECT = { id: true, name: true, avatar: true, xp: true } as const;
+
+import { z } from "zod";
+import { SPORTS } from "@/domain/facts/types";
+
+export const LANGUAGES = ["en", "hi"] as const;
+export type Language = (typeof LANGUAGES)[number];
+export const preferencesInput = z.object({
+  sports: z.array(z.enum(SPORTS)).max(5).transform((s) => [...new Set(s)]),
+  language: z.enum(LANGUAGES),
+});
+export type Preferences = z.infer<typeof preferencesInput>;

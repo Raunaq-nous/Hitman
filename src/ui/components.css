@@ -110,3 +110,25 @@
 .crew-menu-body{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding-top:.4rem}
 .crew-menu select{font:inherit;margin-left:.3rem;padding:.25rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);color:var(--text)}
 .crew-members li{flex-wrap:wrap}
+
+/* Pictogram Onboarding */
+.onb{max-width:34rem;margin:0 auto;padding:2rem 1rem 3rem;display:grid;gap:1rem;background:var(--bg);color:var(--text);border-radius:var(--radius-lg);font-family:var(--font-text)}
+.onb h1{margin:0;font:800 var(--step-3)/1.05 var(--font-display);font-stretch:72%;outline:none}
+.onb-body{margin:0;color:var(--text-2);font-size:var(--step-0)}
+.onb-progress{display:flex;gap:.4rem;margin:0}
+.onb-progress span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.onb-progress span[data-on]{background:var(--text)}
+.onb-pictos{display:flex;gap:1rem;color:var(--text)}
+.onb-picto{width:4.5rem;height:4.5rem}
+.onb-choices{display:grid;gap:1rem}
+.onb-choices fieldset{border:0;padding:0;margin:0;display:grid;gap:.5rem}
+.onb-choices legend{font-weight:700;margin-bottom:.4rem}
+.onb-sports{display:grid;grid-template-columns:repeat(auto-fill,minmax(8.5rem,1fr));gap:.5rem}
+.onb-sport,.onb-lang{display:flex;align-items:center;gap:.5rem;padding:.6rem .7rem;border:2px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);cursor:pointer}
+.onb-sport:has(input:checked),.onb-lang:has(input:checked){border-color:var(--text)}
+.onb-sport-picto{width:1.8rem;height:1.8rem;flex:none}
+.onb-nav{display:flex;gap:.5rem;justify-content:flex-end}
+.onb button{font:800 var(--step-0)/1 var(--font-display);padding:.8rem 1.2rem;border-radius:var(--radius-lg);border:2px solid var(--text);background:var(--text);color:var(--bg);cursor:pointer}
+.onb button.onb-back{background:transparent;color:var(--text)}
+.onb button:disabled{opacity:.5;cursor:not-allowed}
+.onb :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
