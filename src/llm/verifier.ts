@@ -1,4 +1,5 @@
 // Claim verifier: gates every generated item. Pure and deterministic.
+import { BANNED } from "./bannedTerms";
 import type { Claim, Fact } from "./contract";
 
 export interface Rejection { claim: number; reason: string }
@@ -51,6 +52,7 @@ export function verifyClaims(claims: Claim[], facts: Fact[], snapshotCutoff: str
     for (const m of c.text.matchAll(ISO_DATE)) if (Date.parse(m[0]) > cutoff) reject(`mentions ${m[0]}, after SNAPSHOT_CUTOFF`);
     const text = c.text.replace(ISO_DATE, " ");
     for (const m of text.matchAll(YEAR)) if (Number(m[0]) > cutoffYear) reject(`mentions ${m[0]}, after SNAPSHOT_CUTOFF`);
+    for (const b of BANNED) if (b.re.test(c.text)) reject(b.why);
     const allowed = allowedNumbers(cited);
     for (const m of text.matchAll(NUMBER)) if (!matches(m[0], allowed)) reject(`number ${m[0]} is not in the referenced facts`);
   });

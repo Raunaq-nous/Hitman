@@ -12,8 +12,16 @@ const walk = (d: string): string[] => readdirSync(d).flatMap((n) => {
 
 describe("no-money audit", () => {
   it("source, schema, config and public assets contain no payment, QR, UPI, wallet, entry-fee or prize language", () => {
-    const hits = ROOTS.flatMap(walk).flatMap((f) => findMoneyTerms(f, readFileSync(f, "utf8")));
+    // deny-lists (files whose first line says so) name the terms in order to reject them
+    const hits = ROOTS.flatMap(walk).map((f) => [f, readFileSync(f, "utf8")] as const)
+      .filter(([, text]) => !text.split("\n", 1)[0].includes("no-money-audit: deny-list"))
+      .flatMap(([f, text]) => findMoneyTerms(f, text));
     expect(hits.map((h) => `${h.where}: "${h.term}" in …${h.context}…`)).toEqual([]);
+  });
+
+  it("only the verifier's deny-list is exempt", () => {
+    const exempt = ROOTS.flatMap(walk).filter((f) => readFileSync(f, "utf8").split("\n", 1)[0].includes("no-money-audit: deny-list"));
+    expect(exempt).toEqual(["src/llm/bannedTerms.ts"]);
   });
 
   it("the schema has no fee, prize, wallet or payment fields", () => {
