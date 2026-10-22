@@ -899,8 +899,8 @@
         "F-D-05",
         "F-G-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/llm/retrieval.ts retrieve(query, docs, {observedCutoff, canUse, k}): drops documents observed after the cutoff and sources without rights before scoring (IDF-weighted lexical, deterministic ties); buildModelInput also drops facts and retrieved text observed after SNAPSHOT_CUTOFF. npm test -- retrieval 4/4 (post-cutoff result of the 2017 eliminator never retrieved before the cutoff, found after it; unlicensed source dropped; model input filtered)."
     },
     {
       "id": "F-K-01",

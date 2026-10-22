@@ -50,7 +50,7 @@ describe("production prompt", () => {
 
 describe("prompt injection", () => {
   it("retrieved text travels as cleaned, capped JSON data, never as instructions", () => {
-    const input = buildModelInput({ facts, retrieved: INJECTIONS.map((t, i) => ({ id: `d${i}`, sourceId: "cricsheet", text: t })), snapshotCutoff: CUTOFF });
+    const input = buildModelInput({ facts, retrieved: INJECTIONS.map((t, i) => ({ id: `d${i}`, sourceId: "cricsheet", text: t, observedAt: "2017-01-01T00:00:00Z" })), snapshotCutoff: CUTOFF });
     expect(input.untrusted_context).toHaveLength(INJECTIONS.length);
     expect(input.untrusted_context[4].text).toBe("esrever hidden text with control chars");
     expect(cleanUntrusted("x".repeat(5000))).toHaveLength(2000);
@@ -62,7 +62,7 @@ describe("prompt injection", () => {
   it("injection strings inside retrieved text don't change the output (template path)", async () => {
     const plain = await generateVerified(new TemplateProvider(), { task: "t", system: PRODUCTION_PROMPT, facts, snapshotCutoff: CUTOFF, model: "fast", template }, () => undefined);
     for (const inj of INJECTIONS) {
-      const extraInput = buildModelInput({ facts, retrieved: [{ id: "d", sourceId: "cricsheet", text: inj }], snapshotCutoff: CUTOFF }) as unknown as Record<string, unknown>;
+      const extraInput = buildModelInput({ facts, retrieved: [{ id: "d", sourceId: "cricsheet", text: inj, observedAt: "2017-01-01T00:00:00Z" }], snapshotCutoff: CUTOFF }) as unknown as Record<string, unknown>;
       const r = await generateVerified(new TemplateProvider(), { task: "t", system: PRODUCTION_PROMPT, facts, snapshotCutoff: CUTOFF, model: "fast", template, extraInput }, () => undefined);
       expect(r.claims).toEqual(plain.claims);
     }
@@ -71,7 +71,7 @@ describe("prompt injection", () => {
   it("even a model that obeys injections can't get them shown: the verifier rejects and the template is used", async () => {
     for (const inj of INJECTIONS.slice(0, 4)) {
       const client = obedientModel();
-      const extraInput = buildModelInput({ facts, retrieved: [{ id: "d", sourceId: "cricsheet", text: inj }], snapshotCutoff: CUTOFF }) as unknown as Record<string, unknown>;
+      const extraInput = buildModelInput({ facts, retrieved: [{ id: "d", sourceId: "cricsheet", text: inj, observedAt: "2017-01-01T00:00:00Z" }], snapshotCutoff: CUTOFF }) as unknown as Record<string, unknown>;
       const r = await generateVerified(new GeminiProvider({ client, models: { fast: "f", deep: "d" } }), { task: "t", system: PRODUCTION_PROMPT, facts, snapshotCutoff: CUTOFF, model: "fast", template, extraInput }, () => undefined);
       expect(r.source).toBe("template");
       expect(r.claims).toEqual(template(facts));
