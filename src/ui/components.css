@@ -148,7 +148,7 @@
 .nav-mark{display:inline-flex;gap:2px}
 .nav-mark i{width:4px;height:18px;border-radius:1px;background:var(--opener)}
 .nav-mark i:nth-child(2){background:var(--closer)} .nav-mark i:nth-child(3){background:var(--architect)} .nav-mark i:nth-child(4){background:var(--professor)} .nav-mark i:nth-child(5){background:var(--iceman)}
-.nav-menu-btn,.nav-theme,.nav-btn{font:700 var(--step--1)/1 var(--font-text);padding:.55rem .8rem;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;text-decoration:none;display:inline-block}
+.nav-menu-btn,.nav-theme,.nav-lang,.nav-btn{font:700 var(--step--1)/1 var(--font-text);padding:.55rem .8rem;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;text-decoration:none;display:inline-block}
 .nav-btn{background:var(--text);color:var(--bg);border-color:var(--text)}
 .nav-btn-ghost{background:transparent;color:var(--text);border-color:var(--line)}
 .nav-links{display:none;width:100%;gap:.75rem;flex-direction:column}
@@ -200,3 +200,10 @@
 .shell-foot nav{display:flex;flex-wrap:wrap;gap:1rem}
 .shell-foot a{color:var(--text)}
 .shell-foot p{margin:0}
+
+/* split-flap language toggle: the new letters fall into place like a departures board */
+.nav-lang{min-width:3rem;text-align:center;perspective:200px}
+.nav-lang:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.flap{display:inline-block;animation:flap-in .28s ease-out}
+@keyframes flap-in{from{transform:rotateX(-90deg);opacity:.2}to{transform:rotateX(0);opacity:1}}
+@media (prefers-reduced-motion:reduce){.flap{animation:none}}

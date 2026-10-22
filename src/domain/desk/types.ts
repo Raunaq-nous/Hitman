@@ -10,12 +10,13 @@ export interface DeskItem {
   season: string;
   /** the biggest |ΔWP| over six legal balls; null when the sport has no WP model (reason says why) */
   swing: { value: number; from: number; to: number; team: string; receipt: Receipt; model: string } | null;
-  swingReason: string | null;
+  /** why there is no swing: "rain" (revised target or no chase) or "no-model" (no WP model for the sport) */
+  swingReason: "rain" | "no-model" | null;
   stories: (Story & { receipt: Receipt })[];
   attribution: string;
 }
 
-export interface DeskPending { sport: SportSlug; reason: string }
+export interface DeskPending { sport: SportSlug; reason: string; /** set when a rights check refused the source */ refused?: boolean }
 
 export interface DeskBrief { items: DeskItem[]; pending: DeskPending[] }
 

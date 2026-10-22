@@ -4,14 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
+import { t } from "@/i18n";
+import { LangToggle, useLang } from "./LangToggle";
 
 const LINKS = [
-  { href: "/crews", label: "Crews", auth: true },
-  { href: "/desk", label: "Desk", auth: false },
-  { href: "/roster", label: "Roster", auth: false },
-  { href: "/commentary", label: "Scores", auth: false },
-  { href: "/onboarding", label: "How it works", auth: false },
-];
+  { href: "/crews", label: "nav.crews", auth: true },
+  { href: "/desk", label: "nav.desk", auth: false },
+  { href: "/roster", label: "nav.roster", auth: false },
+  { href: "/commentary", label: "nav.scores", auth: false },
+  { href: "/onboarding", label: "nav.how", auth: false },
+] as const;
 
 type Theme = "light" | "dark" | "system";
 
@@ -41,34 +43,36 @@ export default function Navbar(): React.JSX.Element {
   const open = openOn === pathname;
   const setOpen = (v: boolean): void => setOpenOn(v ? pathname : null);
   const links = LINKS.filter((l) => !l.auth || session);
+  const lang = useLang();
   return (
     <header className="appnav">
-      <a className="skip-link" href="#main">Skip to content</a>
+      <a className="skip-link" href="#main">{t(lang, "nav.skip")}</a>
       <div className="nav-bar">
         <Link href="/" className="nav-brand" aria-label="ALTER EGO home">
           <span className="nav-mark" aria-hidden="true"><i /><i /><i /><i /><i /></span>
           ALTER EGO
         </Link>
         <button type="button" className="nav-menu-btn" aria-expanded={open} aria-controls="nav-links" onClick={() => setOpen(!open)}>
-          Menu
+          {t(lang, "nav.menu")}
         </button>
         <nav id="nav-links" className="nav-links" data-open={open ? "" : undefined} aria-label="Main">
           <ul>
             {links.map((l) => (
-              <li key={l.href}><Link href={l.href} aria-current={pathname === l.href || pathname.startsWith(`${l.href}/`) ? "page" : undefined}>{l.label}</Link></li>
+              <li key={l.href}><Link href={l.href} aria-current={pathname === l.href || pathname.startsWith(`${l.href}/`) ? "page" : undefined}>{t(lang, l.label)}</Link></li>
             ))}
           </ul>
           <div className="nav-account">
+            <LangToggle />
             <ThemeToggle />
             {session ? (
               <>
                 <Link href="/settings" className="nav-user">{session.user?.name}<span className="sr-only"> (settings)</span></Link>
-                <button type="button" className="nav-btn" onClick={async () => { await signOut({ redirect: false }); window.location.assign("/"); }}>Sign out</button>
+                <button type="button" className="nav-btn" onClick={async () => { await signOut({ redirect: false }); window.location.assign("/"); }}>{t(lang, "nav.signout")}</button>
               </>
             ) : (
               <>
-                <Link href="/login" className="nav-btn nav-btn-ghost">Sign in</Link>
-                <Link href="/register" className="nav-btn">Join free</Link>
+                <Link href="/login" className="nav-btn nav-btn-ghost">{t(lang, "nav.signin")}</Link>
+                <Link href="/register" className="nav-btn">{t(lang, "nav.join")}</Link>
               </>
             )}
           </div>

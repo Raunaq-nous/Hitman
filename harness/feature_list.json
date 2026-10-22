@@ -958,8 +958,8 @@
       "depends_on": [
         "F-K-03"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/i18n (en/hi messages, t()), Hindi story titles (src/domain/stories/config.ts TITLES), Hindi depth templates (src/domain/desk/service.ts) verified with the same numbers and source ids as English; split-flap EN ⇄ हि toggle in the nav (src/components/LangToggle.tsx, reduced-motion aware) persists to the ae_lang cookie and the account (POST /api/me/language); /desk prerendered per language (/desk/en, /desk/hi) and src/proxy.ts serves the reader's language. Scope: Desk + navigation (D-024, TD-009). npm run test:e2e -- i18n passes (toggle → Hindi heading, nav, swing, depth text, receipt labels; persists across reload; axe clean; back to English); unit i18n + Hindi depth tests pass; full verify PASS."
     },
     {
       "id": "F-K-05",

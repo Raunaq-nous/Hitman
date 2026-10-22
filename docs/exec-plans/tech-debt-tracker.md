@@ -9,3 +9,4 @@
 | TD-006 | Football and F1 have no win-probability model, so the Desk shows "Swing: not modelled" for them and ranks them after cricket (D-023) | Cross-sport ranking is cricket-first | Add a WP model per sport before ranking them by swing | Open |
 | TD-007 | OpenF1 has no pit records for session 7953 (404, recorded as missing in `data/manifest.json`) | Pit-window demo (Professor) has no pit data in the committed sample | Pick a session with pit records via a new `data/requests/` file | Open |
 | TD-008 | `/api/health` described in `docs/RELIABILITY.md` does not exist yet | No health check for hosting | Add the route with DB connectivity and build version | Open |
+| TD-009 | Hindi covers only the Desk and navigation (D-024) | Other screens (Crews, Roster, onboarding copy, legal) are English-only | Move their strings into `src/i18n` with Hindi messages | Open |

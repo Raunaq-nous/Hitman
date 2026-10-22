@@ -53,3 +53,18 @@ describe("depth switch (depth)", () => {
     expect(bad.claims).toEqual(depthTemplate("tactical", top)(facts));
   });
 });
+
+describe("Hindi depth templates (depth)", () => {
+  it("every item × depth in Hindi passes the verifier, quoting the same numbers as English", () => {
+    for (const it of items) for (const d of DEPTHS) {
+      const facts = itemFacts(it, "hi");
+      const hi = depthTemplate(d, it, "hi")(facts);
+      expect(verifyClaims(hi.claims, facts, snapshotOf(it)), `${it.id} ${d}`).toEqual({ ok: true, rejections: [] });
+      const nums = (c: Claims): string[] => c.claims.flatMap((x) => x.text.match(/\d+(\.\d+)?/g) ?? []).sort();
+      expect(nums(hi)).toEqual(nums(depthTemplate(d, it, "en")(itemFacts(it, "en"))));
+      expect(hi.claims.map((c) => c.source_ids)).toEqual(depthTemplate(d, it, "en")(itemFacts(it, "en")).claims.map((c) => c.source_ids));
+    }
+    const top = items[0];
+    expect(depthTemplate("tactical", top, "hi")(itemFacts(top, "hi")).claims[0].text).toMatch(/की जीत की संभावना छह गेंदों में \d+% से \d+% हुई/);
+  });
+});
