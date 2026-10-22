@@ -487,8 +487,8 @@
       "depends_on": [
         "F-D-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/adapters/index.ts: SourceAdapter interface + registry for every sport — cricket (Cricsheet), F1 (OpenF1 historical, prototype-only policy), football (StatsBomb open data); basketball and tennis are honest source-pending entries. Each adapter calls assertRight(source,'store') before parsing (F1 refused when PROTOTYPE_DATA=false). npm test -- adapters 13/13 on courier-recorded fixtures (OpenF1 Bahrain 2023 race 1058 laps, null lap times kept null; StatsBomb 7525 Russia 5–0 Saudi Arabia: 20 shots, 5 goals); no network in tests."
     },
     {
       "id": "F-D-07",
