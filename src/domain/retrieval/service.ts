@@ -1,7 +1,6 @@
 // Retrieval guardrails: only documents whose source allows embedding may be indexed or returned.
 import { canUse } from "@/providers/rights";
-import { retrieve } from "@/llm/retrieval";
-import type { RetrievedText } from "@/llm/prompt";
+import { retrieve, type RetrievedText } from "@/providers/llm";
 import type { RetrievalDoc } from "./types";
 
 export function embeddable(docs: RetrievalDoc[]): RetrievalDoc[] {

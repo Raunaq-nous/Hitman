@@ -52,3 +52,6 @@ export async function generateClaims(req: import("@/llm/verified").VerifiedReque
   return result;
 }
 export { verifyClaims } from "@/llm/verifier";
+
+export { retrieve } from "@/llm/retrieval";
+export type { RetrievedText } from "@/llm/prompt";
