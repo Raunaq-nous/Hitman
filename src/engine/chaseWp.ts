@@ -7,8 +7,12 @@ export type OutcomeDist = Record<Outcome, number>;
 
 export interface ChaseState { b: number; w: number; r: number }
 
-/** Per-ball outcome distribution for a state (extras folded into runs, run-outs counted as wickets). */
-export type OutcomeModel = (s: ChaseState) => OutcomeDist;
+/**
+ * Per-ball outcome distribution for a state (extras folded into runs, run-outs counted as wickets), or several
+ * playing styles open to the batting side: the chaser plays the style with the highest win probability. Offering a
+ * side every style of sides with fewer wickets in hand ("free disposal") keeps WP monotonic in wickets.
+ */
+export type OutcomeModel = (s: ChaseState) => OutcomeDist | readonly OutcomeDist[];
 
 export function next(s: ChaseState, o: Outcome): ChaseState {
   return o === "W" ? { b: s.b - 1, w: s.w - 1, r: s.r } : { b: s.b - 1, w: s.w, r: s.r - o };
@@ -35,21 +39,20 @@ export interface ChaseModel {
   wp(s: ChaseState): number;
   /** Std dev of next-ball WP: how much the next ball can move the match. */
   leverage(s: ChaseState): number;
+  /** The distribution the chaser plays at a non-terminal state (the best of the styles offered). */
+  played(s: ChaseState): OutcomeDist;
 }
 
 export function createChaseModel(model: OutcomeModel): ChaseModel {
   const memo = new Map<number, number>();
-  const distMemo = new Map<number, OutcomeDist>();
+  const chosen = new Map<number, OutcomeDist>();
   const key = (s: ChaseState): number => (s.b * 16 + s.w) * 1024 + s.r;
-  const dist = (s: ChaseState): OutcomeDist => {
-    const k = key(s);
-    let d = distMemo.get(k);
-    if (!d) {
-      d = model(s);
-      checkDist(d);
-      distMemo.set(k, d);
-    }
-    return d;
+  const styles = (s: ChaseState): readonly OutcomeDist[] => {
+    const m = model(s);
+    const list = Array.isArray(m) ? m : [m as OutcomeDist];
+    if (list.length === 0) throw new RangeError("the outcome model offered no distribution");
+    list.forEach(checkDist);
+    return list;
   };
   const wp = (s: ChaseState): number => {
     const t = terminal(s);
@@ -57,17 +60,26 @@ export function createChaseModel(model: OutcomeModel): ChaseModel {
     const k = key(s);
     const hit = memo.get(k);
     if (hit !== undefined) return hit;
-    const d = dist(s);
-    let v = 0;
-    for (const o of OUTCOMES) if (d[o] > 0) v += d[o] * wp(next(s, o));
-    memo.set(k, v);
-    return v;
+    let best = -1;
+    for (const d of styles(s)) {
+      let v = 0;
+      for (const o of OUTCOMES) if (d[o] > 0) v += d[o] * wp(next(s, o));
+      if (v > best) { best = v; chosen.set(k, d); }
+    }
+    memo.set(k, best);
+    return best;
   };
+  const dist = (s: ChaseState): OutcomeDist => { wp(s); return chosen.get(key(s)) as OutcomeDist; };
   const validate = (s: ChaseState): void => {
     if (![s.b, s.w, s.r].every(Number.isInteger) || s.b < 0 || s.b > 600 || s.w < 0 || s.w > 10 || s.r > 1000) throw new RangeError(`invalid chase state ${JSON.stringify(s)}`);
   };
   return {
     wp: (s) => { validate(s); return wp(s); },
+    played: (s) => {
+      validate(s);
+      if (terminal(s) !== null) throw new RangeError(`no ball is played at terminal state ${JSON.stringify(s)}`);
+      return dist(s);
+    },
     leverage: (s) => {
       validate(s);
       if (terminal(s) !== null) return 0;

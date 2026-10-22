@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
 import { OUTCOMES } from "@/engine/chaseWp";
-import { bucketKey, chaseSamples, fitOutcomes, predictOutcome, type OutcomeArtifact, type Sample } from "@/engine/outcomeModel";
+import { bucketKey, chaseSamples, fitOutcomes, predictOutcome, predictStyles, type OutcomeArtifact, type Sample } from "@/engine/outcomeModel";
 import { loadChaseSamples } from "../../../scripts/fit-outcomes";
 
 const file = JSON.parse(readFileSync("data/models/outcomes-v1.json", "utf8")) as OutcomeArtifact & { hash: string; source: string };
@@ -65,6 +65,8 @@ describe("per-ball outcome model (outcomes)", () => {
       { matchId: "t", year: 2020, innings: 2, runsBatter: 6, extras: 1, extraType: "byes", wicket: false, target: 10 },
     ]);
     expect(s.map((x) => [x.state.r, x.outcome])).toEqual([[9, 2], [6, "W"], [6, 6]]);
+    expect(predictStyles(file, { b: 30, w: 7, r: 40 }, 180)).toEqual([7, 2, 4, 6].map((w) => predictOutcome(file, { b: 30, w, r: 40 }, 180)));
+    expect(predictStyles(file, { b: 30, w: 1, r: 40 }, 180)).toHaveLength(1);
     expect(chaseSamples([{ matchId: "t", year: 2020, innings: 1, runsBatter: 1, extras: 0, extraType: null, wicket: false, target: null }])).toEqual([]);
     expect(bucketKey({ b: 120, w: 10, r: 200 }, 200)).toBe("3:5:4:2");
     expect(s.every((x) => x.target === 10)).toBe(true);
