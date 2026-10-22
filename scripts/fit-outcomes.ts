@@ -30,6 +30,7 @@ export function loadChaseSamples(dir = "data/derived") {
   // chases over fewer than 20 overs (a shortened match without a recorded method) don't fit the 120-ball model
   for (const b of balls) if (b.innings === "2" && b.target_overs && Number(b.target_overs) < 20) excluded.add(b.match_id);
   const winner = new Map(matches.map((m) => [m.match_id, m.winner]));
+  const dateOf = new Map(matches.map((m) => [m.match_id, m.date]));
   const chaser = new Map<string, string>();
   const byMatch = new Map<string, ChaseBall[]>();
   for (const b of balls) {
@@ -40,7 +41,7 @@ export function loadChaseSamples(dir = "data/derived") {
     byMatch.set(b.match_id, list);
   }
   // each sample also carries whether the chasing side went on to win (for calibration)
-  return [...byMatch.entries()].flatMap(([id, m]) => chaseSamples(m).map((s) => ({ ...s, chaseWon: (winner.get(id) === chaser.get(id) ? 1 : 0) as 0 | 1 })));
+  return [...byMatch.entries()].flatMap(([id, m]) => chaseSamples(m).map((s) => ({ ...s, date: dateOf.get(id) as string, chaseWon: (winner.get(id) === chaser.get(id) ? 1 : 0) as 0 | 1 })));
 }
 
 if (process.argv[1]?.endsWith("fit-outcomes.ts")) {

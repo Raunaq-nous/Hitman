@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createChaseModel, type OutcomeDist } from "@/engine/chaseWp";
-import { fitLogistic, logistic, matchBrier, matchCalibrationTest, mergeBuckets, seededRandom, simulateChase, type MatchSample } from "@/engine/matchCalibration";
+import { calibrationLine, calibrationSlopeTest, fitLogistic, logistic, logit, matchBrier, matchCalibrationTest, mergeBuckets, seededRandom, simulateChase, walkForward, type MatchSample } from "@/engine/matchCalibration";
 
 // Synthetic samples for testing the statistics (not match data).
 function calibratedMatches(n: number, seed: number, shift = 0): MatchSample[] {
@@ -100,5 +100,38 @@ describe("match-level calibration (calibration)", () => {
     const ties = Array.from({ length: 400 }, () => simulateChase(tie, { b: 1, w: 1, r: 1 }, rand).won);
     expect(ties.filter((x) => x === 1).length).toBeGreaterThan(150);
     expect(ties.filter((x) => x === 0).length).toBeGreaterThan(150);
+  });
+
+  it("walk-forward: each date is scored with the intercept learned from earlier dates only", () => {
+    const ms = [
+      { match: "b", date: "2025-03-02", y: 1 as const, preds: [0.5, 0.6] },
+      { match: "a", date: "2025-03-01", y: 1 as const, preds: [0.5, 0.7] },
+      { match: "c", date: "2025-03-02", y: 0 as const, preds: [0.5] },
+      { match: "d", date: "2025-03-03", y: 1 as const, preds: [0.5] },
+    ];
+    const r = walkForward(ms, 0.5);
+    expect(r.matches.map((m) => m.match)).toEqual(["a", "b", "c", "d"]);
+    // day 1 unadjusted; day 2 (both matches) shifted by 0.5 × (1 − 0.5); day 3 adds day 2's two residuals
+    expect(r.deltas).toEqual([0, 0.25, 0.25, 0.25 + 0.5 * ((1 - r.matches[1].preds[0]) + (0 - r.matches[2].preds[0]))]);
+    expect(r.matches[0].preds).toEqual([0.5, 0.7].map((p) => 1 / (1 + Math.exp(-logit(p)))));
+    expect(r.matches[1].preds[0]).toBeCloseTo(1 / (1 + Math.exp(-0.25)), 12);
+    expect(walkForward(ms, 0).matches.flatMap((m) => m.preds).map((p) => Math.round(p * 1e9) / 1e9)).toEqual([0.5, 0.7, 0.5, 0.6, 0.5, 0.5].map((p) => Math.round(p * 1e9) / 1e9));
+  });
+
+  it("calibration line: intercept 0 and slope 1 for calibrated predictions; the joint test rejects a shifted model", () => {
+    const ok = calibratedMatches(600, 21);
+    const line = calibrationLine(ok);
+    expect(Math.abs(line.a)).toBeLessThan(0.3);
+    expect(Math.abs(line.b - 1)).toBeLessThan(0.3);
+    const t = calibrationSlopeTest(ok, { boot: 200, seed: 3 });
+    expect(t.reject).toBe(false);
+    expect(t.wald).toBeLessThan(t.critical);
+    const bad = calibrationSlopeTest(calibratedMatches(600, 21, 0.2), { boot: 200, seed: 3 });
+    expect(bad.reject).toBe(true);
+    // logit is finite at the edges
+    expect(Number.isFinite(logit(0))).toBe(true);
+    expect(Number.isFinite(logit(1))).toBe(true);
+    // a degenerate sample (one match) can't estimate a covariance: the test rejects rather than pass by default
+    expect(calibrationSlopeTest([{ p: 0.5, y: 1, match: "x" }, { p: 0.6, y: 1, match: "x" }], { boot: 20 }).reject).toBe(true);
   });
 });
