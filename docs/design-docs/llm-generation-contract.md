@@ -9,5 +9,8 @@ Every generated item is a list of claims: `{ text, kind: OBSERVED | DERIVED | MO
 ## Provider
 `src/llm/provider.ts` interface: `generate({ system, input, schema, model, maxTokens }) → parsed`. Implementations: `GeminiProvider` (`@google/genai`, model ids from `GEMINI_MODEL_FAST` / `GEMINI_MODEL_DEEP`; look up current ids at ai.google.dev when implementing) and `TemplateProvider` (deterministic; default when no key). Tests use a mock provider and must never call the network. Log tokens, latency and cost per call.
 
+## Retrieval
+`retrieve` in `src/llm/retrieval.ts` drops any document observed after the snapshot cutoff; `src/domain/retrieval/service.ts` (`retrieveForSnapshot`) also drops sources whose rights policy forbids embedding.
+
 ## Evals
-`tests/llm/` runs fixed fixtures through the verifier: valid outputs pass, fabricated numbers fail, post-cutoff claims fail, prompt-injection strings inside retrieved text do not change behaviour.
+`tests/unit/llm/` runs fixed fixtures through the verifier: valid outputs pass, fabricated numbers fail, post-cutoff claims fail, prompt-injection strings inside retrieved text do not change behaviour.

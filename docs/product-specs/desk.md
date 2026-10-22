@@ -11,3 +11,6 @@ One brief across sports, ranked by **swing**: the absolute change in win probabi
 - **Event Rooms**: one room per event with the WP chart, leverage meter, story list and data-state badge; a **stream-delay honesty badge** explains that feeds and broadcasts run at different delays.
 - Story detector is rules-first (like F1 Track Pulse): each sport has explicit thresholds (e.g., cricket: WP swing ≥ 15 points within an over; wicket at leverage ≥ p90; required rate crossing 12) producing prioritised stories.
 - Query planner: structured questions go to the database; documents to retrieval; the LLM only phrases results.
+
+## Built so far (F-K-01, F-K-06, F-K-07)
+`/desk` (`src/app/desk`, `src/domain/desk`) builds the brief from the committed recorded replays through the adapter registry and the story detector (`src/domain/stories`, thresholds in `config.ts`), ranked by modelled swing (largest six-ball |ΔWP| from the exact chase model). Football and F1 have no WP model, so they show "Swing: not modelled" and rank after, by story priority (D-023). Receipt Drawer, depth switch, Hindi and Event Rooms are not built yet.
