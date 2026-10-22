@@ -40,3 +40,13 @@ Walk-forward recalibration (η = 0, tuned on 2023–2024) on 2025+2026 pooled (1
 
 Grades use the exact model's option differences and are labelled "provisional calibration", as are win probabilities on the Desk and in Event Rooms.
 
+## Doubly robust check of scenario estimates (F-E-09, offline only)
+`npm run model:dr` → `data/models/dr-check-v1.json`. Logged decisions: 232 death overs of IPL chases (2008–2026) whose bowler has a recorded style (32 pace, 200 spin; Wikidata via the courier, D-036); reward = the chasing side won; propensity of pace from the required rate (clipped to 0.05–0.95).
+
+| Option | Model scenario estimate | Doubly robust estimate | Disagreement (95% match-bootstrap interval) |
+|---|---|---|---|
+| Pace | 0.456 | 0.545 | +8.9 pts (-0.2 to +20.0) |
+| Spin | 0.463 | 0.572 | +11.0 pts (+6.7 to +15.7) |
+
+Both options' scenario estimates sit about 9–11 points below the doubly robust estimates — the same under-prediction of chasers behind the calibration known issue (D-032). The pace sample is small (wide interval). Scenario estimates stay labelled "scenario model estimate" and "provisional calibration" and are never shown as what would have happened.
+

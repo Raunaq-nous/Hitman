@@ -649,8 +649,8 @@
       "depends_on": [
         "F-E-05"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "scripts/dr-check.ts (npm run model:dr) compares F-E-05 scenario estimates with doubly robust estimates (src/engine/doublyRobust.ts) on 232 logged death overs of IPL chases with recorded bowler style (32 pace, 200 spin): DR − model = +8.9 pts pace (95% −0.2 to +20.0), +11.0 pts spin (+6.7 to +15.7) — consistent with the calibration known issue; summarised in docs/QUALITY_SCORE.md; offline only, never shown to users as fact. npm test -- dr 4/4 (synthetic recovery and degenerate-input tests, plus reproducible artifact); verify --quick PASS."
     },
     {
       "id": "F-E-10",
