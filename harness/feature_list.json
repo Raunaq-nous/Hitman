@@ -681,8 +681,8 @@
         "F-E-08",
         "F-U-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "/lab (50 golden moments) and /lab/[momentId] (prerendered): Ticket Call with the moment context — target, needs R off B, overs in legal balls (O.B), required rate, wickets in hand, striker/bowler, last 12 deliveries — a Leverage meter, the decision question, 2–3 options, confidence slider 50–99 (default 60) and Lock (POST /api/lab/calls; F-L-02). Pre-lock DTOs (src/domain/lab) never carry the reveal or the model's option estimates (unit test). npm run test:e2e -- lab-call passes (keyboard pick and confidence, LOCKED stamp, axe clean); evidence docs/evidence/F-L-01/{lab,call}-{390,1280}-{light,dark}.png; verify --ci PASS."
     },
     {
       "id": "F-L-02",
