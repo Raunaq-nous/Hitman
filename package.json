@@ -19,7 +19,8 @@
     "model:outcomes": "tsx scripts/fit-outcomes.ts v1",
     "model:calibration": "tsx scripts/fit-calibration-walkforward.ts",
     "perf": "node scripts/perf.mjs / /desk /lab",
-    "model:calibration:rolling": "tsx scripts/fit-calibration-rolling.ts"
+    "model:calibration:rolling": "tsx scripts/fit-calibration-rolling.ts",
+    "data:moments": "tsx scripts/select-golden-moments.ts"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",

@@ -633,8 +633,8 @@
         "F-E-05",
         "F-D-05"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "scripts/select-golden-moments.ts (npm run data:moments) → data/fixtures/moments/golden-moments.json (sha256 e71e0d20a44f): 50 moments from IPL 2024–2026 chases (outcomes-v1 fitted on 2008–2023), top-decile leverage (≥ 0.0489 of 22,927 states), gradeable decisions (intent 43, tempo 7; ≥300 balls per option, gap ≥ 2 pts, provisional), diversified one per match (seasons 14/18/18, death 25, middle 25, ≤14 per team; D-037); each validated by the data contract on its rebuilt match, stored with pre-lock state, an observedCutoff on the replay clock and a separate reveal. npm test -- moments 8/8; verify --ci PASS."
     },
     {
       "id": "F-E-09",
