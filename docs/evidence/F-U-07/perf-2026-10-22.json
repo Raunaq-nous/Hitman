@@ -1,0 +1,45 @@
+{
+  "profile": "412x915, 4x CPU, 1.6 Mbps/750 kbps, 150 ms RTT, cache disabled",
+  "runs": 3,
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "lcpMs": 624,
+      "lcpRunsMs": [
+        672,
+        616,
+        624
+      ],
+      "routeJsKbTransferred": 170,
+      "lcpOk": true,
+      "jsOk": true
+    },
+    {
+      "path": "/desk",
+      "status": 200,
+      "lcpMs": 580,
+      "lcpRunsMs": [
+        580,
+        560,
+        600
+      ],
+      "routeJsKbTransferred": 166,
+      "lcpOk": true,
+      "jsOk": true
+    },
+    {
+      "path": "/rooms/cricket/cricsheet-1082625",
+      "status": 200,
+      "lcpMs": 552,
+      "lcpRunsMs": [
+        556,
+        536,
+        552
+      ],
+      "routeJsKbTransferred": 166,
+      "lcpOk": true,
+      "jsOk": true
+    }
+  ]
+}

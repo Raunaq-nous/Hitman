@@ -1060,7 +1060,7 @@
         "F-U-05"
       ],
       "passes": false,
-      "evidence": ""
+      "evidence": "Partial (not passing): scripts/perf.mjs (npm run perf) measures median LCP on a mid-range mobile profile (412×915, 4× CPU, 1.6 Mbps/150 ms RTT) and transferred route JS. 2026-10-22: / 660 ms, /desk 616 ms, a room 556 ms; route JS 166–170 KB (budget 200 KB) — docs/evidence/F-U-07/perf-2026-10-22.json. /lab does not exist yet (Lab features blocked behind F-E-04), so the criterion can't be met."
     },
     {
       "id": "F-R-01",
