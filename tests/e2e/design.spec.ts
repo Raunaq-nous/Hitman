@@ -30,7 +30,7 @@ test.describe("design gallery", () => {
 
   test("receipt opens with source, class and time", async ({ page }) => {
     await page.goto("/design");
-    await page.getByTestId("gallery-receipt").locator("summary").click();
+    await page.getByTestId("gallery-receipt").locator(".ui-receipt-toggle").click();
     await expect(page.getByTestId("gallery-receipt")).toContainText("verified delayed");
   });
 
