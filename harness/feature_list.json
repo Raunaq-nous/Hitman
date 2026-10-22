@@ -585,8 +585,8 @@
       "depends_on": [
         "F-E-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/engine/options.ts: option-conditioned WP (exact backward induction with the option's distribution for its window, then the base model), shrinkage toward the state's distribution (k = 200), insufficient-data threshold (300 balls), coin-flip band 2 points. Decision types (D-036): next-over intent (attack/consolidate = sides one required-rate band above/below), chase tempo (target rate bands for two overs), death-over pace vs spin (Wikidata P2545 styles via the courier; reports insufficient data: 110 pace / 983 spin labelled death balls). data/models/options-v1.json (2008–2023, sha256 e61c896b36b3) refits identically. npm test -- options 9/9 incl. real states from 2017 GL v MI; verify --ci PASS."
     },
     {
       "id": "F-E-06",
