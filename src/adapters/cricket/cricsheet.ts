@@ -28,6 +28,7 @@ export const cricsheetMatch = z.object({
     team: z.string(),
     overs: z.array(z.object({ over: z.number().int().nonnegative(), deliveries: z.array(delivery) })).default([]),
     target: z.object({ runs: z.number(), overs: z.number() }).optional(),
+    super_over: z.boolean().optional(),
   }).passthrough()),
 });
 export type CricsheetMatch = z.infer<typeof cricsheetMatch>;
@@ -52,7 +53,7 @@ export function parseCricsheet(raw: unknown, matchId: string): ParsedEvent {
           seq: 0,
           actor: d.batter,
           type: "ball",
-          payload: { innings: i + 1, team: inn.team, over: over.over, ball: j, batter: d.batter, bowler: d.bowler, runs: d.runs.batter, extras: d.runs.extras, extraType, wicket: (d.wickets?.length ?? 0) > 0, wicketKind: d.wickets?.[0]?.kind ?? null, ...(inn.target ? { target: inn.target.runs } : {}) },
+          payload: { innings: i + 1, superOver: inn.super_over === true, team: inn.team, over: over.over, ball: j, batter: d.batter, bowler: d.bowler, runs: d.runs.batter, extras: d.runs.extras, extraType, wicket: (d.wickets?.length ?? 0) > 0, wicketKind: d.wickets?.[0]?.kind ?? null, ...(inn.target ? { target: inn.target.runs } : {}) },
           sourceId: SOURCE_ID,
           sourceRef: `${matchId}:${i + 1}:${over.over}:${j}`,
           sourceClass: "VERIFIED_DELAYED",
