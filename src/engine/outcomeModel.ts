@@ -61,7 +61,12 @@ export interface OutcomeArtifact {
   global: OutcomeDist;
   parents: Record<string, OutcomeDist>;
   buckets: Record<string, OutcomeDist>;
+  /** false: one target band for every chase (absent means conditioned on the target band) */
+  targetConditioning?: boolean;
 }
+
+/** The target the buckets see: the real one, or a fixed one when the artifact isn't target-conditioned. */
+const keyTarget = (conditioned: boolean, target: number): number => (conditioned ? target : 0);
 
 const zero = (): Record<Outcome, number> => Object.fromEntries(OUTCOMES.map((o) => [o, 0])) as Record<Outcome, number>;
 const normalise = (c: Record<Outcome, number>): OutcomeDist => {
@@ -75,7 +80,8 @@ const shrink = (c: Record<Outcome, number>, prior: OutcomeDist, k: number): Outc
 };
 
 /** Fit on samples from `trainYears` only (later seasons can't leak in). Era weight 0.5^((latest − year) / halfLife). */
-export function fitOutcomes(samples: Sample[], trainYears: number[], heldOutYears: number[], opts = { halfLifeYears: 4, bucketK: 200, parentK: 500 }, version = "v1"): OutcomeArtifact {
+export function fitOutcomes(samples: Sample[], trainYears: number[], heldOutYears: number[], opts: { halfLifeYears: number; bucketK: number; parentK: number; targetConditioning?: boolean } = { halfLifeYears: 4, bucketK: 200, parentK: 500 }, version = "v1"): OutcomeArtifact {
+  const conditioned = opts.targetConditioning !== false;
   const train = new Set(trainYears);
   const latest = Math.max(...trainYears);
   const g = zero();
@@ -86,20 +92,22 @@ export function fitOutcomes(samples: Sample[], trainYears: number[], heldOutYear
     if (!train.has(s.year)) continue;
     const w = 0.5 ** ((latest - s.year) / opts.halfLifeYears);
     g[s.outcome] += w;
-    (pc[parentKey(s.state, s.target)] ??= zero())[s.outcome] += w;
-    (bc[bucketKey(s.state, s.target)] ??= zero())[s.outcome] += w;
+    const t = keyTarget(conditioned, s.target);
+    (pc[parentKey(s.state, t)] ??= zero())[s.outcome] += w;
+    (bc[bucketKey(s.state, t)] ??= zero())[s.outcome] += w;
     n++;
   }
   if (n === 0) throw new RangeError("no training samples in the training seasons");
   const global = normalise(g);
   const parents = Object.fromEntries(Object.entries(pc).map(([k, c]) => [k, shrink(c, global, opts.parentK)]));
   const buckets = Object.fromEntries(Object.entries(bc).map(([k, c]) => [k, shrink(c, parents[k.split(":").slice(0, 3).join(":")], opts.bucketK)]));
-  return { version, trainedOnYears: [...trainYears].sort(), heldOutYears: [...heldOutYears].sort(), halfLifeYears: opts.halfLifeYears, pseudoCounts: { bucket: opts.bucketK, parent: opts.parentK }, samples: n, global, parents, buckets };
+  return { version, trainedOnYears: [...trainYears].sort(), heldOutYears: [...heldOutYears].sort(), halfLifeYears: opts.halfLifeYears, pseudoCounts: { bucket: opts.bucketK, parent: opts.parentK }, samples: n, global, parents, buckets, ...(conditioned ? {} : { targetConditioning: false }) };
 }
 
 /** Distribution for a state in a chase of `target`: its bucket, else its parent, else the global distribution. */
 export function predictOutcome(a: OutcomeArtifact, s: ChaseState, target: number): OutcomeDist {
-  return a.buckets[bucketKey(s, target)] ?? a.parents[parentKey(s, target)] ?? a.global;
+  const t = keyTarget(a.targetConditioning !== false, target);
+  return a.buckets[bucketKey(s, t)] ?? a.parents[parentKey(s, t)] ?? a.global;
 }
 
 /**

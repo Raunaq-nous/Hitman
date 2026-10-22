@@ -4,8 +4,8 @@ The agent keeps this list current and never blocks on it. Each item has a safe f
 
 - [x] **GitHub write access for the agent session**: resolved 2026-10-22 (pushes and API writes work).
 - [x] **Network access for data sources**: worked around 2026-10-22 with the data courier workflow (D-020); no network settings changed.
-- [ ] **F-E-04 calibration gate (decide)**: on held-out IPL 2024–26 the recalibrated WP is 17–21 points too low in the 0.4–0.8 buckets (real drift: scoring jumped after 2023), and the gate itself is underpowered: per-ball samples within a match share one outcome, so even a perfectly calibrated model passes all ten 5-point buckets only 2.4% of the time on three seasons (D-022, `data/models/calibration-v1.json` → gatePower). F-E-04 blocks 21 features including release (F-Z-*). Options for the owner: (a) gate on a statistically meaningful tolerance, e.g. within max(5 pts, 2 cluster SE); (b) keep 5 pts but evaluate per match at fixed checkpoints; (c) wait for more seasons. The agent will not change the criterion itself.
-- [ ] **Push the gate tags**: this session's git proxy refuses tag pushes (HTTP 403; branch pushes work). Annotated tags `gate-0`, `gate-1`, `gate-4` on commit 109c20c (CI run 39817981766 green) were created locally; from a clone run `for g in 0 1 4; do git tag -a gate-$g 109c20c -m "Gate $g"; done; git push origin gate-0 gate-1 gate-4`. The release tag `v0.1.0-beta` will need the same.
+- [x] **F-E-04 calibration gate (decide)**: owner decided 2026-10-22 (D-027): rolling-origin calibration with a match-level test.
+- [x] **Push the gate tags**: done 2026-10-22 through the tagger workflow (D-028); gate-0, gate-1 and gate-4 exist on GitHub at 109c20c.
 - [ ] Rotate `NEXTAUTH_SECRET` in Vercel (Production and Preview) and set `ADMIN_EMAILS` and `CRON_SECRET`.
 - [ ] Check `NEXTAUTH_URL` in Vercel: either unset or the full site URL (an empty value breaks builds).
 - [ ] Provision or confirm the production PostgreSQL database and set `DATABASE_URL`; run `npx prisma migrate deploy` deliberately after reviewing migrations (never automatic in Vercel builds).
