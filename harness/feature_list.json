@@ -568,7 +568,7 @@
         "F-E-02"
       ],
       "passes": false,
-      "evidence": "",
+      "evidence": "Built and run per D-027 (npm run model:calibration → data/models/calibration-v2.json, sha256 3189b38768df; npm test -- calibration recomputes the verdict from stored per-match predictions). FAILS after three attempts (D-029): 2026 misses 4/5 buckets (ECE 15.3 pts; chasers won 64.3%); 2025 ECE 6.2 pts and recalibrated Brier 0.1290 vs run-rate logistic 0.1288; the fairness simulation shows the specified test (and two variants) is not fair and strict at ~70 matches/season (calibrated pass 0.725/0.65). Owner decision needed (docs/HUMAN_TODO.md).",
       "acceptance_history": "Until 2026-10-22 (owner decision D-027): calibration map fitted on training seasons (2008-2023) and versioned; held-out seasons 2024-2026: every 10-point bucket with >= 200 samples within 5 points; reliability diagram data exported for the Notebook."
     },
     {
