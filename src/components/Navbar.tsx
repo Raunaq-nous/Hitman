@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { t } from "@/i18n";
 import { LangToggle, useLang } from "./LangToggle";
 
@@ -45,6 +45,14 @@ export default function Navbar(): React.JSX.Element {
   const setOpen = (v: boolean): void => setOpenOn(v ? pathname : null);
   const links = LINKS.filter((l) => !l.auth || session);
   const lang = useLang();
+  const router = useRouter();
+  // a signed-in reader on a new device gets their account language (the cookie wins once it exists)
+  useEffect(() => {
+    if (!session || /(?:^|; )ae_lang=/.test(document.cookie)) return;
+    void fetch("/api/me/preferences").then((r) => (r.ok ? r.json() : null)).then((p: { language?: string } | null) => {
+      if (p?.language === "hi") { document.cookie = `ae_lang=hi; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`; router.refresh(); }
+    }).catch(() => undefined);
+  }, [session, router]);
   return (
     <header className="appnav">
       <a className="skip-link" href="#main">{t(lang, "nav.skip")}</a>

@@ -7,6 +7,8 @@ export interface Receipt {
   sourceId: string;
   sourceClass: SourceClass;
   observedAt: string;
+  /** "replay": a historical replay, whose time of day is a deterministic replay clock, not a real observation time */
+  clock?: "replay";
 }
 
 export interface Sourced<T> extends Receipt {

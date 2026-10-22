@@ -41,6 +41,7 @@ export const PRIORITY: Record<string, { base: number; scale: number }> = {
 
 type P = Record<string, string | number>;
 const plural = (n: number | string, word: string): string => `${n} ${word}${Number(n) === 1 ? "" : "s"}`;
+const gend = (n: number | string): string => `${n} ${Number(n) === 1 ? "गेंद" : "गेंदों"}`;
 const possessive = (name: string | number): string => (String(name).endsWith("s") ? `${name}’` : `${name}’s`);
 
 /** Story titles in each language, built only from the story's own parameters. */
@@ -58,9 +59,9 @@ export const TITLES: Record<"en" | "hi", Record<string, (p: P) => string>> = {
   },
   hi: {
     "big-over": (p) => `${p.team} ने ओवर ${p.over} में ${p.runs} रन बनाए`,
-    collapse: (p) => `${p.team} ने ${p.balls} गेंदों में ${p.wickets} विकेट गंवाए`,
+    collapse: (p) => `${p.team} ने ${gend(p.balls)} में ${p.wickets} विकेट गंवाए`,
     swing: (p) => `${p.team} के पीछा करने की जीत की संभावना ${p.from}% से ${p.to}% हुई`,
-    "tense-finish": (p) => `${p.team} को ${p.balls} गेंदों में ${p.runs} रन चाहिए, ${p.wickets} विकेट बाकी (जीत की संभावना ${p.wp}%)`,
+    "tense-finish": (p) => `${p.team} को ${gend(p.balls)} में ${p.runs} रन चाहिए, ${p.wickets} विकेट बाकी (जीत की संभावना ${p.wp}%)`,
     "late-goal": (p) => `${p.who} ने ${p.team} के लिए देर से गोल किया (${p.minute}')`,
     goal: (p) => `${p.who} ने ${p.team} के लिए गोल किया (${p.minute}')`,
     "big-chance-missed": (p) => `${p.who} ने ${p.team} के लिए बड़ा मौका गंवाया (${p.minute}', xG ${p.xg})`,

@@ -26,7 +26,7 @@ export function eventRoom(sport: SportSlug, slug: string): EventRoom | null {
   const e = events.find((x) => x.sport === sport && slugOf(x) === slug);
   if (!e) return null;
   const at = e.incidents.map((i) => i.observedAt.toISOString()).sort();
-  const receiptOf = (observedAt: string) => ({ sourceId: e.sourceId, sourceClass: "VERIFIED_DELAYED" as const, observedAt });
+  const receiptOf = (observedAt: string) => ({ sourceId: e.sourceId, sourceClass: "VERIFIED_DELAYED" as const, observedAt, clock: "replay" as const });
   const chase = chaseSeries(e, cricketWp(artifact));
   let wp: EventRoom["wp"] = null;
   let leverage: EventRoom["leverage"] = null;

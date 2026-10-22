@@ -4,7 +4,7 @@ import type { ParsedEvent } from "@/adapters/types";
 import type { OutcomeArtifact } from "@/engine/outcomeModel";
 import { namedCache } from "@/providers/cache";
 import { generateClaims, PRODUCTION_PROMPT, type Claims, type Fact } from "@/providers/llm";
-import { getPolicy, rightsContext, RightsError } from "@/providers/rights";
+import { assertRight, getPolicy, rightsContext, RightsError } from "@/providers/rights";
 import { chaseSeries, cricketWp, detectStories, maxSwing, storyTitle } from "@/domain/stories/service";
 import type { Lang } from "@/i18n";
 import type { SportSlug } from "@/domain/facts/types";
@@ -13,7 +13,7 @@ import { DEPTHS, type DeskBrief, type DeskItem, type DeskPending, type Depth } f
 
 export { DEPTHS };
 
-const receiptOf = (e: ParsedEvent, observedAt: string) => ({ sourceId: e.sourceId, sourceClass: "VERIFIED_DELAYED" as const, observedAt });
+const receiptOf = (e: ParsedEvent, observedAt: string) => ({ sourceId: e.sourceId, sourceClass: "VERIFIED_DELAYED" as const, observedAt, clock: "replay" as const });
 
 function item(e: ParsedEvent, wp: ReturnType<typeof cricketWp>, model: string): DeskItem {
   const stories = detectStories(e, { wp }).slice(0, 3).map((s) => ({ ...s, receipt: receiptOf(e, s.observedAt) }));
@@ -26,7 +26,7 @@ function item(e: ParsedEvent, wp: ReturnType<typeof cricketWp>, model: string): 
     name: e.name,
     competition: e.competition.name,
     season: e.season,
-    swing: best && last && chase ? { value: best.swing, from: best.from, to: best.to, team: chase.team, receipt: receiptOf(e, last.observedAt.toISOString()), model } : null,
+    swing: best && last && chase ? { value: Math.abs(Math.round(best.to * 100) - Math.round(best.from * 100)) / 100, from: best.from, to: best.to, team: chase.team, receipt: receiptOf(e, last.observedAt.toISOString()), model } : null,
     swingReason: best ? null : e.sport === "cricket" ? "rain" : "no-model",
     stories,
     attribution: getPolicy(e.sourceId)?.attribution_text ?? e.sourceId,
@@ -51,7 +51,8 @@ export function replays(): Replays {
   const pending: DeskPending[] = [];
   const events: ParsedEvent[] = [];
   const load = (sport: SportSlug, parse: () => ParsedEvent[]): void => {
-    try { events.push(...parse()); } catch (err) {
+    // stored by the adapter's store check; shown here, so the source must also allow display
+    try { events.push(...parse().map((e) => { assertRight(e.sourceId, "display"); return e; })); } catch (err) {
       if (!(err instanceof RightsError)) throw err;
       pending.push({ sport, reason: err.message.replace(/^Rights check failed: /, ""), refused: true });
     }
