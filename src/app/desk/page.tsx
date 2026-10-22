@@ -27,8 +27,7 @@ export default function DeskPage(): React.JSX.Element {
               <div className="desk-swing">
                 <span className="desk-swing-value" data-testid="swing">Swing {pts(it.swing.value)} pts</span>
                 <span className="desk-swing-note tabular">{it.swing.team} win probability {pts(it.swing.from)}% → {pts(it.swing.to)}% over six balls</span>
-                <Receipt receipt={it.swing.receipt}>receipt</Receipt>
-                <p className="desk-model">{it.swing.model}</p>
+                <Receipt receipt={it.swing.receipt} attribution={it.attribution} details={[it.swing.model]}>receipt</Receipt>
               </div>
             ) : (
               <p className="desk-swing-note" data-testid="swing-none">Swing: not modelled. {it.swingReason}</p>
@@ -36,7 +35,7 @@ export default function DeskPage(): React.JSX.Element {
             <ul className="desk-stories" aria-label={`Stories from ${it.name}`}>
               {it.stories.map((s) => (
                 <li key={`${s.kind}:${s.receipts[0]}`} data-testid="story">
-                  {s.title} <Receipt receipt={s.receipt}>receipt</Receipt>
+                  {s.title} <Receipt receipt={s.receipt} attribution={it.attribution} details={[`Incidents: ${s.receipts.slice(0, 6).join(", ")}${s.receipts.length > 6 ? ` and ${s.receipts.length - 6} more` : ""}`]}>receipt</Receipt>
                 </li>
               ))}
             </ul>

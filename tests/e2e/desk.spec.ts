@@ -24,7 +24,7 @@ test.describe("desk", () => {
     // sports without a WP model say so instead of showing a number
     await expect(page.locator('[data-sport="football"]').getByTestId("swing-none")).toContainText("not modelled");
     // a receipt opens to its source, class and time
-    await first.locator(".ui-receipt summary").first().click();
+    await first.locator(".ui-receipt-toggle").first().click();
     await expect(first.locator(".ui-receipt dl").first()).toContainText("cricsheet");
     const pending = page.getByTestId("desk-pending");
     await expect(pending).toContainText("Basketball");

@@ -12,9 +12,13 @@
 
 /* Receipt */
 .ui-receipt{display:inline-block;font:400 var(--step--1)/1.4 var(--font-receipt);color:var(--receipt-ink)}
-.ui-receipt summary{cursor:pointer;list-style:none;text-decoration:underline dotted;text-underline-offset:.2em}
-.ui-receipt summary::-webkit-details-marker{display:none}
-.ui-receipt dl{display:grid;grid-template-columns:auto 1fr;gap:.15em .8em;margin:.4em 0 0;padding:.5em .7em;border:1px dashed var(--receipt);border-radius:var(--radius)}
+.ui-receipt-toggle{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline dotted;text-underline-offset:.2em}
+.ui-receipt-toggle:focus-visible,.ui-receipt-close:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.ui-receipt-drawer{display:block;margin:.4em 0 0;padding:.5em .7em;border:1px dashed var(--receipt);border-radius:var(--radius);background:var(--surface)}
+.ui-receipt-drawer[hidden]{display:none}
+.ui-receipt dl{display:grid;grid-template-columns:auto 1fr;gap:.15em .8em;margin:0}
+.ui-receipt-detail{display:block;margin-top:.3em;color:var(--text-2)}
+.ui-receipt-close{margin-top:.4em;font:inherit;color:var(--text);background:none;border:1px solid var(--receipt);border-radius:var(--radius);padding:.15em .5em;cursor:pointer}
 .ui-receipt dt{color:var(--text-2)} .ui-receipt dd{margin:0;color:var(--text)}
 
 /* Stamp */

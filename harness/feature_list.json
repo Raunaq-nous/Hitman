@@ -930,8 +930,8 @@
       "depends_on": [
         "F-K-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/ui/components/Receipt.tsx is a receipt drawer: a button (aria-expanded/aria-controls) opens a labelled region with source, source class, observed time (<time datetime>), attribution and details (model hash, incident refs); Escape and Close shut it and return focus to the button. Used on every Desk number and story. npm run test:e2e -- receipts passes (Enter/Space open, Escape closes with focus restored, attribution 'Data from Cricsheet (cricsheet.org)', axe clean); full verify PASS."
     },
     {
       "id": "F-K-03",
