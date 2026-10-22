@@ -40,7 +40,8 @@ jobs:
           get data/raw/openf1/sessions-2023-race.json "https://api.openf1.org/v1/sessions?year=2023&session_name=Race"
           KEY=$(node -e 'const s=require("./data/raw/openf1/sessions-2023-race.json");console.log(s[0].session_key)')
           get data/raw/openf1/laps.json "https://api.openf1.org/v1/laps?session_key=${KEY}"
-          get data/raw/openf1/pit.json "https://api.openf1.org/v1/pit?session_key=${KEY}"
+          # OpenF1 answers 404 when a session has no pit records: note it, never fill it in
+          get data/raw/openf1/pit.json "https://api.openf1.org/v1/pit?session_key=${KEY}" || echo "no pit records for session ${KEY}" > data/raw/openf1/pit.missing
           # StatsBomb open data sample: competitions, one competition-season's matches and one match's events
           SB=https://raw.githubusercontent.com/statsbomb/open-data/master/data
           get data/raw/statsbomb/competitions.json "$SB/competitions.json"
