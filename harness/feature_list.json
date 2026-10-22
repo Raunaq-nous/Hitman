@@ -944,8 +944,8 @@
       "depends_on": [
         "F-K-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/domain/desk/service.ts: itemFacts (typed, sourced facts per Desk item), depthTemplate(quick|tactical|analyst) deterministic claims, phraseItem → generateClaims (model phrasing only when it passes verifyClaims, template otherwise); /desk renders all three verified depths with a remembered Quick/Tactical/Analyst switch (src/app/desk/DepthSwitch.tsx). npm test -- depth 4/4 (every item × depth passes the verifier and is deterministic; football says swing isn’t modelled; no key → template; fake model: valid claim used, invented '99-point' claim falls back to template); e2e depth.spec passes; full verify PASS."
     },
     {
       "id": "F-K-04",
