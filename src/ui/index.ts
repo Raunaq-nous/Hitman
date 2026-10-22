@@ -7,3 +7,4 @@ export { ShareCard } from "./components/ShareCard";
 export { Stamp, type StampKind } from "./components/Stamp";
 export { Ticket, type TicketLock, type TicketOption } from "./components/Ticket";
 export { TimingTowerRow, type TimingTowerEntry, type FormResult } from "./components/TimingTowerRow";
+export { StreamDelayBadge } from "./components/StreamDelayBadge";

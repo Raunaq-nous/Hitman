@@ -10,6 +10,7 @@ import { LangToggle, useLang } from "./LangToggle";
 const LINKS = [
   { href: "/crews", label: "nav.crews", auth: true },
   { href: "/desk", label: "nav.desk", auth: false },
+  { href: "/rooms", label: "nav.rooms", auth: false },
   { href: "/roster", label: "nav.roster", auth: false },
   { href: "/commentary", label: "nav.scores", auth: false },
   { href: "/onboarding", label: "nav.how", auth: false },

@@ -1,0 +1,4 @@
+.room-badges{display:flex;flex-wrap:wrap;gap:.4rem}
+.room-panel{padding:1rem;display:grid;gap:.6rem}
+.room-stories{margin:0;padding-left:1.1rem;display:grid;gap:.35rem}
+.room-note{color:var(--text-2);margin:0;font-size:var(--step--1)}

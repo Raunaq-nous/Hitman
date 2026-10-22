@@ -34,17 +34,20 @@ function item(e: ParsedEvent, wp: ReturnType<typeof cricketWp>, model: string): 
 }
 
 // recorded replays don't change while the server runs; recompute daily at most
-const briefs = namedCache<DeskBrief>("desk-brief", { ttlMs: 24 * 60 * 60 * 1000, maxEntries: 2 });
+const DAY = 24 * 60 * 60 * 1000;
+const loaded = namedCache<Replays>("desk-replays", { ttlMs: DAY, maxEntries: 2 });
+const briefs = namedCache<DeskBrief>("desk-brief", { ttlMs: DAY, maxEntries: 2 });
 
-/** Ranked by swing (modelled swings first, biggest first), then by the top story's priority. */
-export function deskBrief(): DeskBrief {
-  const key = `prototype=${rightsContext().prototypeData}`;
-  const hit = briefs.get(key);
-  if (hit) return hit;
-  const artifact = repo.outcomeModel();
-  const wp = cricketWp(artifact as unknown as OutcomeArtifact);
-  const model = `Exact chase WP on outcome model ${artifact.version} (sha256 ${artifact.hash.slice(0, 12)})`;
+export interface Replays { events: ParsedEvent[]; pending: DeskPending[]; artifact: OutcomeArtifact & { hash: string; version: string }; model: string }
+
+/** Every recorded replay we may use here (rights checked), plus honest pending entries. */
+export function replays(): Replays {
   const ctx = rightsContext();
+  const key = `prototype=${ctx.prototypeData}`;
+  const hit = loaded.get(key);
+  if (hit) return hit;
+  const artifact = repo.outcomeModel() as unknown as Replays["artifact"];
+  const model = `Exact chase WP on outcome model ${artifact.version} (sha256 ${artifact.hash.slice(0, 12)})`;
   const pending: DeskPending[] = [];
   const events: ParsedEvent[] = [];
   const load = (sport: SportSlug, parse: () => ParsedEvent[]): void => {
@@ -57,6 +60,18 @@ export function deskBrief(): DeskBrief {
   load("football", () => repo.footballReplays().map((d) => footballAdapter.parse(d, ctx)));
   load("f1", () => repo.f1Replays().map((d) => f1Adapter.parse(d, ctx)));
   for (const a of Object.values(ADAPTERS)) if (a.status === "source-pending") pending.push({ sport: a.sport, reason: a.reason });
+  const r = { events, pending, artifact, model };
+  loaded.set(key, r);
+  return r;
+}
+
+/** Ranked by swing (modelled swings first, biggest first), then by the top story's priority. */
+export function deskBrief(): DeskBrief {
+  const key = `prototype=${rightsContext().prototypeData}`;
+  const hit = briefs.get(key);
+  if (hit) return hit;
+  const { events, pending, artifact, model } = replays();
+  const wp = cricketWp(artifact);
   const items = events.map((e) => item(e, wp, model)).sort((a, b) =>
     (b.swing?.value ?? -1) - (a.swing?.value ?? -1) || (b.stories[0]?.priority ?? 0) - (a.stories[0]?.priority ?? 0) || a.id.localeCompare(b.id));
   const brief = { items, pending };

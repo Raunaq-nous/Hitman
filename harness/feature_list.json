@@ -973,8 +973,8 @@
         "F-K-01",
         "F-L-08"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "/rooms (five sports) → /rooms/[sport] → /rooms/[sport]/[event], prerendered from the recorded replays (src/domain/rooms/service.ts). Cricket rooms: Swing Seismograph of the chaser's WP ball by ball (exact chase model, outcomes-v1), Leverage Meter of the chase's peak leverage (std dev of next-ball WP, full scale 0.5) with the ball it preceded, stories with receipts, Historical-replay data-state badge and a new Stream-Delay Honesty Badge ('Not live · recorded 29 Apr 2017'). Rain-affected cricket, football and F1 say WP isn't modelled; basketball and tennis are source-pending. npm test -- rooms 3/3; npm run test:e2e -- rooms 2/2 (axe clean); full verify PASS. Evidence: docs/evidence/F-K-05/*.png."
     },
     {
       "id": "F-K-06",
