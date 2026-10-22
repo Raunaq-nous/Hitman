@@ -5,7 +5,7 @@ export const isLang = (v: unknown): v is Lang => LANGS.includes(v as Lang);
 export const LANG_COOKIE = "ae_lang";
 
 const en = {
-  "nav.desk": "Desk", "nav.crews": "Crews", "nav.roster": "Roster", "nav.scores": "Scores", "nav.how": "How it works",
+  "nav.desk": "Desk", "nav.rooms": "Rooms", "nav.crews": "Crews", "nav.roster": "Roster", "nav.scores": "Scores", "nav.how": "How it works",
   "nav.skip": "Skip to content", "nav.menu": "Menu", "nav.signin": "Sign in", "nav.join": "Join free", "nav.signout": "Sign out",
   "lang.switch": "Language: English. Switch to Hindi",
   "desk.title": "The Desk",
@@ -25,7 +25,7 @@ const en = {
 export type MessageKey = keyof typeof en;
 
 const hi: Record<MessageKey, string> = {
-  "nav.desk": "डेस्क", "nav.crews": "क्रू", "nav.roster": "रोस्टर", "nav.scores": "स्कोर", "nav.how": "यह कैसे काम करता है",
+  "nav.desk": "डेस्क", "nav.rooms": "रूम", "nav.crews": "क्रू", "nav.roster": "रोस्टर", "nav.scores": "स्कोर", "nav.how": "यह कैसे काम करता है",
   "nav.skip": "सामग्री पर जाएँ", "nav.menu": "मेनू", "nav.signin": "साइन इन", "nav.join": "मुफ़्त जुड़ें", "nav.signout": "साइन आउट",
   "lang.switch": "भाषा: हिन्दी। अंग्रेज़ी पर जाएँ",
   "desk.title": "डेस्क",
