@@ -1,0 +1,124 @@
+// Rules-first story detector: explicit thresholds over a parsed event's incidents, no model output in the text.
+import type { ParsedEvent } from "@/adapters/types";
+import type { IncidentInput } from "@/domain/facts/types";
+import { createChaseModel, type ChaseModel, type ChaseState } from "@/engine/chaseWp";
+import { predictStyles, type OutcomeArtifact } from "@/engine/outcomeModel";
+import { PRIORITY, THRESHOLDS } from "./config";
+import type { Story } from "./types";
+
+export type WinProbability = (target: number, s: ChaseState) => number;
+
+/** Exact chase WP from a fitted outcome artifact; one model per target, the most recent few kept. */
+export function cricketWp(artifact: OutcomeArtifact): WinProbability {
+  const models = new Map<number, ChaseModel>();
+  return (target, s) => {
+    let m = models.get(target);
+    if (!m) {
+      m = createChaseModel((st) => predictStyles(artifact, st, target));
+      models.set(target, m);
+      if (models.size > 8) models.delete(models.keys().next().value as number);
+    }
+    return m.wp(s);
+  };
+}
+
+function story(e: ParsedEvent, kind: string, title: string, magnitude: number, incidents: IncidentInput[]): Story {
+  const p = PRIORITY[kind];
+  const last = incidents[incidents.length - 1];
+  return { sport: e.sport, kind, title, magnitude, priority: p.base + p.scale * magnitude, observedAt: last.observedAt.toISOString(), sourceId: e.sourceId, receipts: incidents.map((i) => i.sourceRef) };
+}
+
+const pct = (x: number): string => `${Math.round(x * 100)}%`;
+const plural = (n: number, word: string): string => `${n} ${word}${n === 1 ? "" : "s"}`;
+const possessive = (name: string): string => (name.endsWith("s") ? `${name}’` : `${name}’s`);
+
+interface Ball { i: IncidentInput; innings: number; team: string; over: number; runs: number; legal: boolean; wicket: boolean; target?: number }
+
+function cricketStories(e: ParsedEvent, wp: WinProbability): Story[] {
+  const T = THRESHOLDS.cricket;
+  const balls: Ball[] = e.incidents.filter((i) => i.type === "ball" && i.payload.superOver !== true).map((i) => {
+    const p = i.payload as { innings: number; team: string; over: number; runs: number; extras: number; extraType: string | null; wicket: boolean; target?: number };
+    return { i, innings: p.innings, team: p.team, over: p.over, runs: p.runs + p.extras, legal: p.extraType !== "wides" && p.extraType !== "noballs", wicket: p.wicket, target: p.target };
+  });
+  const out: Story[] = [];
+  for (const inn of [...new Set(balls.map((b) => b.innings))]) {
+    const bs = balls.filter((b) => b.innings === inn);
+    const team = bs[0].team;
+    for (const over of [...new Set(bs.map((b) => b.over))]) {
+      const ob = bs.filter((b) => b.over === over);
+      const runs = ob.reduce((a, b) => a + b.runs, 0);
+      if (runs >= T.bigOverRuns) out.push(story(e, "big-over", `${team} take ${runs} off over ${over + 1}`, runs, ob.map((b) => b.i)));
+    }
+    // collapses: merge overlapping windows of ≥ collapseWickets wickets within collapseWindowBalls legal balls
+    const legalIdx = bs.map((b, k) => bs.slice(0, k + 1).filter((x) => x.legal).length);
+    const wk = bs.map((b, k) => ({ b, k })).filter((x) => x.b.wicket);
+    let start = 0;
+    while (start < wk.length) {
+      let end = start;
+      while (end + 1 < wk.length && legalIdx[wk[end + 1].k] - legalIdx[wk[start].k] < T.collapseWindowBalls) end++;
+      const n = end - start + 1;
+      if (n >= T.collapseWickets) {
+        const span = bs.slice(wk[start].k, wk[end].k + 1);
+        out.push(story(e, "collapse", `${team} lose ${n} wickets in ${plural(legalIdx[wk[end].k] - legalIdx[wk[start].k] + 1, "ball")}`, n, span.map((b) => b.i)));
+        start = end + 1;
+      } else start++;
+    }
+  }
+  // the chase: WP after every legal ball (rain-affected and tied-on-a-revised-target chases have no exact WP)
+  const chase = balls.filter((b) => b.innings === 2);
+  const target = chase.find((b) => b.target !== undefined)?.target;
+  if (target === undefined || typeof e.outcome.method === "string") return out;
+  const team = chase[0].team;
+  let s: ChaseState = { b: 120, w: 10, r: target };
+  const series: { wp: number; i: IncidentInput; s: ChaseState }[] = [];
+  const start = wp(target, s);
+  for (const b of chase) {
+    s = { b: s.b - (b.legal ? 1 : 0), w: s.w - (b.wicket ? 1 : 0), r: s.r - b.runs };
+    if (b.legal || s.r <= 0 || s.w <= 0) series.push({ wp: wp(target, { b: Math.max(0, s.b), w: Math.max(0, s.w), r: s.r }), i: b.i, s });
+  }
+  const W = T.swingWindowBalls;
+  const windows = series.map((x, k) => ({ k, from: k < W ? start : series[k - W].wp, to: x.wp })).map((w) => ({ ...w, d: Math.abs(w.to - w.from) }));
+  const taken = new Set<number>();
+  for (const w of [...windows].sort((a, b) => b.d - a.d || a.k - b.k)) {
+    if (w.d < T.swing || taken.size >= 3 * W) break;
+    const ks = Array.from({ length: Math.min(W, w.k + 1) }, (_, j) => w.k - j);
+    if (ks.some((k) => taken.has(k))) continue;
+    ks.forEach((k) => taken.add(k));
+    out.push(story(e, "swing", `${possessive(team)} chase swings from ${pct(w.from)} to ${pct(w.to)}`, w.d, ks.reverse().map((k) => series[k].i)));
+  }
+  const tense = series.filter((x) => x.s.b > 0 && x.s.b <= T.tenseBallsLeft && x.s.r > 0 && x.s.w > 0 && x.wp >= T.tenseLo && x.wp <= T.tenseHi).at(-1);
+  if (tense) out.push(story(e, "tense-finish", `${team} need ${tense.s.r} off ${plural(tense.s.b, "ball")} with ${plural(tense.s.w, "wicket")} left (${pct(tense.wp)} to win)`, 1, [tense.i]));
+  return out;
+}
+
+function footballStories(e: ParsedEvent): Story[] {
+  const T = THRESHOLDS.football;
+  return e.incidents.filter((i) => i.type === "shot").flatMap((i) => {
+    const p = i.payload as { minute: number; team: string; player: string | null; goal: boolean; xg: number | null };
+    const who = p.player ?? p.team;
+    if (p.goal) return [p.minute >= T.lateGoalMinute ? story(e, "late-goal", `${who} scores late for ${p.team} (${p.minute}')`, 1, [i]) : story(e, "goal", `${who} scores for ${p.team} (${p.minute}')`, 1, [i])];
+    if (p.xg !== null && p.xg >= T.bigChanceXg) return [story(e, "big-chance-missed", `${who} misses a big chance for ${p.team} (${p.minute}', xG ${p.xg.toFixed(2)})`, p.xg, [i])];
+    return [];
+  });
+}
+
+function f1Stories(e: ParsedEvent): Story[] {
+  const laps = e.incidents.filter((i) => i.type === "lap");
+  const out = laps.filter((i) => i.payload.pitOutLap === true).map((i) => story(e, "pit-stop", `Car ${i.payload.driverNumber} leaves the pits on lap ${i.payload.lap}`, 1, [i]));
+  for (const car of [...new Set(laps.map((i) => i.payload.driverNumber as number))]) {
+    const timed = laps.filter((i) => i.payload.driverNumber === car && typeof i.payload.lapSeconds === "number");
+    if (timed.length === 0) continue;
+    const times = timed.map((i) => i.payload.lapSeconds as number).sort((a, b) => a - b);
+    const median = times[Math.floor((times.length - 1) / 2)];
+    const best = timed.find((i) => i.payload.lapSeconds === times[0]) as IncidentInput;
+    const gain = median - times[0];
+    if (gain >= THRESHOLDS.f1.quickLapGainSeconds) out.push(story(e, "pace", `Car ${car} laps ${gain.toFixed(1)} s under its median on lap ${best.payload.lap}`, gain, [best]));
+  }
+  return out;
+}
+
+/** Prioritised stories for an event; sports without a source have none. */
+export function detectStories(e: ParsedEvent, deps: { wp: WinProbability }): Story[] {
+  const stories = e.sport === "cricket" ? cricketStories(e, deps.wp) : e.sport === "football" ? footballStories(e) : e.sport === "f1" ? f1Stories(e) : [];
+  return stories.sort((a, b) => b.priority - a.priority || a.observedAt.localeCompare(b.observedAt));
+}
