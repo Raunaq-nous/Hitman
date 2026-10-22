@@ -31,7 +31,7 @@ describe("data contract on real Cricsheet fixtures", () => {
     }
   });
 
-  it("detects broken data: reordered deliveries, too many legal balls, wrong winner", () => {
+  it("detects broken data: reordered deliveries, too many legal balls, wrong winner, runs going backwards", () => {
     const e = load(fixtures.find((f) => load(f).outcome.winner && !load(f).outcome.method) as string);
     const swapped = { ...e, incidents: [e.incidents[1], e.incidents[0], ...e.incidents.slice(2)] };
     expect(checkCricketContract(swapped).violations.join(" ")).toMatch(/out of order/);
@@ -39,5 +39,7 @@ describe("data contract on real Cricsheet fixtures", () => {
     expect(checkCricketContract({ ...e, outcome: { winner: loser } }).violations.join(" ")).toMatch(/disagrees with totals/);
     const extraLegal = { ...e, incidents: [...e.incidents, { ...e.incidents[5], sourceRef: "x" }] };
     expect(checkCricketContract(extraLegal, 20).violations.length).toBeGreaterThan(0);
+    const negative = { ...e, incidents: e.incidents.map((x, i) => (i === 3 ? { ...x, payload: { ...(x.payload as object), runs: -4 } } : x)) };
+    expect(checkCricketContract(negative).violations.join(" ")).toMatch(/negative runs/);
   });
 });

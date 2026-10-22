@@ -25,6 +25,8 @@ export function checkCricketContract(e: ParsedEvent, maxOvers = 20): ContractRes
       prev = pos;
       const isLegal = b.extraType !== "wides" && b.extraType !== "noballs";
       if (isLegal) { legal++; legalByOver.set(b.over, (legalByOver.get(b.over) ?? 0) + 1); }
+      // runs only ever accumulate: a negative delivery would make the score go backwards
+      if (b.runs < 0 || b.extras < 0) violations.push(`innings ${inn}: negative runs at over ${b.over}.${b.ball}`);
       if (b.wicket) wickets++;
       runs += b.runs + b.extras;
     }
