@@ -5,10 +5,11 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { unzipSync } from 'fflate';
 const i = process.argv.indexOf('--set');
-const set = i > 0 ? process.argv[i + 1] : 'ipl_json';
+const set = i > 0 ? process.argv[i + 1] : 'ipl_male_json';
 if (!/^[a-z0-9_]+$/.test(set)) { console.error(`invalid set name: ${set}`); process.exit(2); }
 const url = `https://cricsheet.org/downloads/${set}.zip`;
-const dir = `data/raw/cricsheet/${set}`;
+// stored as ipl_json whatever Cricsheet calls the archive, so ingest and fixture scripts find it
+const dir = `data/raw/cricsheet/${set === 'ipl_male_json' ? 'ipl_json' : set}`;
 const res = await fetch(url).catch((e) => ({ ok: false, status: String(e.cause?.code ?? e.message) }));
 if (!res.ok) { console.error(`download failed (${res.status}) for ${url}; check network access to cricsheet.org`); process.exit(1); }
 const files = unzipSync(new Uint8Array(await res.arrayBuffer()));

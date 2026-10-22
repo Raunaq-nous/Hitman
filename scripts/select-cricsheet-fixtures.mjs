@@ -16,5 +16,5 @@ const chosen = [...new Map([tie, rain, ...normal].filter(Boolean).map((m) => [m.
 if (!tie || !rain || chosen.length < 5) { console.error('could not find a tie, a rain-affected match and enough results'); process.exit(1); }
 mkdirSync(out, { recursive: true });
 for (const m of chosen) copyFileSync(`${src}/${m.f}`, `${out}/${m.f}`);
-writeFileSync(`${out}/MANIFEST.json`, JSON.stringify({ source: 'https://cricsheet.org/downloads/ipl_json.zip', attribution: 'Data from Cricsheet (cricsheet.org)', files: chosen.map((m) => ({ file: m.f, season: String(m.season), teams: m.teams, outcome: m.outcome })) }, null, 2) + '\n');
+writeFileSync(`${out}/MANIFEST.json`, JSON.stringify({ source: (() => { try { return readFileSync(`${src}/../url.txt`, 'utf8').trim(); } catch { return 'https://cricsheet.org/downloads/ipl_male_json.zip'; } })(), attribution: 'Data from Cricsheet (cricsheet.org)', files: chosen.map((m) => ({ file: m.f, season: String(m.season), teams: m.teams, outcome: m.outcome })) }, null, 2) + '\n');
 console.log(`selected ${chosen.length} fixtures into ${out}`);
