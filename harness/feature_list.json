@@ -554,18 +554,22 @@
     {
       "id": "F-E-04",
       "phase": "2",
-      "title": "Isotonic recalibration with a CI calibration gate",
+      "title": "Rolling-origin recalibration with a match-level calibration gate",
       "acceptance": [
-        "calibration map fitted on training seasons and versioned",
-        "held-out seasons: every 10-point bucket with ≥ 200 samples within 5 points",
-        "reliability diagram data exported for the Notebook"
+        "choices (era half-life, target-band conditioning, isotonic weights) tuned on 2024 only",
+        "2025 and 2026 evaluated separately; for season S the calibration map is fitted on S-3..S-1 only and S is never seen while fitting; production recalibrates the same way before every season (documented in docs/design-docs/models-and-grading.md)",
+        "per evaluated season the sample unit is the match: adjacent 10-point buckets merged until each has >= 40 distinct matches; each bucket's 95% match-level cluster-bootstrap interval of the observed chase win rate contains its mean predicted probability; match-weighted calibration error <= 5 points (the original intent was every bucket within 5 points)",
+        "recalibrated Brier score beats both the exact model and a required-run-rate logistic baseline",
+        "fairness and strictness proven by simulation on the same matches: a perfectly calibrated model passes >= 90% of runs and one shifted by 8 points fails >= 80%",
+        "calibration map and reliability data versioned and exported for the Notebook; measured drift (incl. 2026 chase win rate) recorded in docs/QUALITY_SCORE.md"
       ],
       "verify": "npm test -- calibration",
       "depends_on": [
         "F-E-02"
       ],
       "passes": false,
-      "evidence": ""
+      "evidence": "",
+      "acceptance_history": "Until 2026-10-22 (owner decision D-027): calibration map fitted on training seasons (2008-2023) and versioned; held-out seasons 2024-2026: every 10-point bucket with >= 200 samples within 5 points; reliability diagram data exported for the Notebook."
     },
     {
       "id": "F-E-05",
