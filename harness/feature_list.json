@@ -548,8 +548,8 @@
       "depends_on": [
         "F-E-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "leverage = std dev of next-ball WP (ChaseModel.leverage), swing = |ΔWP| over a window (swing). npm test -- leverage 3/3 on the chase-eligible Cricsheet fixtures scored with outcomes-v1: mean death-over (b ≤ 24) leverage exceeds mean powerplay (b > 84) leverage; powerplay swing = |WP(after 6 overs) − WP(start)|."
     },
     {
       "id": "F-E-04",
