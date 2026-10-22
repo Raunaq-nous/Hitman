@@ -1,7 +1,7 @@
 // Isotonic recalibration (pool-adjacent-violators) and the calibration gate: every 10-point bucket with enough
 // samples must be within 5 percentage points of its observed win rate.
 
-export interface Sample { p: number; y: 0 | 1 }
+export interface Sample { p: number; y: 0 | 1; /** optional weight (e.g. era weight); default 1 */ w?: number }
 export interface IsotonicMap { xs: number[]; ys: number[] }
 
 /** Fit a non-decreasing map from predicted probability to observed frequency. */
@@ -10,7 +10,8 @@ export function fitIsotonic(samples: Sample[]): IsotonicMap {
   const sorted = [...samples].sort((a, b) => a.p - b.p);
   const blocks: { sum: number; n: number; lo: number; hi: number }[] = [];
   for (const s of sorted) {
-    blocks.push({ sum: s.y, n: 1, lo: s.p, hi: s.p });
+    const w = s.w ?? 1;
+    blocks.push({ sum: s.y * w, n: w, lo: s.p, hi: s.p });
     while (blocks.length > 1 && blocks[blocks.length - 2].sum / blocks[blocks.length - 2].n > blocks[blocks.length - 1].sum / blocks[blocks.length - 1].n) {
       const b = blocks.pop() as (typeof blocks)[number];
       const a = blocks[blocks.length - 1];
