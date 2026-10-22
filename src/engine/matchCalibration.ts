@@ -142,3 +142,77 @@ export function simulateChase(model: ChaseModel, start: ChaseState, rand: () => 
   const end = terminal(s) as number;
   return { states, won: end === 0.5 ? (rand() < 0.5 ? 1 : 0) : (end as 0 | 1) };
 }
+
+const clampP = (p: number): number => Math.min(1 - 1e-6, Math.max(1e-6, p));
+export const logit = (p: number): number => Math.log(clampP(p) / (1 - clampP(p)));
+const sigmoid = (x: number): number => 1 / (1 + Math.exp(-x));
+
+export interface WalkForwardMatch { match: string; date: string; y: 0 | 1; preds: number[] }
+
+/**
+ * Walk-forward recalibration within a season (D-030): predictions are shifted on the logit scale by an intercept δ
+ * that starts at 0 and, after each completed date, moves by `eta` × the summed residuals (result − adjusted pre-match
+ * probability) of that date's matches. A match is scored with the δ from earlier dates only, so same-day matches
+ * never inform each other.
+ */
+export function walkForward(matches: WalkForwardMatch[], eta: number): { matches: WalkForwardMatch[]; deltas: number[] } {
+  const ordered = [...matches].sort((a, b) => a.date.localeCompare(b.date) || a.match.localeCompare(b.match));
+  const out: WalkForwardMatch[] = [];
+  const deltas: number[] = [];
+  let delta = 0;
+  for (let i = 0; i < ordered.length;) {
+    const day = ordered[i].date;
+    let pending = 0;
+    for (; i < ordered.length && ordered[i].date === day; i++) {
+      const m = ordered[i];
+      const preds = m.preds.map((p) => sigmoid(logit(p) + delta));
+      out.push({ ...m, preds });
+      deltas.push(delta);
+      pending += m.y - preds[0];
+    }
+    delta += eta * pending;
+  }
+  return { matches: out, deltas };
+}
+
+/**
+ * Calibration intercept and slope: weighted logistic regression of the result on logit(p), every match weighing 1
+ * (its balls share 1/n each). Perfect calibration is intercept 0, slope 1.
+ */
+export function calibrationLine(samples: MatchSample[]): { a: number; b: number } {
+  const n = new Map<string, number>();
+  for (const s of samples) n.set(s.match, (n.get(s.match) ?? 0) + 1);
+  return fitLogistic(samples.map((s) => logit(s.p)), samples.map((s) => s.y), samples.map((s) => 1 / (n.get(s.match) as number)));
+}
+
+/**
+ * Joint test of intercept = 0 and slope = 1: Wald statistic with the covariance of (a, b) from a match-clustered
+ * bootstrap, compared with the χ²(2) critical value at `alpha` (5.991 at 5%). Rejects when the statistic is larger.
+ */
+export function calibrationSlopeTest(samples: MatchSample[], opts: { boot?: number; seed?: number } = {}): { a: number; b: number; wald: number; critical: number; reject: boolean } {
+  const { boot = 400, seed = 1 } = opts;
+  const byMatch = new Map<string, { xs: number[]; y: 0 | 1 }>();
+  for (const s of samples) { const g = byMatch.get(s.match) ?? { xs: [], y: s.y }; g.xs.push(logit(s.p)); byMatch.set(s.match, g); }
+  const groups = [...byMatch.values()];
+  const { a, b } = calibrationLine(samples);
+  const rand = seededRandom(seed);
+  const as: number[] = [], bs: number[] = [];
+  for (let r = 0; r < boot; r++) {
+    const xs: number[] = [], ys: (0 | 1)[] = [], ws: number[] = [];
+    for (let k = 0; k < groups.length; k++) {
+      const g = groups[Math.floor(rand() * groups.length)];
+      const w = 1 / g.xs.length;
+      for (const x of g.xs) { xs.push(x); ys.push(g.y); ws.push(w); }
+    }
+    const f = fitLogistic(xs, ys, ws);
+    as.push(f.a); bs.push(f.b);
+  }
+  const mean = (xs: number[]): number => xs.reduce((x, y) => x + y, 0) / xs.length;
+  const ma = mean(as), mb = mean(bs);
+  const vaa = mean(as.map((x) => (x - ma) ** 2)), vbb = mean(bs.map((x) => (x - mb) ** 2)), vab = mean(as.map((x, i) => (x - ma) * (bs[i] - mb)));
+  const det = vaa * vbb - vab * vab;
+  const da = a, db = b - 1;
+  const wald = det > 0 ? (vbb * da * da - 2 * vab * da * db + vaa * db * db) / det : Infinity;
+  const critical = 5.991464547107979;
+  return { a, b, wald, critical, reject: wald > critical };
+}

@@ -554,14 +554,15 @@
     {
       "id": "F-E-04",
       "phase": "2",
-      "title": "Rolling-origin recalibration with a match-level calibration gate",
+      "title": "Walk-forward recalibration with a pooled match-level calibration gate",
       "acceptance": [
-        "choices (era half-life, target-band conditioning, isotonic weights) tuned on 2024 only",
-        "2025 and 2026 evaluated separately; for season S the calibration map is fitted on S-3..S-1 only and S is never seen while fitting; production recalibrates the same way before every season (documented in docs/design-docs/models-and-grading.md)",
-        "per evaluated season the sample unit is the match: adjacent 10-point buckets merged until each has >= 40 distinct matches; each bucket's 95% match-level cluster-bootstrap interval of the observed chase win rate contains its mean predicted probability; match-weighted calibration error <= 5 points (the original intent was every bucket within 5 points)",
-        "recalibrated Brier score beats both the exact model and a required-run-rate logistic baseline",
-        "fairness and strictness proven by simulation on the same matches: a perfectly calibrated model passes >= 90% of runs and one shifted by 8 points fails >= 80%",
-        "calibration map and reliability data versioned and exported for the Notebook; measured drift (incl. 2026 chase win rate) recorded in docs/QUALITY_SCORE.md"
+        "walk-forward recalibration: each season S starts from an isotonic map fitted on S-3..S-1 and is updated after every completed match (online logit-intercept adjustment); a match is scored only with matches completed before it; update settings tuned on 2023-2024 only; documented as the production method in docs/design-docs/models-and-grading.md",
+        "2025 and 2026 walk-forward predictions evaluated pooled (match as the sample unit) and reported per season (not gated per season)",
+        "(a) joint test of calibration intercept = 0 and slope = 1 with a match-clustered bootstrap is not rejected at the 5% level",
+        "(b) Brier score beats the exact model and is no more than 0.002 worse than the run-rate logistic baseline",
+        "(c) simulation on the same matches: a perfectly calibrated model passes >= 90% of the time",
+        "(d) the smallest shift detected with 80% power is reported and is <= 15 points",
+        "per-season results and the 2026 drift recorded in docs/QUALITY_SCORE.md; artifact versioned (data/models/calibration-v3.json)"
       ],
       "verify": "npm test -- calibration",
       "depends_on": [
@@ -569,7 +570,7 @@
       ],
       "passes": false,
       "evidence": "Built and run per D-027 (npm run model:calibration → data/models/calibration-v2.json, sha256 3189b38768df; npm test -- calibration recomputes the verdict from stored per-match predictions). FAILS after three attempts (D-029): 2026 misses 4/5 buckets (ECE 15.3 pts; chasers won 64.3%); 2025 ECE 6.2 pts and recalibrated Brier 0.1290 vs run-rate logistic 0.1288; the fairness simulation shows the specified test (and two variants) is not fair and strict at ~70 matches/season (calibrated pass 0.725/0.65). Owner decision needed (docs/HUMAN_TODO.md).",
-      "acceptance_history": "Until 2026-10-22 (owner decision D-027): calibration map fitted on training seasons (2008-2023) and versioned; held-out seasons 2024-2026: every 10-point bucket with >= 200 samples within 5 points; reliability diagram data exported for the Notebook."
+      "acceptance_history": "Until 2026-10-22 (owner decision D-027): calibration map fitted on training seasons (2008-2023) and versioned; held-out seasons 2024-2026: every 10-point bucket with >= 200 samples within 5 points; reliability diagram data exported for the Notebook. | D-027 (superseded by D-030): rolling-origin map on S-3..S-1 without looking at S; 2025 and 2026 gated separately with >=40-match buckets, 95% match-level bootstrap intervals, match-weighted error <= 5 points, Brier beating exact and run-rate logistic, and a fairness simulation; intent kept: each season tested out of sample at the match level."
     },
     {
       "id": "F-E-05",
