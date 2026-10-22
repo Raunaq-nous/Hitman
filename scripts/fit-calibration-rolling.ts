@@ -20,6 +20,9 @@ const GRID: Choices[] = [1, 2, 4].flatMap((outcomeHalfLife) => [true, false].fla
 const GATE = { minMatches: 40, boot: 1000, level: 0.95, maxEce: 0.05 };
 const SIM_RUNS = Number(process.env.SIM_RUNS ?? 200);
 const SHIFT = 0.08;
+// the owner's test as written, and two statistically motivated variants measured for fairness (D-029)
+const VARIANTS = { literal: {}, simultaneous: { simultaneous: true }, simultaneousDebiased: { simultaneous: true, debiasedEce: true } } as const;
+type Variant = keyof typeof VARIANTS;
 const rrr = (b: Ball): number => Math.min(36, (b.state.r * 6) / b.state.b);
 const round = (x: number, d = 6): number => Math.round(x * 10 ** d) / 10 ** d;
 
@@ -78,7 +81,7 @@ function fairness(season: number, outcomes: OutcomeArtifact, seed: number) {
   const targets = [...new Map(all.filter((b) => b.year === season).map((b) => [b.matchId, b.target])).entries()];
   const model = chaseModels(outcomes);
   const rand = seededRandom(seed);
-  let calibratedPass = 0, upFail = 0, downFail = 0;
+  const tally = Object.fromEntries(Object.keys(VARIANTS).map((v) => [v, { calibratedPass: 0, upFail: 0, downFail: 0 }])) as Record<Variant, { calibratedPass: number; upFail: number; downFail: number }>;
   for (let run = 0; run < SIM_RUNS; run++) {
     const sim: MatchSample[] = [];
     for (const [match, target] of targets) {
@@ -86,12 +89,19 @@ function fairness(season: number, outcomes: OutcomeArtifact, seed: number) {
       const { states, won } = simulateChase(m, { b: 120, w: 10, r: target }, rand);
       for (const s of states) sim.push({ p: m.wp(s), y: won, match });
     }
-    const opts = { ...GATE, seed: seed + run };
-    if (matchCalibrationTest(sim, opts).pass) calibratedPass++;
-    if (!matchCalibrationTest(sim.map((x) => ({ ...x, p: Math.min(1, x.p + SHIFT) })), opts).pass) upFail++;
-    if (!matchCalibrationTest(sim.map((x) => ({ ...x, p: Math.max(0, x.p - SHIFT) })), opts).pass) downFail++;
+    const up = sim.map((x) => ({ ...x, p: Math.min(1, x.p + SHIFT) })), down = sim.map((x) => ({ ...x, p: Math.max(0, x.p - SHIFT) }));
+    for (const [v, extra] of Object.entries(VARIANTS) as [Variant, object][]) {
+      const opts = { ...GATE, ...extra, seed: seed + run };
+      if (matchCalibrationTest(sim, opts).pass) tally[v].calibratedPass++;
+      if (!matchCalibrationTest(up, opts).pass) tally[v].upFail++;
+      if (!matchCalibrationTest(down, opts).pass) tally[v].downFail++;
+    }
   }
-  return { runs: SIM_RUNS, matches: targets.length, calibratedPassRate: calibratedPass / SIM_RUNS, shiftedUpFailRate: upFail / SIM_RUNS, shiftedDownFailRate: downFail / SIM_RUNS, shiftPts: SHIFT * 100 };
+  const rates = (t: { calibratedPass: number; upFail: number; downFail: number }) => {
+    const r = { calibratedPassRate: t.calibratedPass / SIM_RUNS, shiftedUpFailRate: t.upFail / SIM_RUNS, shiftedDownFailRate: t.downFail / SIM_RUNS };
+    return { ...r, fairAndStrict: r.calibratedPassRate >= 0.9 && r.shiftedUpFailRate >= 0.8 && r.shiftedDownFailRate >= 0.8 };
+  };
+  return { runs: SIM_RUNS, matches: targets.length, shiftPts: SHIFT * 100, variants: Object.fromEntries(Object.entries(tally).map(([v, t]) => [v, rates(t)])) as Record<Variant, ReturnType<typeof rates>> };
 }
 
 function drift() {
@@ -128,19 +138,20 @@ function main(): void {
     const { map, baseline, window } = fitWindow(season, balls, exact, chosen.isoHalfLife);
     const e = evaluate(season, balls, exact, map, baseline);
     const test = matchCalibrationTest(e.recal, GATE);
+    const variants = Object.fromEntries((Object.entries(VARIANTS) as [Variant, object][]).map(([v, extra]) => [v, matchCalibrationTest(e.recal, { ...GATE, ...extra }).pass]));
     const matches = [...new Set(e.recal.map((x) => x.match))].map((id) => {
       const mine = e.recal.map((x, i) => ({ x, i })).filter(({ x }) => x.match === id);
       return { match: id, y: mine[0].x.y, recalibrated: mine.map(({ x }) => round(x.p)), exact: mine.map(({ i }) => round(e.raw[i].p)), runRateLogistic: mine.map(({ i }) => round(e.base[i].p)) };
     });
     const fair = fairness(season, outcomes, 1000 * (k + 1));
     const brierOk = e.brier.recalibrated < e.brier.exact && e.brier.recalibrated < e.brier.runRateLogistic;
-    console.log(`season ${season}: calibration ${test.pass ? "PASS" : "FAIL"} (ece ${(test.ece * 100).toFixed(1)} pts, ${test.buckets.length} buckets), Brier recal ${e.brier.recalibrated.toFixed(4)} exact ${e.brier.exact.toFixed(4)} logistic ${e.brier.runRateLogistic.toFixed(4)}; fairness pass ${fair.calibratedPassRate} fail+8 ${fair.shiftedUpFailRate} fail-8 ${fair.shiftedDownFailRate}`);
+    console.log(`season ${season}: calibration ${test.pass ? "PASS" : "FAIL"} (ece ${(test.ece * 100).toFixed(1)} pts, debiased ${(test.eceDebiased * 100).toFixed(1)}, ${test.buckets.length} buckets), Brier recal ${e.brier.recalibrated.toFixed(4)} exact ${e.brier.exact.toFixed(4)} logistic ${e.brier.runRateLogistic.toFixed(4)}; real-data pass by variant ${JSON.stringify(variants)}; fairness ${JSON.stringify(fair.variants)}`);
     for (const b of test.buckets) console.log(`  ${b.lo.toFixed(1)}-${b.hi.toFixed(1)} matches ${b.matches} pred ${b.meanPredicted.toFixed(3)} obs ${b.observed.toFixed(3)} CI [${b.ciLo.toFixed(3)}, ${b.ciHi.toFixed(3)}] ${b.covered ? "ok" : "MISS"}`);
     return {
       season, outcomeTrainedOn: outcomes.trainedOnYears, calibrationFitOn: window, map,
       baseline: { a: round(baseline.a), b: round(baseline.b) },
-      test, brier: { recalibrated: round(e.brier.recalibrated), exact: round(e.brier.exact), runRateLogistic: round(e.brier.runRateLogistic) },
-      brierOk, fairness: fair, pass: test.pass && brierOk && fair.calibratedPassRate >= 0.9 && fair.shiftedUpFailRate >= 0.8 && fair.shiftedDownFailRate >= 0.8,
+      test, variants, brier: { recalibrated: round(e.brier.recalibrated), exact: round(e.brier.exact), runRateLogistic: round(e.brier.runRateLogistic) },
+      brierOk, fairness: fair, pass: test.pass && brierOk && fair.variants.literal.fairAndStrict,
       matches,
     };
   });

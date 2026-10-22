@@ -48,6 +48,11 @@ describe("match-level calibration (calibration)", () => {
     const shifted = matchCalibrationTest(calibratedMatches(400, 3, 0.15), { minMatches: 40, boot: 400 });
     expect(shifted.pass).toBe(false);
     expect(shifted.buckets.some((b) => !b.covered) || shifted.ece > 0.05).toBe(true);
+    // simultaneous intervals are wider; the debiased error is never above the plain one
+    const sim = matchCalibrationTest(calibratedMatches(400, 3), { minMatches: 40, boot: 400, simultaneous: true, debiasedEce: true });
+    sim.buckets.forEach((b, i) => expect(b.ciHi - b.ciLo).toBeGreaterThanOrEqual(ok.buckets[i].ciHi - ok.buckets[i].ciLo));
+    expect(sim.eceDebiased).toBeLessThanOrEqual(sim.ece);
+    expect(sim.pass).toBe(sim.buckets.every((b) => b.covered) && sim.eceDebiased <= 0.05);
     // deterministic for a seed
     expect(matchCalibrationTest(calibratedMatches(400, 3), { minMatches: 40, boot: 400 })).toEqual(ok);
     expect(() => matchCalibrationTest([])).toThrow(RangeError);

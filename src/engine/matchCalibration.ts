@@ -42,7 +42,7 @@ export function mergeBuckets(samples: MatchSample[], minMatches = 40): { lo: num
 
 export interface MatchBucket { lo: number; hi: number; matches: number; balls: number; meanPredicted: number; observed: number; ciLo: number; ciHi: number; covered: boolean }
 
-export interface MatchCalibrationResult { buckets: MatchBucket[]; ece: number; matches: number; pass: boolean }
+export interface MatchCalibrationResult { buckets: MatchBucket[]; ece: number; eceDebiased: number; matches: number; pass: boolean }
 
 /**
  * Per bucket: each match contributes once (its mean prediction over its balls in the bucket, and its result).
@@ -50,10 +50,12 @@ export interface MatchCalibrationResult { buckets: MatchBucket[]; ece: number; m
  * percentile interval at `level`). Passes when every interval contains its bucket's mean prediction and the
  * match-weighted calibration error is at most `maxEce`.
  */
-export function matchCalibrationTest(samples: MatchSample[], opts: { minMatches?: number; boot?: number; level?: number; maxEce?: number; seed?: number } = {}): MatchCalibrationResult {
-  const { minMatches = 40, boot = 1000, level = 0.95, maxEce = 0.05, seed = 1 } = opts;
+export function matchCalibrationTest(samples: MatchSample[], opts: { minMatches?: number; boot?: number; level?: number; maxEce?: number; seed?: number; simultaneous?: boolean; debiasedEce?: boolean } = {}): MatchCalibrationResult {
+  const { minMatches = 40, boot = 1000, maxEce = 0.05, seed = 1, simultaneous = false, debiasedEce = false } = opts;
   if (samples.length === 0) throw new RangeError("no samples to test");
   const ranges = mergeBuckets(samples, minMatches);
+  // simultaneous: Bonferroni, so all the buckets' intervals hold together with probability `level`
+  const level = simultaneous ? 1 - (1 - (opts.level ?? 0.95)) / ranges.length : opts.level ?? 0.95;
   const bucketOf = (p: number): number => ranges.findIndex((r, i) => p >= r.lo && (p < r.hi || i === ranges.length - 1));
   // per match: result, and per bucket the sum and count of its predictions
   const matches = new Map<string, { y: 0 | 1; sum: number[]; n: number[] }>();
@@ -85,7 +87,12 @@ export function matchCalibrationTest(samples: MatchSample[], opts: { minMatches?
   });
   const total = buckets.reduce((a, b) => a + b.matches, 0);
   const ece = buckets.reduce((a, b) => a + (b.matches / total) * Math.abs(b.meanPredicted - b.observed), 0);
-  return { buckets, ece, matches: list.length, pass: buckets.every((b) => b.covered) && ece <= maxEce };
+  // debiased: remove each bucket's sampling noise (bootstrap standard error) from its squared gap before the root
+  const eceDebiased = buckets.reduce((a, b, i) => {
+    const d = draws[i], m = d.reduce((x, y) => x + y, 0) / d.length, v = d.reduce((x, y) => x + (y - m) ** 2, 0) / d.length;
+    return a + (b.matches / total) * Math.sqrt(Math.max(0, (b.meanPredicted - b.observed) ** 2 - v));
+  }, 0);
+  return { buckets, ece, eceDebiased, matches: list.length, pass: buckets.every((b) => b.covered) && (debiasedEce ? eceDebiased : ece) <= maxEce };
 }
 
 /** Brier score with every match counted once (the mean of its balls' squared errors). */
