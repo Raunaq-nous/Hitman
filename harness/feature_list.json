@@ -135,8 +135,8 @@
         "F-H-06",
         "F-H-07"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "2026-10-22: GitHub Actions CI run 39742306306 on overhaul (head 3cb2a9c) concluded success: Postgres service, npm ci, prisma generate, Playwright install, db:migrate, then node harness/verify.mjs --ci in ~93 s (unit tests hit the vitest schema; build and e2e ran). With F-H-05/06/07 passing, verify --ci skips nothing: local run shows PASS for feature list, lint, typecheck, unit tests, build, e2e and no SKIP lines."
     },
     {
       "id": "F-H-09",
