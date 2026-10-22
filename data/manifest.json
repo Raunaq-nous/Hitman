@@ -1,0 +1,140 @@
+{
+  "downloadedAt": "2026-10-22T07:47:19Z",
+  "missing": [
+    "no pit records for session 7953"
+  ],
+  "builtBy": "data-courier workflow",
+  "sources": [
+    {
+      "sourceId": "cricsheet",
+      "url": "https://cricsheet.org/downloads/ipl_male_json.zip",
+      "attribution": "Data from Cricsheet (cricsheet.org)",
+      "bytes": 5187774,
+      "sha256": "6fe9142db9e139e4f77a5634ddc61c1c72a26a56bee2fe5affe5921867de04b3",
+      "downloadedAt": "2026-10-22T07:47:19Z",
+      "rawFile": "data/raw/cricsheet/ipl_json.zip"
+    },
+    {
+      "sourceId": "openf1",
+      "url": "https://api.openf1.org/v1/sessions?year=2023&session_name=Race",
+      "attribution": "Historical timing data from OpenF1 (openf1.org), an unofficial project not associated with Formula 1 companies",
+      "bytes": 8229,
+      "sha256": "1c4ebc39663a3ae9e1ce069a7739e4b2f14366b75e79769317499bcf8b6a3554",
+      "downloadedAt": "2026-10-22T07:47:19Z",
+      "rawFile": "data/raw/openf1/sessions-2023-race.json"
+    },
+    {
+      "sourceId": "openf1",
+      "url": "https://api.openf1.org/v1/laps?session_key=7953",
+      "attribution": "OpenF1 (openf1.org)",
+      "bytes": 526418,
+      "sha256": "fa44efcdf9a4cbf9b9f9550322511ef94645e765aa5b231c11b86e69897d39a7",
+      "downloadedAt": "2026-10-22T07:47:19Z",
+      "rawFile": "data/raw/openf1/laps.json"
+    },
+    {
+      "sourceId": "statsbomb",
+      "url": "https://raw.githubusercontent.com/statsbomb/open-data/master/data/competitions.json",
+      "attribution": "Event data provided by StatsBomb (open data)",
+      "bytes": 34887,
+      "sha256": "e6cd42f5d8956d6aa30fb917ce8d4c3b3df1879a93f02f8feba820930a6971fa",
+      "downloadedAt": "2026-10-22T07:47:19Z",
+      "rawFile": "data/raw/statsbomb/competitions.json"
+    },
+    {
+      "sourceId": "statsbomb",
+      "url": "https://raw.githubusercontent.com/statsbomb/open-data/master/data/events/7525.json",
+      "attribution": "Event data provided by StatsBomb (open data)",
+      "bytes": 2817851,
+      "sha256": "bc04e7442328cc43d52e3e2e549d926b366f40ec0a443fa99e4d58210e8484e5",
+      "downloadedAt": "2026-10-22T07:47:19Z",
+      "rawFile": "data/raw/statsbomb/events-7525.json"
+    },
+    {
+      "sourceId": "statsbomb",
+      "url": "https://raw.githubusercontent.com/statsbomb/open-data/master/data/matches/43/3.json",
+      "attribution": "Event data provided by StatsBomb (open data)",
+      "bytes": 114527,
+      "sha256": "f89dbd4aedcaf9c9e4ec9d8e745d5d54596500ec357d7489c914a2f126805adf",
+      "downloadedAt": "2026-10-22T07:47:19Z",
+      "rawFile": "data/raw/statsbomb/matches-43-3.json"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "data/fixtures/cricsheet/1082591.json",
+      "bytes": 88393,
+      "sha256": "8df2013aad10bc51a33c2f5f3321aba519f790ebb1df25dcbed15bd7b77c1e70"
+    },
+    {
+      "file": "data/fixtures/cricsheet/1082625.json",
+      "bytes": 95348,
+      "sha256": "2c6cf9990a11bff997e57599d5920fb655a17477b2506ebeb6572f41fc5b0730"
+    },
+    {
+      "file": "data/fixtures/cricsheet/1082648.json",
+      "bytes": 57532,
+      "sha256": "738aa95d0b620a75f9f7c3825348b5156f98f040a7417809be55e8d8937d5aa8"
+    },
+    {
+      "file": "data/fixtures/cricsheet/1422119.json",
+      "bytes": 89655,
+      "sha256": "2349e88a7697e8d223679b2c4f434380c3d5f9b65b6b0f3fc63cfec7845973eb"
+    },
+    {
+      "file": "data/fixtures/cricsheet/1473438.json",
+      "bytes": 79999,
+      "sha256": "4de702a2ca0f716f6218425ceb19c481626122043bcb3c6e0e092a48d87d845f"
+    },
+    {
+      "file": "data/fixtures/cricsheet/1527674.json",
+      "bytes": 82564,
+      "sha256": "9e2132019d6ec41b7cd70e80bc232016e113570fc351ca39e55450d79783ccc9"
+    },
+    {
+      "file": "data/fixtures/cricsheet/335982.json",
+      "bytes": 81074,
+      "sha256": "3e48c8ecbdb4ad3c0e1f1a857bf318bf3a4c688bc4be7da16652fb7f49010f36"
+    },
+    {
+      "file": "data/fixtures/cricsheet/MANIFEST.json",
+      "bytes": 2091,
+      "sha256": "f19d0bee0685cdacbcac00d15bafd52519d56c418d45a08dbec122eabf342942"
+    },
+    {
+      "file": "data/fixtures/openf1/laps.json",
+      "bytes": 526418,
+      "sha256": "fa44efcdf9a4cbf9b9f9550322511ef94645e765aa5b231c11b86e69897d39a7"
+    },
+    {
+      "file": "data/fixtures/openf1/sessions-2023-race.json",
+      "bytes": 8229,
+      "sha256": "1c4ebc39663a3ae9e1ce069a7739e4b2f14366b75e79769317499bcf8b6a3554"
+    },
+    {
+      "file": "data/fixtures/statsbomb/competitions.json",
+      "bytes": 34887,
+      "sha256": "e6cd42f5d8956d6aa30fb917ce8d4c3b3df1879a93f02f8feba820930a6971fa"
+    },
+    {
+      "file": "data/fixtures/statsbomb/events-7525.json.gz",
+      "bytes": 238185,
+      "sha256": "6dfc6712b10ba694a04138639a382ddf7d3deb48df11f920c5137655a2beca4b"
+    },
+    {
+      "file": "data/fixtures/statsbomb/matches-43-3.json",
+      "bytes": 114527,
+      "sha256": "f89dbd4aedcaf9c9e4ec9d8e745d5d54596500ec357d7489c914a2f126805adf"
+    },
+    {
+      "file": "data/derived/ipl-balls.csv.gz",
+      "bytes": 1699211,
+      "sha256": "7bf0759394421782a6e5986263562f7c96e0d8877db4d5381052f4bea4e15949"
+    },
+    {
+      "file": "data/derived/ipl-matches.csv.gz",
+      "bytes": 13633,
+      "sha256": "10f76a0c088ae7e6bfbe786d978dca1025f6442e03a40f412ac0ead11aae48d8"
+    }
+  ]
+}
