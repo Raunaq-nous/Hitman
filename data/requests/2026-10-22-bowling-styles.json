@@ -1,0 +1,5 @@
+{
+  "requestedAt": "2026-10-22T21:00:00Z",
+  "reason": "Bowling styles for IPL bowlers from Wikidata (CC0) via the Cricsheet people register, for F-E-05 pace vs spin",
+  "sources": ["cricsheet:ipl_male_json", "cricsheet:register/people.csv", "wikidata:bowling style"]
+}
