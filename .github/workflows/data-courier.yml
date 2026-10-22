@@ -64,6 +64,8 @@ jobs:
           set -euo pipefail
           npm run data:fixtures -- data/raw/cricsheet/ipl_json
           npx tsx scripts/courier/derive-cricsheet.ts data/raw/cricsheet/ipl_json data/derived
+          # bowling styles from Wikidata (CC0); a failure is recorded in the meta file, never filled in
+          node scripts/courier/bowling-styles.mjs data/raw/cricsheet/ipl_json data/derived || echo '{"status":"step-failed"}' > data/derived/bowling-styles.meta.json
           node scripts/courier/samples-and-manifest.mjs
       - name: Check sizes
         run: |
