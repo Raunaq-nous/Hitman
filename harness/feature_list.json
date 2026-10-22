@@ -442,8 +442,8 @@
       "depends_on": [
         "F-D-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "Courier run 39743455392 (data-courier.yml on eef1491) ran npm run data:cricsheet on the runner: downloaded ipl_male_json.zip (5,187,774 B, sha256 6fe9142d…, 1245 match files) and ingested events + ball incidents; data/manifest.json records URL, time, SHA-256 and attribution 'Data from Cricsheet (cricsheet.org)'. 7 fixtures in data/fixtures/cricsheet incl. tie 1082625 and D/L 1082648; npm test -- cricsheet 7/7 (ingest from fixtures stores events+incidents, idempotent re-run)."
     },
     {
       "id": "F-D-04",
@@ -457,8 +457,8 @@
       "depends_on": [
         "F-D-03"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/domain/facts/contract.ts: ordering, ≤6 legal balls/over, legal-ball cap, ≤10 wickets, non-negative runs (monotonic), tie/winner agreement with totals; rain-affected (method set), no-result and missing-chase matches marked not chase-eligible. npm test -- contract 4/4 on the 7 real fixtures plus broken-data cases."
     },
     {
       "id": "F-D-05",
@@ -472,8 +472,8 @@
       "depends_on": [
         "F-D-03"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "getStateAt(eventId, effectiveAt, observedCutoff) in src/domain/facts/service.ts; npm test -- leakage 4/4 incl. an injected post-cutoff incident having no effect. Depends on F-D-03 now passing."
     },
     {
       "id": "F-D-06",
