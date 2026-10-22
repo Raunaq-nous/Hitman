@@ -987,8 +987,8 @@
       "depends_on": [
         "F-E-03"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/domain/stories/{config,service,types}.ts: explicit per-sport thresholds (cricket swing ≥0.15 over 6 balls, collapse ≥3 wkts in 12 balls, big over ≥18, tense finish ≤12 balls at WP 0.3–0.7; football late goal ≥80', big chance xG ≥0.3; F1 pit-out laps, fastest lap ≥1.5 s under median) → template-titled stories with priority and incident receipts, sorted. npm test -- stories 6/6 on real fixtures (GL v MI 2017 tie: 'Mumbai Indians need 2 off 2 balls with 1 wicket left' tops; KKR v RCB 2008: RCB collapse, 'KKR take 24 off over 15', no swing; Russia 5–0 Saudi Arabia: 5 goals, 2 late; Bahrain 2023: pit stories = pit-out laps); tennis/basketball yield none."
     },
     {
       "id": "F-K-07",
