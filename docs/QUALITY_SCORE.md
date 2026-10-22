@@ -30,3 +30,13 @@ Grades: A (complete, tested, documented) · B (works, minor gaps) · C (partial)
 
 Scoring rose from about 1.30–1.40 runs per legal ball before 2024 to 1.53–1.58 in 2024–2026, and mean targets from about 170 to 191–197. In 2026 chasers won **64.3%** of matches against 45–51% in 2023–2025. A map fitted on the three previous seasons under-predicts 2026 chasers by up to 26 points (D-029).
 
+## Known issue: calibration gate F-E-04 (D-030, D-031, D-032)
+Walk-forward recalibration (η = 0, tuned on 2023–2024) on 2025+2026 pooled (138 matches): joint intercept/slope test **rejected** (Wald 7.45 > 5.99); Brier 0.121844 beats the exact model (0.181286) and the run-rate logistic (0.127944); a calibrated model passes 96% of simulated seasons; minimum detectable shift 10 points.
+
+| Season | Matches | Chase win rate | Brier (walk-forward / exact / run-rate logistic) | Intercept, slope | Wald (5% critical 5.99) |
+|---|---|---|---|---|---|
+| 2025 | 68 | 51.5% | 0.128981 / 0.172141 / 0.128824 | 0.20, 0.81 | 1.01 |
+| 2026 | 70 | 64.3% | 0.11491 / 0.190169 / 0.12709 | 1.29, 1.68 | 8.71 |
+
+Grades use the exact model's option differences and are labelled "provisional calibration", as are win probabilities on the Desk and in Event Rooms.
+
