@@ -10,3 +10,8 @@ export async function getPreferences(userId: string): Promise<Preferences | null
   const r = await repo.loadPreferences(userId);
   return r ? { sports: r.favouriteSports as Preferences["sports"], language: r.language as Language } : null;
 }
+
+/** Save only the language (the nav toggle), keeping the chosen sports. */
+export async function setLanguage(userId: string, language: Language): Promise<Language> {
+  return (await repo.saveLanguage(userId, language)).language as Language;
+}

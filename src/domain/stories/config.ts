@@ -38,3 +38,33 @@ export const PRIORITY: Record<string, { base: number; scale: number }> = {
   "pit-stop": { base: 30, scale: 0 },
   pace: { base: 20, scale: 10 },
 };
+
+type P = Record<string, string | number>;
+const plural = (n: number | string, word: string): string => `${n} ${word}${Number(n) === 1 ? "" : "s"}`;
+const possessive = (name: string | number): string => (String(name).endsWith("s") ? `${name}’` : `${name}’s`);
+
+/** Story titles in each language, built only from the story's own parameters. */
+export const TITLES: Record<"en" | "hi", Record<string, (p: P) => string>> = {
+  en: {
+    "big-over": (p) => `${p.team} take ${p.runs} off over ${p.over}`,
+    collapse: (p) => `${p.team} lose ${p.wickets} wickets in ${plural(p.balls, "ball")}`,
+    swing: (p) => `${possessive(p.team)} chase swings from ${p.from}% to ${p.to}%`,
+    "tense-finish": (p) => `${p.team} need ${p.runs} off ${plural(p.balls, "ball")} with ${plural(p.wickets, "wicket")} left (${p.wp}% to win)`,
+    "late-goal": (p) => `${p.who} scores late for ${p.team} (${p.minute}')`,
+    goal: (p) => `${p.who} scores for ${p.team} (${p.minute}')`,
+    "big-chance-missed": (p) => `${p.who} misses a big chance for ${p.team} (${p.minute}', xG ${p.xg})`,
+    "pit-stop": (p) => `Car ${p.car} leaves the pits on lap ${p.lap}`,
+    pace: (p) => `Car ${p.car} laps ${p.gain} s under its median on lap ${p.lap}`,
+  },
+  hi: {
+    "big-over": (p) => `${p.team} ने ओवर ${p.over} में ${p.runs} रन बनाए`,
+    collapse: (p) => `${p.team} ने ${p.balls} गेंदों में ${p.wickets} विकेट गंवाए`,
+    swing: (p) => `${p.team} के पीछा करने की जीत की संभावना ${p.from}% से ${p.to}% हुई`,
+    "tense-finish": (p) => `${p.team} को ${p.balls} गेंदों में ${p.runs} रन चाहिए, ${p.wickets} विकेट बाकी (जीत की संभावना ${p.wp}%)`,
+    "late-goal": (p) => `${p.who} ने ${p.team} के लिए देर से गोल किया (${p.minute}')`,
+    goal: (p) => `${p.who} ने ${p.team} के लिए गोल किया (${p.minute}')`,
+    "big-chance-missed": (p) => `${p.who} ने ${p.team} के लिए बड़ा मौका गंवाया (${p.minute}', xG ${p.xg})`,
+    "pit-stop": (p) => `कार ${p.car} लैप ${p.lap} पर पिट से निकली`,
+    pace: (p) => `कार ${p.car} ने लैप ${p.lap} पर अपने मीडियन से ${p.gain} सेकंड कम का लैप लगाया`,
+  },
+};

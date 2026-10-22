@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useSyncExternalStore } from "react";
 
-const DEPTHS = [["quick", "Quick"], ["tactical", "Tactical"], ["analyst", "Analyst"]] as const;
+const DEPTHS = [["quick"], ["tactical"], ["analyst"]] as const;
 type Depth = (typeof DEPTHS)[number][0];
 const KEY = "alterego.desk.depth";
 const Ctx = createContext<Depth>("quick");
@@ -27,14 +27,14 @@ function choose(d: Depth): void {
 }
 
 /** Holds the reader's depth (remembered on this device) and renders the switch above its children. */
-export function DepthProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
+export function DepthProvider({ labels, children }: { labels: { legend: string } & Record<Depth, string>; children: React.ReactNode }): React.JSX.Element {
   const depth = useSyncExternalStore(subscribe, read, () => "quick" as Depth);
   return (
     <Ctx.Provider value={depth}>
       <fieldset className="desk-depth" data-testid="depth-switch">
-        <legend>Depth</legend>
-        {DEPTHS.map(([d, label]) => (
-          <label key={d}><input type="radio" name="depth" value={d} checked={depth === d} onChange={() => choose(d)} /> {label}</label>
+        <legend>{labels.legend}</legend>
+        {DEPTHS.map(([d]) => (
+          <label key={d}><input type="radio" name="depth" value={d} checked={depth === d} onChange={() => choose(d)} /> {labels[d]}</label>
         ))}
       </fieldset>
       {children}
