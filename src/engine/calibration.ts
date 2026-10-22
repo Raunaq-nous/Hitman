@@ -58,3 +58,35 @@ export function calibrationGate(bs: Bucket[], minN = 200, maxErrorPts = 5): { ok
   const failing = checked.filter((b) => (b.errorPts as number) > maxErrorPts);
   return { ok: failing.length === 0, failing, checked: checked.length };
 }
+
+export interface BucketPower { lo: number; hi: number; n: number; clusters: number; sePts: number; pWithin: number }
+
+/** Standard normal CDF (Abramowitz–Stegun 7.1.26 erf, error < 1.5e-7). */
+export function normalCdf(z: number): number {
+  const x = Math.abs(z) / Math.SQRT2, t = 1 / (1 + 0.3275911 * x);
+  const erf = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+  return z >= 0 ? (1 + erf) / 2 : (1 - erf) / 2;
+}
+
+/**
+ * How well the gate can tell calibrated from miscalibrated. Samples in one cluster (one match) share an outcome, so
+ * under perfect calibration a bucket's observed rate has variance Σ n_c² q_c(1−q_c) / N² over clusters c. Returns
+ * each gated bucket's standard error and the chance a perfectly calibrated model lands within `tolerancePts`, and the
+ * chance it passes every gated bucket (buckets treated as independent).
+ */
+export function gatePower(samples: (Sample & { cluster: string })[], tolerancePts = 5, minN = 200): { buckets: BucketPower[]; passProbability: number } {
+  const out: BucketPower[] = [];
+  for (let i = 0; i < 10; i++) {
+    const lo = i / 10, hi = (i + 1) / 10;
+    const inB = samples.filter((s) => s.p >= lo && (i === 9 ? s.p <= hi : s.p < hi));
+    if (inB.length < minN) continue;
+    const per = new Map<string, { n: number; q: number }>();
+    for (const s of inB) { const c = per.get(s.cluster) ?? { n: 0, q: 0 }; c.n++; c.q += s.p; per.set(s.cluster, c); }
+    let v = 0;
+    for (const c of per.values()) { const q = c.q / c.n; v += c.n * c.n * q * (1 - q); }
+    const se = Math.sqrt(v) / inB.length;
+    const pWithin = se === 0 ? 1 : 2 * normalCdf(tolerancePts / 100 / se) - 1;
+    out.push({ lo, hi, n: inB.length, clusters: per.size, sePts: se * 100, pWithin });
+  }
+  return { buckets: out, passProbability: out.reduce((a, b) => a * b.pWithin, 1) };
+}

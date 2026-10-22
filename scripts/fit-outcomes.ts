@@ -47,7 +47,7 @@ if (process.argv[1]?.endsWith("fit-outcomes.ts")) {
   const years = [...new Set(samples.map((s) => s.year))].sort();
   const heldOut = years.slice(-3), train = years.slice(0, -3);
   const halfLifeYears = Number(process.env.HALF_LIFE ?? 4);
-  const artifact = fitOutcomes(samples, train, heldOut, { halfLifeYears, bucketK: 20, parentK: 50 }, version);
+  const artifact = fitOutcomes(samples, train, heldOut, { halfLifeYears, bucketK: Number(process.env.BUCKET_K ?? 200), parentK: Number(process.env.PARENT_K ?? 500) }, version);
   const body = JSON.stringify(artifact);
   const hash = createHash("sha256").update(body).digest("hex");
   mkdirSync("data/models", { recursive: true });

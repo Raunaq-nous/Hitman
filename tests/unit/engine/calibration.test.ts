@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyIsotonic, buckets, calibrationGate, fitIsotonic, type Sample } from "@/engine/calibration";
+import { applyIsotonic, buckets, calibrationGate, fitIsotonic, gatePower, normalCdf, type Sample } from "@/engine/calibration";
 
 // deterministic pseudo-random generator for synthetic test samples
 function rng(seed: number): () => number {
@@ -46,5 +46,32 @@ describe("calibration: buckets and gate", () => {
     expect(bs[3]).toEqual({ lo: 0.3, hi: 0.4, n: 0, meanPredicted: null, observed: null, errorPts: null });
     expect(calibrationGate(bs)).toEqual({ ok: true, failing: [], checked: 0 });
     expect(calibrationGate(bs, 1).ok).toBe(false);
+  });
+});
+
+describe("gate power (calibration)", () => {
+  it("normalCdf matches known values", () => {
+    expect(normalCdf(0)).toBeCloseTo(0.5, 7);
+    expect(normalCdf(1.959964)).toBeCloseTo(0.975, 6);
+    expect(normalCdf(-1)).toBeCloseTo(0.158655, 6);
+  });
+
+  it("clustered samples have a larger standard error than independent ones", () => {
+    // 400 samples at p = 0.5: as 400 independent clusters, then as 20 clusters of 20 (one outcome each)
+    const flat = Array.from({ length: 400 }, (_, i) => ({ p: 0.55, y: (i % 2) as 0 | 1, cluster: `m${i}` }));
+    const grouped = flat.map((s, i) => ({ ...s, cluster: `m${Math.floor(i / 20)}` }));
+    const a = gatePower(flat).buckets[0], b = gatePower(grouped).buckets[0];
+    expect(a).toMatchObject({ lo: 0.5, n: 400, clusters: 400 });
+    expect(a.sePts).toBeCloseTo(100 * Math.sqrt(0.55 * 0.45 / 400), 9);
+    expect(b.clusters).toBe(20);
+    expect(b.sePts).toBeCloseTo(a.sePts * Math.sqrt(20), 9);
+    expect(b.pWithin).toBeLessThan(a.pWithin);
+    expect(gatePower(flat).passProbability).toBe(a.pWithin);
+  });
+
+  it("skips buckets below minN; a certain bucket has zero error; no gated buckets pass trivially", () => {
+    const sure = Array.from({ length: 300 }, (_, i) => ({ p: 1, y: 1 as const, cluster: `m${i}` }));
+    expect(gatePower(sure).buckets[0]).toMatchObject({ lo: 0.9, sePts: 0, pWithin: 1 });
+    expect(gatePower(sure.slice(0, 10))).toEqual({ buckets: [], passProbability: 1 });
   });
 });

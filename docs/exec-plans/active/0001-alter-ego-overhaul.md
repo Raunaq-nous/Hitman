@@ -68,6 +68,9 @@ Features: F-Z-01, F-Z-02, F-Z-03
 | D-018 | 2026-10-21 | Legacy fantasy contest screens (team builder) stay, wrapped in a `.legacy-dark` surface with AA-lifted colours, until the Decision Lab replaces them | Keeps crews' existing contests working without fabricating anything |
 | D-019 | 2026-10-21 | Landing names no real athletes (persona lineage removed from the landing); the roster is presented as original AI characters | Personality rights are actively enforced in India; "no likeness" is safest; lineage, if ever shown, belongs on reviewed roster pages |
 | D-012 | 2026-10-21 | Cloud session has no working `gh` login; CI status, PRs and merges go through the GitHub API (MCP) instead | Same effect, no interactive auth needed |
+| D-020 | 2026-10-22 | Real data comes through `.github/workflows/data-courier.yml`: a request file under `data/requests/` triggers a runner that downloads Cricsheet IPL, an OpenF1 historical sample and a StatsBomb open-data sample, runs the ingest scripts and commits only fixtures, gzipped derived tables and `data/manifest.json` (URL, time, SHA-256, attribution). Supersedes D-016. Missing source records (OpenF1 pit stops for session 7953 → 404) are recorded as missing, never filled | The VM network policy can't change; GitHub's runners can reach the sources; raw files stay out of git |
+| D-021 | 2026-10-22 | Outcome model v1: buckets by (target band, balls, wickets, required rate), shrinkage pseudo-counts 200/500, era half-life 4 y; the chaser may play the style of any side with fewer wickets in hand ("free disposal", `predictStyles`) and the exact model plays the best style | Raw buckets made WP non-monotonic in wickets (21,657 grid violations) and runs (363); with styles + shrinkage both are 0 across the grid and the martingale property holds exactly under the played style |
+| D-022 | 2026-10-22 | F-E-04 stays failing; the criterion and the held-out choice (latest three seasons, 2024–26) are not changed. Two findings, both in `data/models/calibration-v1.json`: (1) real drift — the 0.4–0.8 buckets are 17–21 points under-predicted (≈3.5 SE; scoring rose from ~1.33 to ~1.55 runs/ball, 2026 chasers won 63%) after five attempts (era weights, isotonic half-life, target conditioning, free disposal, era-adjusted runs required); (2) the gate is underpowered at this data size — balls of one match share an outcome, each bucket holds only ~90–120 matches (SE 4.6–6.8 pts), so a perfectly calibrated model would pass all ten buckets only 2.4% of the time (`gatePower`) | Tuning until a noisy gate passes would be fitting noise; picking easier seasons would weaken it. Owner decision logged in HUMAN_TODO |
 
 ## Progress log
 <!-- newest first: date, feature, plan, result -->
@@ -109,5 +112,6 @@ Features: F-Z-01, F-Z-02, F-Z-03
 
 
 ## Surprises and discoveries
+- 2026-10-22: Cricsheet renamed the IPL archive to `ipl_male_json.zip`; OpenF1 has no pit records for the 2023 Bahrain race; IPL chases in 2024–26 are won far more often than any pre-2024 model predicts (see D-022).
 
 ## Outcomes

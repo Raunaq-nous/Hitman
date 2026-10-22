@@ -75,7 +75,7 @@ const shrink = (c: Record<Outcome, number>, prior: OutcomeDist, k: number): Outc
 };
 
 /** Fit on samples from `trainYears` only (later seasons can't leak in). Era weight 0.5^((latest − year) / halfLife). */
-export function fitOutcomes(samples: Sample[], trainYears: number[], heldOutYears: number[], opts = { halfLifeYears: 4, bucketK: 20, parentK: 50 }, version = "v1"): OutcomeArtifact {
+export function fitOutcomes(samples: Sample[], trainYears: number[], heldOutYears: number[], opts = { halfLifeYears: 4, bucketK: 200, parentK: 500 }, version = "v1"): OutcomeArtifact {
   const train = new Set(trainYears);
   const latest = Math.max(...trainYears);
   const g = zero();
@@ -100,4 +100,13 @@ export function fitOutcomes(samples: Sample[], trainYears: number[], heldOutYear
 /** Distribution for a state in a chase of `target`: its bucket, else its parent, else the global distribution. */
 export function predictOutcome(a: OutcomeArtifact, s: ChaseState, target: number): OutcomeDist {
   return a.buckets[bucketKey(s, target)] ?? a.parents[parentKey(s, target)] ?? a.global;
+}
+
+/**
+ * Playing styles open to a chaser: its own bucket's distribution plus those of sides with fewer wickets in hand (a
+ * side can always bat as if it had fewer wickets). With createChaseModel this keeps WP monotonic in wickets.
+ */
+export function predictStyles(a: OutcomeArtifact, s: ChaseState, target: number): OutcomeDist[] {
+  const own = band(s.w, WICKET_BANDS);
+  return [predictOutcome(a, s, target), ...WICKET_BANDS.slice(0, own).map((w) => predictOutcome(a, { ...s, w }, target))];
 }
