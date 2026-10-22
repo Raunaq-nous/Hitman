@@ -22,6 +22,37 @@ export function cricketWp(artifact: OutcomeArtifact): WinProbability {
   };
 }
 
+export interface ChasePoint { wp: number; i: IncidentInput; s: ChaseState }
+
+/** WP after every legal ball of the chase (and after the ball that ends it); null when there is no exact WP. */
+export function chaseSeries(e: ParsedEvent, wp: WinProbability): { team: string; target: number; start: number; series: ChasePoint[] } | null {
+  // rain-affected chases (revised targets) have no exact WP
+  if (e.sport !== "cricket" || typeof e.outcome.method === "string") return null;
+  const chase = e.incidents.filter((i) => i.type === "ball" && i.payload.innings === 2 && i.payload.superOver !== true);
+  const target = chase.find((i) => typeof i.payload.target === "number")?.payload.target as number | undefined;
+  if (target === undefined) return null;
+  let s: ChaseState = { b: 120, w: 10, r: target };
+  const series: ChasePoint[] = [];
+  for (const i of chase) {
+    const p = i.payload as { runs: number; extras: number; extraType: string | null; wicket: boolean };
+    const legal = p.extraType !== "wides" && p.extraType !== "noballs";
+    s = { b: s.b - (legal ? 1 : 0), w: s.w - (p.wicket ? 1 : 0), r: s.r - p.runs - p.extras };
+    if (legal || s.r <= 0 || s.w <= 0) series.push({ wp: wp(target, { b: Math.max(0, s.b), w: Math.max(0, s.w), r: s.r }), i, s });
+  }
+  return { team: chase[0].payload.team as string, target, start: wp(target, { b: 120, w: 10, r: target }), series };
+}
+
+/** The biggest |ΔWP| over any window of `window` legal balls, with the incidents it spans. */
+export function maxSwing(c: NonNullable<ReturnType<typeof chaseSeries>>, window = THRESHOLDS.cricket.swingWindowBalls): { from: number; to: number; swing: number; incidents: IncidentInput[] } {
+  let best = { from: c.start, to: c.start, swing: 0, incidents: [] as IncidentInput[] };
+  c.series.forEach((x, k) => {
+    const from = k < window ? c.start : c.series[k - window].wp;
+    const d = Math.abs(x.wp - from);
+    if (d > best.swing) best = { from, to: x.wp, swing: d, incidents: c.series.slice(Math.max(0, k - window + 1), k + 1).map((p) => p.i) };
+  });
+  return best;
+}
+
 function story(e: ParsedEvent, kind: string, title: string, magnitude: number, incidents: IncidentInput[]): Story {
   const p = PRIORITY[kind];
   const last = incidents[incidents.length - 1];
@@ -64,18 +95,9 @@ function cricketStories(e: ParsedEvent, wp: WinProbability): Story[] {
       } else start++;
     }
   }
-  // the chase: WP after every legal ball (rain-affected and tied-on-a-revised-target chases have no exact WP)
-  const chase = balls.filter((b) => b.innings === 2);
-  const target = chase.find((b) => b.target !== undefined)?.target;
-  if (target === undefined || typeof e.outcome.method === "string") return out;
-  const team = chase[0].team;
-  let s: ChaseState = { b: 120, w: 10, r: target };
-  const series: { wp: number; i: IncidentInput; s: ChaseState }[] = [];
-  const start = wp(target, s);
-  for (const b of chase) {
-    s = { b: s.b - (b.legal ? 1 : 0), w: s.w - (b.wicket ? 1 : 0), r: s.r - b.runs };
-    if (b.legal || s.r <= 0 || s.w <= 0) series.push({ wp: wp(target, { b: Math.max(0, s.b), w: Math.max(0, s.w), r: s.r }), i: b.i, s });
-  }
+  const chase = chaseSeries(e, wp);
+  if (!chase) return out;
+  const { team, start, series } = chase;
   const W = T.swingWindowBalls;
   const windows = series.map((x, k) => ({ k, from: k < W ? start : series[k - W].wp, to: x.wp })).map((w) => ({ ...w, d: Math.abs(w.to - w.from) }));
   const taken = new Set<number>();

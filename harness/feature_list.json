@@ -916,8 +916,8 @@
         "F-E-03",
         "F-G-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "/desk (src/app/desk/page.tsx ← src/domain/desk/service.ts): cross-sport brief from the committed recorded replays (7 IPL matches, StatsBomb 7525, OpenF1 Bahrain 2023) through the adapter registry and story detector; ranked by modelled swing (largest six-ball |ΔWP|, exact chase WP on outcomes-v1 sha256 32164c8bf430), each item with top stories and receipts (source, class, observed time) plus attribution; football/F1 say 'Swing: not modelled' (D-023); basketball and tennis listed as source-pending with reasons. npm run test:e2e -- desk passes (≥5 items across cricket/football/F1, swings sorted desc, receipts open, axe clean); full verify PASS (51 e2e). Evidence: docs/evidence/F-K-01/desk-{390,1280}-{light,dark}.png."
     },
     {
       "id": "F-K-02",
