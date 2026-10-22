@@ -1,4 +1,4 @@
-import { DataStateBadge, Receipt } from "@/ui";
+import { DataStateBadge, ProvisionalBadge, Receipt } from "@/ui";
 import { DEPTHS, deskBrief, phraseItem } from "@/domain/desk/service";
 import { storyTitle } from "@/domain/stories/service";
 import { notFound } from "next/navigation";
@@ -46,6 +46,7 @@ export default async function DeskPage({ params }: { params: Promise<{ lang: str
                   <span className="desk-swing-value" data-testid="swing">{m("desk.swing", { pts: pts(it.swing.value) })}</span>
                   <span className="desk-swing-note tabular">{m("desk.swingNote", { team: it.swing.team, from: pts(it.swing.from), to: pts(it.swing.to) })}</span>
                   <Receipt receipt={it.swing.receipt} attribution={it.attribution} details={[it.swing.model]} labels={labels}>{m("receipt")}</Receipt>
+                  <ProvisionalBadge label={m("calibration.provisional")} />
                 </div>
               ) : (
                 <p className="desk-swing-note" data-testid="swing-none">{m("desk.notModelled")} {it.swingReason && m(`desk.reason.${it.swingReason}`)}</p>

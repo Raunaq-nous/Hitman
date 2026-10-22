@@ -14,6 +14,7 @@ test.describe("i18n", () => {
     await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "डेस्क" })).toBeVisible();
     const first = page.getByTestId("desk-item").first();
     await expect(first.getByTestId("swing")).toHaveText(/^स्विंग \d+ अंक$/);
+    await expect(first.getByTestId("provisional")).toHaveText("अस्थायी कैलिब्रेशन");
     await page.getByTestId("depth-switch").getByLabel("रणनीतिक").check();
     await expect(first.getByTestId("depth-text")).toContainText(/की जीत की संभावना छह गेंदों में \d+% से \d+% हुई/);
     await first.locator(".ui-receipt-toggle").first().click();
