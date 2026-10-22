@@ -37,6 +37,11 @@ describe("cricsheet adapter", () => {
     expect(isRainAffected(parseCricsheet({ ...doc, info: { ...doc.info, outcome: { winner: "Team A", method: "D/L" } } }, "2"))).toBe(true);
     expect(isTie(parseCricsheet({ ...doc, info: { ...doc.info, outcome: { result: "tie" } } }, "3"))).toBe(true);
     expect(() => parseCricsheet({ info: {} }, "x")).toThrow();
+    // a no-ball that also went for byes is still a no-ball (not a legal ball), whatever order the keys come in
+    const nbByes = { batter: "b2", bowler: "a3", runs: { batter: 0, extras: 5, total: 5 }, extras: { byes: 4, noballs: 1 } };
+    const withNb = parseCricsheet({ ...doc, innings: [doc.innings[0], { ...doc.innings[1], overs: [{ over: 0, deliveries: [nbByes] }] }] }, "4");
+    expect(withNb.incidents[3].payload).toMatchObject({ extraType: "noballs", extras: 5 });
+    expect(e.incidents[3].payload).toMatchObject({ target: 6, targetOvers: 20 });
   });
 
   describe("ingest", () => {

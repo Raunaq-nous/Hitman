@@ -41,5 +41,9 @@ describe("data contract on real Cricsheet fixtures", () => {
     expect(checkCricketContract(extraLegal, 20).violations.length).toBeGreaterThan(0);
     const negative = { ...e, incidents: e.incidents.map((x, i) => (i === 3 ? { ...x, payload: { ...(x.payload as object), runs: -4 } } : x)) };
     expect(checkCricketContract(negative).violations.join(" ")).toMatch(/negative runs/);
+    // a chase shortened to 10 overs without a recorded method is valid data but not chase-eligible
+    const short = { ...e, incidents: e.incidents.map((x) => (x.payload.innings === 2 ? { ...x, payload: { ...x.payload, targetOvers: 10 } } : x)) };
+    expect(checkCricketContract(short).chaseEligible).toBe(false);
+    expect(checkCricketContract(short).reasons.join(" ")).toMatch(/10 overs/);
   });
 });

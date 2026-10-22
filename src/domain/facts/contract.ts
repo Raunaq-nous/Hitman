@@ -38,6 +38,8 @@ export function checkCricketContract(e: ParsedEvent, maxOvers = 20): ContractRes
   const o = e.outcome as { winner?: string; result?: string; method?: string };
   const [first, second] = innings.map((inn) => main.find((b) => b.innings === inn)?.team as string);
   if (typeof o.method === "string") reasons.push(`target revised (${o.method}): rain-affected`);
+  const overs = (e.incidents.find((i) => typeof i.payload.targetOvers === "number")?.payload.targetOvers as number | undefined);
+  if (overs !== undefined && overs < maxOvers) reasons.push(`chase over ${overs} overs, not ${maxOvers}`);
   if (o.result === "no result") reasons.push("no result");
   if (innings.length < 2) reasons.push("no second innings");
   if (!o.method && innings.length === 2) {

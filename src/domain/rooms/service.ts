@@ -40,7 +40,7 @@ export function eventRoom(sport: SportSlug, slug: string): EventRoom | null {
       if (!leverage || v > leverage.value) leverage = { value: v, at: ballLabel(120 - s.b) };
     }
   }
-  const noModel = chase ? null : sport === "cricket" ? "Rain-affected or no chase: no exact win probability." : "No win-probability model for this sport yet.";
+  const noModel = chase ? null : sport === "cricket" ? "Rain-affected, shortened or no chase: no exact win probability." : "No win-probability model for this sport yet.";
   return {
     ...summary(e),
     sport,

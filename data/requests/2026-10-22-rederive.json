@@ -1,0 +1,5 @@
+{
+  "requestedAt": "2026-10-22T17:00:00Z",
+  "reason": "Re-derive after the review gate: no-balls with byes stay no-balls; derived table records target_overs so shortened chases are excluded",
+  "sources": ["cricsheet:ipl_male_json", "openf1:2023-race-sample", "statsbomb:43/3-sample"]
+}

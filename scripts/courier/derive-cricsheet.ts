@@ -12,7 +12,7 @@ const csv = (v: unknown): string => {
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 };
 
-const ballCols = ["match_id", "season", "date", "innings", "batting_team", "over", "ball", "batter", "bowler", "runs_batter", "extras", "extra_type", "wicket", "wicket_kind", "target"];
+const ballCols = ["match_id", "season", "date", "innings", "batting_team", "over", "ball", "batter", "bowler", "runs_batter", "extras", "extra_type", "wicket", "wicket_kind", "target", "target_overs"];
 const matchCols = ["match_id", "season", "date", "team1", "team2", "winner", "result", "method", "venue"];
 const balls: string[] = [ballCols.join(",")];
 const matches: string[] = [matchCols.join(",")];
@@ -24,7 +24,7 @@ for (const f of readdirSync(rawDir).filter((x) => /^\d+\.json$/.test(x)).sort())
   matches.push([id, e.season, e.startsAt.toISOString().slice(0, 10), e.participants[0].name, e.participants[1].name, o.winner, o.result, o.method, e.venue].map(csv).join(","));
   for (const i of e.incidents) {
     const p = i.payload as Record<string, unknown>;
-    balls.push([id, e.season, e.startsAt.toISOString().slice(0, 10), p.innings, p.team, p.over, p.ball, p.batter, p.bowler, p.runs, p.extras, p.extraType, p.wicket ? 1 : 0, p.wicketKind, p.target].map(csv).join(","));
+    balls.push([id, e.season, e.startsAt.toISOString().slice(0, 10), p.innings, p.team, p.over, p.ball, p.batter, p.bowler, p.runs, p.extras, p.extraType, p.wicket ? 1 : 0, p.wicketKind, p.target, p.targetOvers].map(csv).join(","));
   }
 }
 

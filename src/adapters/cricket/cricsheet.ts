@@ -46,14 +46,15 @@ export function parseCricsheet(raw: unknown, matchId: string): ParsedEvent {
     for (const over of inn.overs) {
       over.deliveries.forEach((d, j) => {
         const extras = d.extras ?? {};
-        const extraType = Object.keys(extras).find((k) => extras[k] > 0) ?? null;
+        // a wide or no-ball decides legality even when byes or leg-byes also came off it (Cricsheet keys are unordered)
+        const extraType = (["wides", "noballs"] as const).find((k) => (extras[k] ?? 0) > 0) ?? Object.keys(extras).find((k) => extras[k] > 0) ?? null;
         const at = new Date(startsAt.getTime() + n * SECONDS_PER_DELIVERY * 1000);
         incidents.push({
           t: i * 10_000 + over.over * 100 + j,
           seq: 0,
           actor: d.batter,
           type: "ball",
-          payload: { innings: i + 1, superOver: inn.super_over === true, team: inn.team, over: over.over, ball: j, batter: d.batter, bowler: d.bowler, runs: d.runs.batter, extras: d.runs.extras, extraType, wicket: (d.wickets?.length ?? 0) > 0, wicketKind: d.wickets?.[0]?.kind ?? null, ...(inn.target ? { target: inn.target.runs } : {}) },
+          payload: { innings: i + 1, superOver: inn.super_over === true, team: inn.team, over: over.over, ball: j, batter: d.batter, bowler: d.bowler, runs: d.runs.batter, extras: d.runs.extras, extraType, wicket: (d.wickets?.length ?? 0) > 0, wicketKind: d.wickets?.[0]?.kind ?? null, ...(inn.target ? { target: inn.target.runs, targetOvers: inn.target.overs } : {}) },
           sourceId: SOURCE_ID,
           sourceRef: `${matchId}:${i + 1}:${over.over}:${j}`,
           sourceClass: "VERIFIED_DELAYED",
