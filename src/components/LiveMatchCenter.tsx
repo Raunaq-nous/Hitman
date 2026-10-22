@@ -56,10 +56,10 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
 
   const fetchLive = async () => {
     try {
-      setError(null);
       const res = await fetch("/api/live-score");
       const json = await res.json();
       if (json.success && json.data) {
+        setError(null);
         setData(json.data);
       } else {
         setError(json.error || "Failed to fetch");
@@ -73,11 +73,12 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
   };
 
   useEffect(() => {
-    fetchLive();
+    // first fetch on the next tick: state updates belong to the response, not to the effect itself
+    const first = setTimeout(fetchLive, 0);
     if (autoRefresh) {
       intervalRef.current = setInterval(fetchLive, 30000); // Every 30 seconds
     }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+    return () => { clearTimeout(first); if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [autoRefresh]);
 
   const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
