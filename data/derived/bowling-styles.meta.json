@@ -1,0 +1,25 @@
+{
+  "source": "Wikidata (CC0) via Cricsheet people register",
+  "fetchedAt": "2026-10-22T20:34:15.739Z",
+  "register": {
+    "url": "https://cricsheet.org/register/people.csv",
+    "sha256": "a643e7f4479c7e6d448c9ab8d36b1254917d3de356b707f728612ab47113a08f"
+  },
+  "propertyCandidates": [
+    {
+      "id": "P2545",
+      "label": "bowling style",
+      "description": "type of bowling employed by a cricketer"
+    }
+  ],
+  "property": {
+    "id": "P2545",
+    "label": "bowling style",
+    "description": "type of bowling employed by a cricketer"
+  },
+  "status": "ok",
+  "bowlers": 576,
+  "withCricinfoId": 576,
+  "withWikidataItem": 562,
+  "withStyle": 51
+}
