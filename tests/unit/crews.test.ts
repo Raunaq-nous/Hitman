@@ -70,4 +70,17 @@ describe("crews: invite links", () => {
     expect(await joinOrOpen(other.id, c)).toEqual({ id, joined: false });
     await expect(joinOrOpen(other.id, "ZZZZZZ")).rejects.toMatchObject({ code: "NOT_FOUND" });
   });
+
+  it("the same link opened several times at once joins once and opens the crew for every request", async () => {
+    const { joinOrOpen } = await import("@/domain/crews/service");
+    const { makeUser } = await import("../helpers/db");
+    const { prisma } = await import("@/lib/prisma");
+    const { id } = await createCrew(owner.id, "Racing");
+    const c = await code(id);
+    const friend = await makeUser("Friend Racer");
+    const results = await Promise.all(Array.from({ length: 4 }, () => joinOrOpen(friend.id, c)));
+    expect(results.every((r) => r.id === id)).toBe(true);
+    expect(results.filter((r) => r.joined)).toHaveLength(1);
+    expect(await prisma.crewMember.count({ where: { userId: friend.id, crewId: id } })).toBe(1);
+  });
 });
