@@ -15,3 +15,18 @@
 | Trust, legal, privacy | B | Legal pages, export/delete, 18+ gate, AI labels; anti-cheat basics (F-T-05) pending; pages await counsel review |
 | Analytics and scoreboards | A | Event log, KPI queries with fixture tests, `/admin/scoreboards` |
 Grades: A (complete, tested, documented) · B (works, minor gaps) · C (partial) · D (stub) · — (not started). Feature status: 57 of 85 passing in `harness/feature_list.json` at this gardening.
+
+## Measured drift in IPL chases (data/models/calibration-v2.json)
+| Season | Chases | Chase win rate | Mean target | Chase runs per legal ball |
+|---|---|---|---|---|
+| 2019 | 57 | 61.4% | 169.3 | 1.341 |
+| 2020 | 56 | 51.8% | 170.2 | 1.297 |
+| 2021 | 59 | 62.7% | 160.3 | 1.306 |
+| 2022 | 74 | 50.0% | 172.1 | 1.345 |
+| 2023 | 71 | 45.1% | 184 | 1.404 |
+| 2024 | 70 | 51.4% | 191.1 | 1.531 |
+| 2025 | 68 | 51.5% | 193.4 | 1.552 |
+| 2026 | 70 | 64.3% | 197.4 | 1.584 |
+
+Scoring rose from about 1.30–1.40 runs per legal ball before 2024 to 1.53–1.58 in 2024–2026, and mean targets from about 170 to 191–197. In 2026 chasers won **64.3%** of matches against 45–51% in 2023–2025. A map fitted on the three previous seasons under-predicts 2026 chasers by up to 26 points (D-029).
+

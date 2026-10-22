@@ -3,10 +3,11 @@
 STATUS: IN PROGRESS
 CURRENT PHASE: 1
 LAST GATE: none
-NEXT PROMPT: Branch `overhaul` (61/85 passing; verify and verify --clean PASS; CI green at 109c20c). PR Raunaq-nous/Hitman#1 (overhaul → main) is open; merge it only with a merge commit and only when the release criteria pass. Blocked: F-E-04 calibration gate (owner decision, docs/HUMAN_TODO.md, D-022) gates F-E-05..09, the Lab (F-L-*), F-C-02/03, F-R-02..05, F-T-05, F-U-07 (needs /lab) and release F-Z-*. Gate tags gate-0/1/4 at 109c20c can’t be pushed from this environment (403 on tags; HUMAN_TODO). When F-E-04 is decided: build F-E-05 option-conditioned WP next. Restart Postgres after a VM restart (`npm run db:up`).
+NEXT PROMPT: Branch `overhaul` (61/85 passing). F-E-04 built per the owner's D-027 gate and FAILS after three measured attempts (D-029, docs/HUMAN_TODO.md): 2026 drift (chasers won 64.3%), 2025 Brier ties the run-rate logistic, and the specified test is not fair and strict at ~70 matches a season. Owner decision needed; F-E-04 blocks F-E-05..09, the Lab, F-C-02/03, F-R-02..05, F-T-05, F-U-07 and release. Tags: gate-0/1/4 exist (tagger workflow, D-028). PR Raunaq-nous/Hitman#1 open. Restart Postgres after a VM restart (`npm run db:up`).
 
 ## Session log
 <!-- Append newest first: date (UTC), features touched, commits, verification results, blockers, NEXT PROMPT -->
+- 2026-10-22 (UTC) | owner decisions D-027/D-028 recorded; gate tags created via tagger workflow; F-E-04 rolling-origin gate implemented (matchCalibration engine, calibration-v2) and failed after 3 attempts (D-029) | verify --quick PASS | NEXT: owner decision on F-E-04
 - 2026-10-22 (UTC) | F-K-02..05, review-gate (12 findings + npm audit) fixed, courier re-derive + refit, crews invite-link race fixed, gates 0/1/4 closed (tags pending push), PR #1 opened | verify + verify --clean PASS, CI green 109c20c | blocked on F-E-04 | NEXT: owner decision
 - 2026-10-22 (UTC) | F-D-03..07, F-E-01..03, F-G-04, F-K-06, F-K-01..04 passing (62/85) + doc gardening | verify PASS; CI green at b3cbd1c | F-E-04 blocked (D-022, HUMAN_TODO) | note: commit bde1d88 accidentally carries the staged desk page rename (builds only with 830d5bd); history not rewritten | NEXT: F-K-05
 - 2026-10-22 (UTC) | 45/85 passing; `node harness/verify.mjs --clean` PASS (all six steps). Stopped: every remaining feature needs a GitHub push/CI or Cricsheet data, both refused by this environment.

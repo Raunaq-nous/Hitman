@@ -17,7 +17,7 @@
     "data:cricsheet": "node scripts/data-cricsheet.mjs && node scripts/with-env.mjs tsx scripts/ingest-cricsheet.ts",
     "data:fixtures": "node scripts/select-cricsheet-fixtures.mjs",
     "model:outcomes": "tsx scripts/fit-outcomes.ts v1",
-    "model:calibration": "tsx scripts/fit-calibration.ts v1",
+    "model:calibration": "tsx scripts/fit-calibration-rolling.ts",
     "perf": "node scripts/perf.mjs / /desk /lab"
   },
   "dependencies": {
