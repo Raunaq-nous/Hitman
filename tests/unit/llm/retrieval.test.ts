@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildModelInput } from "@/llm/prompt";
 import { retrieve, type RetrievableDoc } from "@/llm/retrieval";
+import { retrieveForSnapshot } from "@/domain/retrieval/service";
 
 const CUTOFF = "2017-05-19T18:00:00Z";
 const docs: RetrievableDoc[] = [
@@ -48,5 +49,11 @@ describe("retrieval with a temporal filter (retrieval)", () => {
     });
     expect(input.facts.map((f) => f.id)).toEqual(["f1"]);
     expect(input.untrusted_context.map((d) => d.id)).toEqual(["a"]);
+  });
+
+  it("the domain retrieval applies both rules: indexable sources only, nothing after the cutoff", () => {
+    const withStatsBomb = [...docs, { id: "e", sourceId: "statsbomb", observedAt: "2017-05-19T10:00:00Z", text: "super over eliminator" }];
+    expect(retrieveForSnapshot("super over eliminator", withStatsBomb, CUTOFF).map((d) => d.id)).toEqual(["a"]);
+    expect(retrieveForSnapshot("super over eliminator", withStatsBomb, "2017-05-20T00:00:00Z", 1).map((d) => d.id)).toEqual(["b"]);
   });
 });
