@@ -16,4 +16,6 @@ export async function signInUi(page: Page, user: { email: string; password: stri
   await page.getByLabel("Email").fill(user.email);
   await page.getByLabel("Password").fill(user.password);
   await page.getByRole("button", { name: /sign in/i }).click();
+  // password hashing is deliberately slow; under a fully parallel suite a sign-in can take several seconds
+  await page.waitForURL((u) => !u.pathname.startsWith("/login"), { timeout: 20_000 });
 }
