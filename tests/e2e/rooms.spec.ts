@@ -14,6 +14,7 @@ test.describe("rooms", () => {
     await expect(page.getByRole("img", { name: /Chasing side’s win probability/ })).toBeVisible();
     const meter = page.getByRole("meter", { name: "Peak leverage of the chase" });
     await expect(meter).toHaveAttribute("aria-valuetext", /^0\.\d\d before ball \d+\.\d$/);
+    await expect(page.getByTestId("provisional")).toHaveCount(2);
     await expect(page.getByRole("status").filter({ hasText: "Historical replay" })).toBeVisible();
     await expect(page.getByTestId("delay-badge")).toHaveText(/^Not live · recorded \d{1,2} \w{3} 2017$/);
     expect(await page.getByTestId("stories").getByRole("listitem").count()).toBeGreaterThan(2);

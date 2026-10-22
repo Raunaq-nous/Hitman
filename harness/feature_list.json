@@ -583,7 +583,7 @@
       ],
       "verify": "npm test -- options",
       "depends_on": [
-        "F-E-04"
+        "F-E-02"
       ],
       "passes": false,
       "evidence": ""
@@ -593,9 +593,10 @@
       "phase": "2",
       "title": "Grader and Brier score",
       "acceptance": [
-        "read_points = WP(pick) − max WP(others) using the calibrated model",
+        "read_points = WP(pick) − max WP(others) using the exact model's option differences (D-031; F-E-04 is a known issue)",
         "brier = (confidence − happened)^2; example 0.7 and 0 gives 0.49",
-        "tests"
+        "tests",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
       ],
       "verify": "npm test -- grader",
       "depends_on": [
@@ -722,7 +723,8 @@
       "acceptance": [
         "What happened / What was reasonable beforehand / Scenario model estimate, each with receipts",
         "WP chart with counterfactual ghost line",
-        "Next read button"
+        "Next read button",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
       ],
       "verify": "npm run test:e2e -- review",
       "depends_on": [
@@ -751,7 +753,8 @@
       "phase": "3",
       "title": "Read Rating display and history",
       "acceptance": [
-        "rating, provisional badge, history chart"
+        "rating, provisional badge, history chart",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
       ],
       "verify": "npm run test:e2e -- rating",
       "depends_on": [
@@ -809,7 +812,8 @@
       "phase": "3",
       "title": "Timing-tower leaderboard",
       "acceptance": [
-        "rank, Read Rating, calibration, calls this week, form, position-change markers"
+        "rank, Read Rating, calibration, calls this week, form, position-change markers",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
       ],
       "verify": "npm run test:e2e -- tower",
       "depends_on": [
@@ -824,7 +828,8 @@
       "phase": "3",
       "title": "“Called it” share cards",
       "acceptance": [
-        "image route renders a graded call; no personal data beyond display name; no prize language"
+        "image route renders a graded call; no personal data beyond display name; no prize language",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
       ],
       "verify": "npm test -- og",
       "depends_on": [
@@ -1116,7 +1121,8 @@
       "phase": "5",
       "title": "Dossier Reveal and share card",
       "acceptance": [
-        "revealed after 10 graded calls; case-file motion; share card"
+        "revealed after 10 graded calls; case-file motion; share card",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
       ],
       "verify": "npm run test:e2e -- reveal",
       "depends_on": [

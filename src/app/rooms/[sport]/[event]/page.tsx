@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { SportSlug } from "@/domain/facts/types";
 import { allRooms, eventRoom } from "@/domain/rooms/service";
-import { DataStateBadge, Meter, Receipt, StreamDelayBadge, SwingSeismograph } from "@/ui";
+import { DataStateBadge, Meter, ProvisionalBadge, Receipt, StreamDelayBadge, SwingSeismograph } from "@/ui";
 import "../../rooms.css";
 
 export const dynamicParams = false;
@@ -39,7 +39,7 @@ export default async function EventRoomPage({ params }: { params: Promise<{ spor
         {room.wp ? (
           <>
             <SwingSeismograph title="Chasing side’s win probability, ball by ball" points={room.wp.points} formatT={over} />
-            <p className="room-note">{room.wp.model} <Receipt receipt={room.receipt} attribution={room.attribution} details={[room.wp.model]}>receipt</Receipt></p>
+            <p className="room-note"><ProvisionalBadge /> {room.wp.model} <Receipt receipt={room.receipt} attribution={room.attribution} details={[room.wp.model]}>receipt</Receipt></p>
           </>
         ) : <p className="room-note" data-testid="no-model">{room.noModel}</p>}
       </section>
@@ -48,7 +48,7 @@ export default async function EventRoomPage({ params }: { params: Promise<{ spor
         {room.leverage ? (
           <>
             <Meter label="Peak leverage of the chase" value={room.leverage.value / 0.5} valueText={`${room.leverage.value.toFixed(2)} before ball ${room.leverage.at}`} />
-            <p className="room-note"><Receipt receipt={room.receipt} attribution={room.attribution} details={[room.wp?.model ?? ""]}>receipt</Receipt></p>
+            <p className="room-note"><ProvisionalBadge /> <Receipt receipt={room.receipt} attribution={room.attribution} details={[room.wp?.model ?? ""]}>receipt</Receipt></p>
           </>
         ) : <p className="room-note">Leverage needs a win-probability model; {room.noModel?.toLowerCase()}</p>}
         <p className="room-note">Leverage is the spread (standard deviation) of the next ball’s win probability; 0.5 is the most a probability can have.</p>

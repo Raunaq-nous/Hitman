@@ -44,10 +44,10 @@ function exactWp(outcomes: OutcomeArtifact, balls: Ball[]): number[] {
   return out;
 }
 
-interface SeasonData { season: number; outcomes: OutcomeArtifact; matches: (WalkForwardMatch & { exact: number[]; baseline: number[] })[] }
+export interface SeasonData { season: number; outcomes: OutcomeArtifact; matches: (WalkForwardMatch & { exact: number[]; baseline: number[] })[] }
 
 /** Pre-season map and baseline from S-3..S-1, and every S match's base (map-only), exact and baseline predictions. */
-function seasonData(season: number): SeasonData {
+export function seasonData(season: number): SeasonData {
   const outcomes = outcomeModelFor(season);
   const balls = all.filter((b) => b.year >= season - 3 && b.year <= season);
   const exact = exactWp(outcomes, balls);

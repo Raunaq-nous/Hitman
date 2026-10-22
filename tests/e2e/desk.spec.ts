@@ -15,6 +15,8 @@ test.describe("desk", () => {
     expect([...swings].sort((a, b) => b - a)).toEqual(swings);
     const first = items.first();
     await expect(first.getByTestId("swing")).toHaveText(/^Swing \d+ pts$/);
+    // every win probability carries the provisional-calibration label (D-031)
+    for (const it of await items.all()) if (await it.getByTestId("swing").count()) await expect(it.getByTestId("provisional")).toHaveText("Provisional calibration");
     for (let i = 0; i < (await items.count()); i++) {
       const it = items.nth(i);
       expect(await it.getByTestId("story").count()).toBeGreaterThan(0);
