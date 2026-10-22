@@ -15,6 +15,18 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: alterego
+          POSTGRES_PASSWORD: alterego
+          POSTGRES_DB: alterego
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U alterego" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      DATABASE_URL: postgresql://alterego:alterego@localhost:5432/alterego
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,11 +43,10 @@ jobs:
           mkdir -p data/raw/cricsheet data/raw/openf1 data/raw/statsbomb
           echo "{\"downloadedAt\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > data/raw/when.json
           get() { echo "GET $2"; curl -fsSL --retry 3 -o "$1" "$2"; }
-          # Cricsheet names the IPL archive ipl_male_json.zip (older name: ipl_json.zip)
-          CS=https://cricsheet.org/downloads/ipl_male_json.zip
-          get data/raw/cricsheet/ipl_json.zip "$CS" || { CS=https://cricsheet.org/downloads/ipl_json.zip; get data/raw/cricsheet/ipl_json.zip "$CS"; }
-          echo "$CS" > data/raw/cricsheet/url.txt
-          mkdir -p data/raw/cricsheet/ipl_json && unzip -q -o data/raw/cricsheet/ipl_json.zip -d data/raw/cricsheet/ipl_json
+          # Cricsheet: the repo's own command downloads ipl_male_json.zip and ingests every match into Postgres
+          npm run db:migrate
+          npm run data:cricsheet
+          node -e 'const f=require("./data/raw/cricsheet/ipl_json/.fetched.json");require("fs").writeFileSync("data/raw/cricsheet/url.txt",f.url)' 
           # OpenF1 historical sample: one 2023 race session (sessions list, laps and pit stops)
           get data/raw/openf1/sessions-2023-race.json "https://api.openf1.org/v1/sessions?year=2023&session_name=Race"
           KEY=$(node -e 'const s=require("./data/raw/openf1/sessions-2023-race.json");console.log(s[0].session_key)')

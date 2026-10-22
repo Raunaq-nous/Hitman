@@ -20,12 +20,15 @@ for (const f of readdirSync('data/raw/statsbomb')) {
 const SB = 'https://raw.githubusercontent.com/statsbomb/open-data/master/data';
 const openf1Key = JSON.parse(readFileSync('data/raw/openf1/sessions-2023-race.json', 'utf8'))[0].session_key;
 const sources = [
-  { sourceId: 'cricsheet', url: readFileSync('data/raw/cricsheet/url.txt', 'utf8').trim(), file: 'data/raw/cricsheet/ipl_json.zip', attribution: 'Data from Cricsheet (cricsheet.org)' },
+
   { sourceId: 'openf1', url: 'https://api.openf1.org/v1/sessions?year=2023&session_name=Race', file: 'data/raw/openf1/sessions-2023-race.json', attribution: 'Historical timing data from OpenF1 (openf1.org), an unofficial project not associated with Formula 1 companies' },
   { sourceId: 'openf1', url: `https://api.openf1.org/v1/laps?session_key=${openf1Key}`, file: 'data/raw/openf1/laps.json', attribution: 'OpenF1 (openf1.org)' },
   ...(existsSync('data/raw/openf1/pit.json') ? [{ sourceId: 'openf1', url: `https://api.openf1.org/v1/pit?session_key=${openf1Key}`, file: 'data/raw/openf1/pit.json', attribution: 'OpenF1 (openf1.org)' }] : []),
   ...readdirSync('data/raw/statsbomb').map((f) => ({ sourceId: 'statsbomb', url: `${SB}/${f === 'competitions.json' ? f : f.startsWith('matches-') ? `matches/${f.slice(8, -5).replace('-', '/')}.json` : `events/${f.slice(7)}`}`, file: `data/raw/statsbomb/${f}`, attribution: 'Event data provided by StatsBomb (open data)' })),
 ].map((s) => ({ ...s, bytes: statSync(s.file).size, sha256: sha(s.file), downloadedAt }));
+// the Cricsheet archive is hashed by scripts/data-cricsheet.mjs as it downloads (the zip itself is not kept)
+const cs = JSON.parse(readFileSync('data/raw/cricsheet/ipl_json/.fetched.json', 'utf8'));
+sources.unshift({ sourceId: 'cricsheet', url: cs.url, file: 'data/raw/cricsheet/ipl_json', attribution: 'Data from Cricsheet (cricsheet.org)', bytes: cs.bytes, sha256: cs.sha256, downloadedAt: cs.fetchedAt, matchFiles: cs.files });
 
 const outputs = [];
 for (const dir of ['data/fixtures/cricsheet', 'data/fixtures/openf1', 'data/fixtures/statsbomb', 'data/derived']) {

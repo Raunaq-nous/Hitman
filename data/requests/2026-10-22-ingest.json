@@ -1,0 +1,1 @@
+{ "requested": "2026-10-22", "reason": "prove npm run data:cricsheet (download + ingest) on the runner; refresh manifest" }
