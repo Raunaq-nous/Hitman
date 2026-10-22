@@ -6,11 +6,13 @@ Turn the HITMAN fantasy app into ALTER EGO as specified in `docs/` — Historica
 ## Phases and gates
 ### Phase 0 — Repository safety and harness
 Features: F-H-00, F-H-01, F-H-02, F-H-03, F-H-04, F-H-05, F-H-06, F-H-07, F-H-08, F-H-09
-- [ ] Gate 0: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-0`; default branch fast-forwarded and pushed; CI green.
+- [x] Gate 0: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-0`; default branch fast-forwarded and pushed; CI green.
+  - Review-gate (2026-10-22, diff 5dea1e7..17bf904, shared by gates 0, 1 and 4): 12 findings + dependency advisories, all fixed: no-balls with byes counted as legal (55f31b6); shortened chases fed the 120-ball model (55f31b6, courier re-derive 9b564da, refit a670a8d); replay-clock times shown as observations, display rights not checked, swing points rounding, Hindi singular, Escape from the receipt button, receipts on room chart/meter, account language on a new device, empty Last-Event-ID, language route rate limit (9eceba9); PROTOTYPE_DATA is deploy-time for prerendered pages (D-025); npm audit critical/high cleared, Next 16.4.2 (17bf904). Main is updated through a pull request with a merge commit, not a direct push (D-026).
 
 ### Phase 1 — Foundations (Phase 0.5)
 Features: F-F-01, F-F-02, F-F-03, F-F-04, F-F-05, F-F-06, F-F-07, F-F-08, F-F-09, F-F-10, F-F-11, F-F-12, F-U-01, F-U-02, F-U-04, F-A-01
-- [ ] Gate 1: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-1`; default branch fast-forwarded and pushed; CI green.
+- [x] Gate 1: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-1`; default branch fast-forwarded and pushed; CI green.
+  - Review-gate (2026-10-22, diff 5dea1e7..17bf904, shared by gates 0, 1 and 4): 12 findings + dependency advisories, all fixed: no-balls with byes counted as legal (55f31b6); shortened chases fed the 120-ball model (55f31b6, courier re-derive 9b564da, refit a670a8d); replay-clock times shown as observations, display rights not checked, swing points rounding, Hindi singular, Escape from the receipt button, receipts on room chart/meter, account language on a new device, empty Last-Event-ID, language route rate limit (9eceba9); PROTOTYPE_DATA is deploy-time for prerendered pages (D-025); npm audit critical/high cleared, Next 16.4.2 (17bf904). Main is updated through a pull request with a merge commit, not a direct push (D-026).
 
 ### Phase 2 — Data, rights and cricket engine
 Features: F-D-01, F-D-02, F-D-03, F-D-04, F-D-05, F-D-06, F-D-07, F-E-01, F-E-02, F-E-03, F-E-04, F-E-05, F-E-06, F-E-07, F-E-08, F-E-09, F-E-10
@@ -22,7 +24,8 @@ Features: F-L-01, F-L-02, F-L-03, F-L-04, F-L-05, F-L-06, F-L-07, F-L-08, F-C-01
 
 ### Phase 4 — Desk and generation contract
 Features: F-G-01, F-G-02, F-G-03, F-G-04, F-K-01, F-K-02, F-K-03, F-K-04, F-K-05, F-K-06, F-K-07
-- [ ] Gate 4: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-4`; default branch fast-forwarded and pushed; CI green.
+- [x] Gate 4: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-4`; default branch fast-forwarded and pushed; CI green.
+  - Review-gate (2026-10-22, diff 5dea1e7..17bf904, shared by gates 0, 1 and 4): 12 findings + dependency advisories, all fixed: no-balls with byes counted as legal (55f31b6); shortened chases fed the 120-ball model (55f31b6, courier re-derive 9b564da, refit a670a8d); replay-clock times shown as observations, display rights not checked, swing points rounding, Hindi singular, Escape from the receipt button, receipts on room chart/meter, account language on a new device, empty Last-Event-ID, language route rate limit (9eceba9); PROTOTYPE_DATA is deploy-time for prerendered pages (D-025); npm audit critical/high cleared, Next 16.4.2 (17bf904). Main is updated through a pull request with a merge commit, not a direct push (D-026).
 
 ### Phase 5 — Design system, Roster and Alter Ego
 Features: F-U-03, F-U-05, F-U-06, F-U-07, F-R-01, F-R-02, F-R-03, F-R-04, F-R-05
@@ -74,6 +77,7 @@ Features: F-Z-01, F-Z-02, F-Z-03
 | D-023 | 2026-10-22 | The Desk brief is built from the committed recorded replays (via the adapter registry and story detector), not the database, and ranks by modelled swing (largest six-ball |ΔWP| from the exact chase model); football and F1 show "Swing: not modelled" and rank after, by story priority. Prototype-only sources that rights refuse appear as source-pending with the reason | Works offline from a clean install; no WP model exists yet for football or F1, so no number is invented for them |
 | D-024 | 2026-10-22 | Hindi in v0.1 covers the Desk (UI, story titles, all three depth templates) and the navigation; the language lives in the `ae_lang` cookie (onboarding and the nav's split-flap toggle) and the account when signed in. Team, player and competition names stay as the source spells them, marked `lang="en"`. Other screens stay English (tech debt) | The Desk is the screen the feature is about; every Hindi template passes the same claim verifier with the same numbers as English |
 | D-025 | 2026-10-22 | The Desk and Event Rooms are prerendered, so `PROTOTYPE_DATA` (which gates the prototype-only OpenF1 source) is applied when the site is built and deployed; changing it requires a redeploy. Replays are checked for both `store` (adapter) and `display` (desk service) rights | Static pages keep LCP ≈ 0.6 s on a mid-range phone; hosting env changes already need a redeploy |
+| D-026 | 2026-10-22 | At gates, `gate-<n>` tags are pushed and `main` is updated by a pull request from `overhaul` merged with a merge commit (never squash), instead of a direct fast-forward push | The owner forbids pushing to main directly; a merge commit keeps every overhaul commit |
 
 ## Progress log
 <!-- newest first: date, feature, plan, result -->
