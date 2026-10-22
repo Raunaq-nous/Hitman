@@ -1,0 +1,12 @@
+.desk-items{list-style:none;margin:0;padding:0;display:grid;gap:.8rem}
+.desk-item{padding:1rem;display:grid;gap:.6rem}
+.desk-head{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;justify-content:space-between}
+.desk-sport{font:700 var(--step--1)/1 var(--font-text);text-transform:uppercase;letter-spacing:.08em;color:var(--text-2)}
+.desk-name{margin:0;font:800 var(--step-1)/1.15 var(--font-display)}
+.desk-swing{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.desk-swing-value{font:900 var(--step-2)/1 var(--font-display);font-variant-numeric:tabular-nums}
+.desk-swing-note,.desk-model,.desk-attr{color:var(--text-2);font-size:var(--step--1);margin:0}
+.desk-stories{margin:0;padding-left:1.1rem;display:grid;gap:.35rem}
+.desk-stories li::marker{color:var(--receipt-ink)}
+.desk-pending{padding:1rem}
+.desk-pending ul{margin:.3rem 0 0;padding-left:1.1rem}
