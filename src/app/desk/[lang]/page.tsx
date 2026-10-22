@@ -21,7 +21,7 @@ export default async function DeskPage({ params }: { params: Promise<{ lang: str
   if (!isLang(lang)) notFound();
   const m = (key: MessageKey, vars?: Record<string, string | number>): string => t(lang, key, vars);
   const sport = (s: string): string => m(`sport.${s}` as MessageKey);
-  const labels = { source: m("receipt.source"), class: m("receipt.class"), observed: m("receipt.observed"), attribution: m("receipt.attribution"), close: m("receipt.close"), region: m("receipt.region") };
+  const labels = { source: m("receipt.source"), class: m("receipt.class"), observed: m("receipt.observed"), recorded: m("receipt.recorded"), replayNote: m("receipt.replayNote"), attribution: m("receipt.attribution"), close: m("receipt.close"), region: m("receipt.region") };
   const { items, pending } = deskBrief();
   // every depth, verified, for every item: the switch only chooses which one to show
   const texts = await Promise.all(items.map(async (it) => Object.fromEntries(await Promise.all(DEPTHS.map(async (d) => [d, (await phraseItem(it, d, lang)).claims.claims.map((c) => c.text)] as const)))));

@@ -39,14 +39,17 @@ export default async function EventRoomPage({ params }: { params: Promise<{ spor
         {room.wp ? (
           <>
             <SwingSeismograph title="Chasing side’s win probability, ball by ball" points={room.wp.points} formatT={over} />
-            <p className="room-note">{room.wp.model}</p>
+            <p className="room-note">{room.wp.model} <Receipt receipt={room.receipt} attribution={room.attribution} details={[room.wp.model]}>receipt</Receipt></p>
           </>
         ) : <p className="room-note" data-testid="no-model">{room.noModel}</p>}
       </section>
       <section className="ui-card room-panel" aria-labelledby="lev-h">
         <h2 id="lev-h">Leverage</h2>
         {room.leverage ? (
-          <Meter label="Peak leverage of the chase" value={room.leverage.value / 0.5} valueText={`${room.leverage.value.toFixed(2)} before ball ${room.leverage.at}`} />
+          <>
+            <Meter label="Peak leverage of the chase" value={room.leverage.value / 0.5} valueText={`${room.leverage.value.toFixed(2)} before ball ${room.leverage.at}`} />
+            <p className="room-note"><Receipt receipt={room.receipt} attribution={room.attribution} details={[room.wp?.model ?? ""]}>receipt</Receipt></p>
+          </>
         ) : <p className="room-note">Leverage needs a win-probability model; {room.noModel?.toLowerCase()}</p>}
         <p className="room-note">Leverage is the spread (standard deviation) of the next ball’s win probability; 0.5 is the most a probability can have.</p>
       </section>

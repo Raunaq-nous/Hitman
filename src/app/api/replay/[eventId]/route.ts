@@ -12,7 +12,8 @@ export const GET = route(async (req: Request, { params }: { params: Promise<{ ev
   const { eventId } = await params;
   const url = new URL(req.url);
   const speed = Number(url.searchParams.get("speed") ?? 60);
-  const last = Number(req.headers.get("last-event-id") ?? url.searchParams.get("from") ?? -1);
+  const raw = req.headers.get("last-event-id") || url.searchParams.get("from") || "";
+  const last = raw.trim() === "" ? -1 : Number(raw);
   const frames = await replayFrames(eventId, speed);
   const from = Number.isInteger(last) && last >= 0 ? Math.min(last + 1, frames.length) : 0;
   return new Response(replayStream(frames, { from, sleep }), {

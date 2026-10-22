@@ -29,5 +29,7 @@ describe("English and Hindi (i18n)", () => {
       const nums = (s: string): string[] => (s.match(/\d+(\.\d+)?/g) ?? []).sort();
       expect(nums(TITLES.hi[k](p)), k).toEqual(nums(TITLES.en[k](p)));
     }
+    expect(TITLES.hi["tense-finish"]({ ...p, balls: 1 })).toContain("1 गेंद में");
+    expect(TITLES.hi.collapse({ ...p, balls: 7 })).toContain("7 गेंदों में");
   });
 });

@@ -14,11 +14,13 @@ test.describe("receipts", () => {
     await expect(drawer).toBeVisible();
     await expect(drawer).toContainText("cricsheet");
     await expect(drawer).toContainText("verified delayed");
-    await expect(drawer.locator("time")).toHaveAttribute("datetime", /^\d{4}-\d\d-\d\dT/);
+    // a historical replay shows the match date only, and says its times are a replay clock
+    await expect(drawer.locator("time")).toHaveAttribute("datetime", /^\d{4}-\d\d-\d\d$/);
+    await expect(drawer).toContainText("Match date");
+    await expect(drawer).toContainText("replay clock");
     await expect(drawer).toContainText("Data from Cricsheet (cricsheet.org)");
     await expect(drawer).toContainText(/Exact chase WP on outcome model v1 \(sha256 [0-9a-f]{12}\)/);
-    // Escape closes the drawer and returns focus to its button
-    await drawer.getByRole("button", { name: /Close/ }).focus();
+    // Escape closes the drawer straight from its button, and focus stays on the button
     await page.keyboard.press("Escape");
     await expect(drawer).toBeHidden();
     await expect(toggle).toBeFocused();

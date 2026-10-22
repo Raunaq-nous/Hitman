@@ -18,7 +18,7 @@ const en = {
   "pending.basketball": "No source with display and storage rights yet; a licensed play-by-play feed is needed.",
   "pending.tennis": "No source with display and storage rights yet; a licensed point-by-point feed is needed.",
   "receipt.incidents": "Incidents: {list}", "receipt.more": " and {n} more",
-  "receipt": "receipt", "receipt.source": "Source", "receipt.class": "Class", "receipt.observed": "Observed", "receipt.attribution": "Attribution", "receipt.close": "Close", "receipt.region": "Receipt",
+  "receipt": "receipt", "receipt.source": "Source", "receipt.class": "Class", "receipt.observed": "Observed", "receipt.recorded": "Match date", "receipt.replayNote": "Historical replay: times of day are a replay clock, not when the source recorded them.", "receipt.attribution": "Attribution", "receipt.close": "Close", "receipt.region": "Receipt",
   "sport.cricket": "Cricket", "sport.football": "Football", "sport.f1": "Formula 1", "sport.basketball": "Basketball", "sport.tennis": "Tennis",
 } as const;
 
@@ -38,7 +38,7 @@ const hi: Record<MessageKey, string> = {
   "pending.basketball": "अभी दिखाने और सहेजने के अधिकार वाला कोई स्रोत नहीं है; लाइसेंस वाली प्ले-बाय-प्ले फ़ीड चाहिए।",
   "pending.tennis": "अभी दिखाने और सहेजने के अधिकार वाला कोई स्रोत नहीं है; लाइसेंस वाली पॉइंट-बाय-पॉइंट फ़ीड चाहिए।",
   "receipt.incidents": "घटनाएँ: {list}", "receipt.more": " और {n} अन्य",
-  "receipt": "रसीद", "receipt.source": "स्रोत", "receipt.class": "श्रेणी", "receipt.observed": "दर्ज समय", "receipt.attribution": "श्रेय", "receipt.close": "बंद करें", "receipt.region": "रसीद",
+  "receipt": "रसीद", "receipt.source": "स्रोत", "receipt.class": "श्रेणी", "receipt.observed": "दर्ज समय", "receipt.recorded": "मैच की तारीख", "receipt.replayNote": "ऐतिहासिक रीप्ले: दिन का समय रीप्ले घड़ी है, वह समय नहीं जब स्रोत ने इसे दर्ज किया।", "receipt.attribution": "श्रेय", "receipt.close": "बंद करें", "receipt.region": "रसीद",
   "sport.cricket": "क्रिकेट", "sport.football": "फ़ुटबॉल", "sport.f1": "फ़ॉर्मूला 1", "sport.basketball": "बास्केटबॉल", "sport.tennis": "टेनिस",
 };
 

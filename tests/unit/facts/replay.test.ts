@@ -53,6 +53,9 @@ describe("incident replay (replay)", () => {
     expect(res.headers.get("content-type")).toMatch(/text\/event-stream/);
     const out = await read(res.body as ReadableStream<Uint8Array>);
     expect(out).toEqual([{ id: undefined, event: "end", data: { frames: expect.any(Number) } }]);
+    // an empty Last-Event-ID header means "from the start", not "after frame 0"
+    const fresh = await read((await GET(new Request(`http://x/api/replay/${eventId}?speed=3600`, { headers: { "Last-Event-ID": "" } }), { params: Promise.resolve({ eventId }) })).body as ReadableStream<Uint8Array>);
+    expect(fresh[0].id).toBe("0");
     expect((await GET(new Request("http://x/api/replay/nope"), { params: Promise.resolve({ eventId: "nope" }) })).status).toBe(404);
     expect((await GET(new Request(`http://x/api/replay/${eventId}?speed=0`), { params: Promise.resolve({ eventId }) })).status).toBe(400);
   });
