@@ -617,8 +617,8 @@
       "depends_on": [
         "F-E-06"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/engine/readRating.ts: difficulty-weighted Elo — start 1200, K = 40 for the first 20 graded calls then 24, floor 100; moment difficulty from option gap and leverage (moments update at K = 8). npm test -- rating 4/4: K schedule, monotonicity (better reads and harder moments earn more), bounds (floor, scores clamped to [0,1]), difficulty behaviour; engine coverage 100%; verify --ci PASS at 49fc322."
     },
     {
       "id": "F-E-08",
