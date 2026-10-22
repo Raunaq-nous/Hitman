@@ -2,11 +2,15 @@
 
 export const COIN_FLIP_BAND_PTS = 2;
 
-export interface Grade { readPoints: number; coinFlip: boolean; best: string }
+import type { Decision } from "./options";
+
+/** Grades use the exact model's option differences while calibration is a known issue (D-031): always shown as provisional. */
+export type CalibrationStatus = "provisional";
+export interface Grade { readPoints: number; coinFlip: boolean; best: string; calibration: CalibrationStatus }
 
 /**
- * read_points = WP_cal(pick) − max WP_cal(others), in percentage points. If the best and second-best options are
- * within the coin-flip band, the call is "coin flip — no grade".
+ * read_points = WP(pick) − max WP(others), in percentage points, from the exact model's option-conditioned WP
+ * (D-031). If the best and second-best options are within the coin-flip band, the call is "coin flip — no grade".
  */
 export function grade(wpByOption: Record<string, number>, pick: string): Grade {
   const entries = Object.entries(wpByOption);
@@ -16,7 +20,13 @@ export function grade(wpByOption: Record<string, number>, pick: string): Grade {
   const sorted = [...entries].sort((a, b) => b[1] - a[1]);
   const coinFlip = (sorted[0][1] - sorted[1][1]) * 100 < COIN_FLIP_BAND_PTS;
   const otherBest = Math.max(...entries.filter(([k]) => k !== pick).map(([, v]) => v));
-  return { readPoints: (wpByOption[pick] - otherBest) * 100, coinFlip, best: sorted[0][0] };
+  return { readPoints: (wpByOption[pick] - otherBest) * 100, coinFlip, best: sorted[0][0], calibration: "provisional" };
+}
+
+/** Grade a pick against a moment's decision (F-E-05); a decision with too little data can't be graded. */
+export function gradeDecision(d: Decision, pick: string): Grade | null {
+  if (d.insufficient) return null;
+  return grade(Object.fromEntries(d.options.map((o) => [o.option, o.wp])), pick);
 }
 
 /** Brier score for the chosen option: (confidence − happened)², confidence in [0.5, 0.99]. 0.7 and 0 → 0.49. */
