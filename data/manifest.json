@@ -1,5 +1,5 @@
 {
-  "downloadedAt": "2026-10-22T16:24:28Z",
+  "downloadedAt": "2026-10-22T20:33:09Z",
   "missing": [
     "no pit records for session 7953"
   ],
@@ -11,7 +11,7 @@
       "attribution": "Data from Cricsheet (cricsheet.org)",
       "bytes": 5187774,
       "sha256": "6fe9142db9e139e4f77a5634ddc61c1c72a26a56bee2fe5affe5921867de04b3",
-      "downloadedAt": "2026-10-22T16:24:30.785Z",
+      "downloadedAt": "2026-10-22T20:33:12.482Z",
       "matchFiles": 1245,
       "rawFile": "data/raw/cricsheet/ipl_json"
     },
@@ -21,7 +21,7 @@
       "attribution": "Historical timing data from OpenF1 (openf1.org), an unofficial project not associated with Formula 1 companies",
       "bytes": 8229,
       "sha256": "1c4ebc39663a3ae9e1ce069a7739e4b2f14366b75e79769317499bcf8b6a3554",
-      "downloadedAt": "2026-10-22T16:24:28Z",
+      "downloadedAt": "2026-10-22T20:33:09Z",
       "rawFile": "data/raw/openf1/sessions-2023-race.json"
     },
     {
@@ -30,7 +30,7 @@
       "attribution": "OpenF1 (openf1.org)",
       "bytes": 526418,
       "sha256": "fa44efcdf9a4cbf9b9f9550322511ef94645e765aa5b231c11b86e69897d39a7",
-      "downloadedAt": "2026-10-22T16:24:28Z",
+      "downloadedAt": "2026-10-22T20:33:09Z",
       "rawFile": "data/raw/openf1/laps.json"
     },
     {
@@ -39,7 +39,7 @@
       "attribution": "Event data provided by StatsBomb (open data)",
       "bytes": 34887,
       "sha256": "e6cd42f5d8956d6aa30fb917ce8d4c3b3df1879a93f02f8feba820930a6971fa",
-      "downloadedAt": "2026-10-22T16:24:28Z",
+      "downloadedAt": "2026-10-22T20:33:09Z",
       "rawFile": "data/raw/statsbomb/competitions.json"
     },
     {
@@ -48,7 +48,7 @@
       "attribution": "Event data provided by StatsBomb (open data)",
       "bytes": 2817851,
       "sha256": "bc04e7442328cc43d52e3e2e549d926b366f40ec0a443fa99e4d58210e8484e5",
-      "downloadedAt": "2026-10-22T16:24:28Z",
+      "downloadedAt": "2026-10-22T20:33:09Z",
       "rawFile": "data/raw/statsbomb/events-7525.json"
     },
     {
@@ -57,7 +57,7 @@
       "attribution": "Event data provided by StatsBomb (open data)",
       "bytes": 114527,
       "sha256": "f89dbd4aedcaf9c9e4ec9d8e745d5d54596500ec357d7489c914a2f126805adf",
-      "downloadedAt": "2026-10-22T16:24:28Z",
+      "downloadedAt": "2026-10-22T20:33:09Z",
       "rawFile": "data/raw/statsbomb/matches-43-3.json"
     }
   ],
@@ -126,6 +126,16 @@
       "file": "data/fixtures/statsbomb/matches-43-3.json",
       "bytes": 114527,
       "sha256": "f89dbd4aedcaf9c9e4ec9d8e745d5d54596500ec357d7489c914a2f126805adf"
+    },
+    {
+      "file": "data/derived/bowling-styles.csv",
+      "bytes": 22426,
+      "sha256": "e502ac60c10bfde4c0219a7446ec3ae49330a6233d7f77e47eac37cd1f2c3541"
+    },
+    {
+      "file": "data/derived/bowling-styles.meta.json",
+      "bytes": 661,
+      "sha256": "feddb463d75cd233db624589b0343b5e23510a7bc7bc71baaa89b947f24d428d"
     },
     {
       "file": "data/derived/ipl-balls.csv.gz",
