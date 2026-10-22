@@ -23,25 +23,30 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - run: npm ci --no-audit --no-fund --ignore-scripts
+      - run: npx prisma generate
       - name: Download sources
         run: |
           set -euo pipefail
           mkdir -p data/raw/cricsheet data/raw/openf1 data/raw/statsbomb
           echo "{\"downloadedAt\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > data/raw/when.json
-          curl -fsSL --retry 3 -o data/raw/cricsheet/ipl_json.zip https://cricsheet.org/downloads/ipl_json.zip
+          get() { echo "GET $2"; curl -fsSL --retry 3 -o "$1" "$2"; }
+          # Cricsheet names the IPL archive ipl_male_json.zip (older name: ipl_json.zip)
+          CS=https://cricsheet.org/downloads/ipl_male_json.zip
+          get data/raw/cricsheet/ipl_json.zip "$CS" || { CS=https://cricsheet.org/downloads/ipl_json.zip; get data/raw/cricsheet/ipl_json.zip "$CS"; }
+          echo "$CS" > data/raw/cricsheet/url.txt
           mkdir -p data/raw/cricsheet/ipl_json && unzip -q -o data/raw/cricsheet/ipl_json.zip -d data/raw/cricsheet/ipl_json
           # OpenF1 historical sample: one 2023 race session (sessions list, laps and pit stops)
-          curl -fsSL --retry 3 -o data/raw/openf1/sessions-2023-race.json "https://api.openf1.org/v1/sessions?year=2023&session_name=Race"
+          get data/raw/openf1/sessions-2023-race.json "https://api.openf1.org/v1/sessions?year=2023&session_name=Race"
           KEY=$(node -e 'const s=require("./data/raw/openf1/sessions-2023-race.json");console.log(s[0].session_key)')
-          curl -fsSL --retry 3 -o data/raw/openf1/laps.json "https://api.openf1.org/v1/laps?session_key=${KEY}"
-          curl -fsSL --retry 3 -o data/raw/openf1/pit.json "https://api.openf1.org/v1/pit?session_key=${KEY}"
+          get data/raw/openf1/laps.json "https://api.openf1.org/v1/laps?session_key=${KEY}"
+          get data/raw/openf1/pit.json "https://api.openf1.org/v1/pit?session_key=${KEY}"
           # StatsBomb open data sample: competitions, one competition-season's matches and one match's events
           SB=https://raw.githubusercontent.com/statsbomb/open-data/master/data
-          curl -fsSL --retry 3 -o data/raw/statsbomb/competitions.json "$SB/competitions.json"
-          curl -fsSL --retry 3 -o data/raw/statsbomb/matches-43-3.json "$SB/matches/43/3.json"
+          get data/raw/statsbomb/competitions.json "$SB/competitions.json"
+          get data/raw/statsbomb/matches-43-3.json "$SB/matches/43/3.json"
           MATCH=$(node -e 'const m=require("./data/raw/statsbomb/matches-43-3.json");console.log(m.sort((a,b)=>a.match_id-b.match_id)[0].match_id)')
-          curl -fsSL --retry 3 -o "data/raw/statsbomb/events-${MATCH}.json" "$SB/events/${MATCH}.json"
+          get "data/raw/statsbomb/events-${MATCH}.json" "$SB/events/${MATCH}.json"
       - name: Build compact outputs
         run: |
           set -euo pipefail

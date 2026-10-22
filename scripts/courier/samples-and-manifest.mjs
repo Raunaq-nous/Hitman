@@ -19,7 +19,7 @@ for (const f of readdirSync('data/raw/statsbomb')) {
 const SB = 'https://raw.githubusercontent.com/statsbomb/open-data/master/data';
 const openf1Key = JSON.parse(readFileSync('data/raw/openf1/sessions-2023-race.json', 'utf8'))[0].session_key;
 const sources = [
-  { sourceId: 'cricsheet', url: 'https://cricsheet.org/downloads/ipl_json.zip', file: 'data/raw/cricsheet/ipl_json.zip', attribution: 'Data from Cricsheet (cricsheet.org)' },
+  { sourceId: 'cricsheet', url: readFileSync('data/raw/cricsheet/url.txt', 'utf8').trim(), file: 'data/raw/cricsheet/ipl_json.zip', attribution: 'Data from Cricsheet (cricsheet.org)' },
   { sourceId: 'openf1', url: 'https://api.openf1.org/v1/sessions?year=2023&session_name=Race', file: 'data/raw/openf1/sessions-2023-race.json', attribution: 'Historical timing data from OpenF1 (openf1.org), an unofficial project not associated with Formula 1 companies' },
   { sourceId: 'openf1', url: `https://api.openf1.org/v1/laps?session_key=${openf1Key}`, file: 'data/raw/openf1/laps.json', attribution: 'OpenF1 (openf1.org)' },
   { sourceId: 'openf1', url: `https://api.openf1.org/v1/pit?session_key=${openf1Key}`, file: 'data/raw/openf1/pit.json', attribution: 'OpenF1 (openf1.org)' },
