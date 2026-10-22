@@ -1,0 +1,63 @@
+name: Data courier
+# Fetches real open data on a GitHub runner (the agent VM can't reach these hosts) and commits back only compact,
+# attributed outputs: fixtures, gzipped derived tables and a manifest. Raw downloads never enter git.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "data/requests/*.json"
+permissions:
+  contents: write
+concurrency:
+  group: data-courier-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Download sources
+        run: |
+          set -euo pipefail
+          mkdir -p data/raw/cricsheet data/raw/openf1 data/raw/statsbomb
+          echo "{\"downloadedAt\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > data/raw/when.json
+          curl -fsSL --retry 3 -o data/raw/cricsheet/ipl_json.zip https://cricsheet.org/downloads/ipl_json.zip
+          mkdir -p data/raw/cricsheet/ipl_json && unzip -q -o data/raw/cricsheet/ipl_json.zip -d data/raw/cricsheet/ipl_json
+          # OpenF1 historical sample: one 2023 race session (sessions list, laps and pit stops)
+          curl -fsSL --retry 3 -o data/raw/openf1/sessions-2023-race.json "https://api.openf1.org/v1/sessions?year=2023&session_name=Race"
+          KEY=$(node -e 'const s=require("./data/raw/openf1/sessions-2023-race.json");console.log(s[0].session_key)')
+          curl -fsSL --retry 3 -o data/raw/openf1/laps.json "https://api.openf1.org/v1/laps?session_key=${KEY}"
+          curl -fsSL --retry 3 -o data/raw/openf1/pit.json "https://api.openf1.org/v1/pit?session_key=${KEY}"
+          # StatsBomb open data sample: competitions, one competition-season's matches and one match's events
+          SB=https://raw.githubusercontent.com/statsbomb/open-data/master/data
+          curl -fsSL --retry 3 -o data/raw/statsbomb/competitions.json "$SB/competitions.json"
+          curl -fsSL --retry 3 -o data/raw/statsbomb/matches-43-3.json "$SB/matches/43/3.json"
+          MATCH=$(node -e 'const m=require("./data/raw/statsbomb/matches-43-3.json");console.log(m.sort((a,b)=>a.match_id-b.match_id)[0].match_id)')
+          curl -fsSL --retry 3 -o "data/raw/statsbomb/events-${MATCH}.json" "$SB/events/${MATCH}.json"
+      - name: Build compact outputs
+        run: |
+          set -euo pipefail
+          npm run data:fixtures -- data/raw/cricsheet/ipl_json
+          npx tsx scripts/courier/derive-cricsheet.ts data/raw/cricsheet/ipl_json data/derived
+          node scripts/courier/samples-and-manifest.mjs
+      - name: Check sizes
+        run: |
+          find data/fixtures data/derived -type f -size +50M -print -exec false {} +
+          du -sh data/fixtures data/derived
+      - name: Commit back to the triggering branch
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/fixtures data/derived data/manifest.json
+          if git diff --cached --quiet; then echo "nothing new"; exit 0; fi
+          git commit -m "chore(data): courier fixtures, derived tables and manifest"
+          git push origin HEAD:${{ github.ref_name }}

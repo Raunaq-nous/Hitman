@@ -1,0 +1,5 @@
+{
+  "requested": "2026-10-22",
+  "reason": "Initial real data for Cricsheet ingest (F-D-03), adapters (F-D-06) and model fitting (F-E-01)",
+  "sources": ["cricsheet:ipl_json", "openf1:2023-race-sample", "statsbomb:43/3-sample"]
+}
