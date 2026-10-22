@@ -32,6 +32,13 @@ describe("per-ball outcome model (outcomes)", () => {
     expect(createHash("sha256").update(JSON.stringify(refit)).digest("hex")).toBe(hash);
   });
 
+  it("can be fitted without target-band conditioning (one band for every chase)", () => {
+    const flat = fitOutcomes(samples, file.trainedOnYears, file.heldOutYears, { halfLifeYears: 4, bucketK: 200, parentK: 500, targetConditioning: false });
+    expect(flat.targetConditioning).toBe(false);
+    expect(predictOutcome(flat, { b: 30, w: 6, r: 50 }, 140)).toEqual(predictOutcome(flat, { b: 30, w: 6, r: 50 }, 230));
+    expect(predictOutcome(file, { b: 30, w: 6, r: 50 }, 140)).not.toEqual(predictOutcome(file, { b: 30, w: 6, r: 50 }, 230));
+  });
+
   it("held-out seasons can't leak into the fit", () => {
     const leak: Sample = { matchId: "x", year: file.heldOutYears[0], target: 180, state: { b: 6, w: 2, r: 30 }, outcome: 6 };
     const a = fitOutcomes(samples, file.trainedOnYears, file.heldOutYears);
