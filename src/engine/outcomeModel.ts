@@ -2,8 +2,8 @@
 // seasons with era weights and hierarchical smoothing (bucket → balls×wickets parent → global).
 import { OUTCOMES, type ChaseState, type Outcome, type OutcomeDist } from "./chaseWp";
 
-export interface ChaseBall { matchId: string; year: number; innings: number; runsBatter: number; extras: number; extraType: string | null; wicket: boolean; target: number | null }
-export interface Sample { matchId: string; year: number; target: number; state: ChaseState; outcome: Outcome }
+export interface ChaseBall { matchId: string; year: number; innings: number; runsBatter: number; extras: number; extraType: string | null; wicket: boolean; target: number | null; bowler?: string }
+export interface Sample { matchId: string; year: number; target: number; state: ChaseState; outcome: Outcome; bowler?: string }
 
 const BALL_BANDS = [6, 12, 24, 36, 60, 120];
 const WICKET_BANDS = [2, 4, 6, 8, 10];
@@ -40,7 +40,7 @@ export function chaseSamples(balls: ChaseBall[], maxBalls = 120): Sample[] {
     if (state.b <= 0 || state.w <= 0 || state.r <= 0) break;
     const wicket = b.wicket || pendingWicket;
     const runs = b.runsBatter + b.extras;
-    out.push({ matchId: b.matchId, year: b.year, target, state, outcome: wicket ? "W" : (Math.min(6, runs) as Outcome) });
+    out.push({ matchId: b.matchId, year: b.year, target, state, outcome: wicket ? "W" : (Math.min(6, runs) as Outcome), ...(b.bowler ? { bowler: b.bowler } : {}) });
     // the score uses every run (carried extras included); the outcome caps at 6
     score += pendingRuns + runs;
     if (wicket) wickets++;

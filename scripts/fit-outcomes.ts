@@ -37,7 +37,7 @@ export function loadChaseSamples(dir = "data/derived") {
     if (excluded.has(b.match_id) || b.innings !== "2") continue;
     chaser.set(b.match_id, b.batting_team);
     const list = byMatch.get(b.match_id) ?? [];
-    list.push({ matchId: b.match_id, year: Number(b.date.slice(0, 4)), innings: 2, runsBatter: Number(b.runs_batter), extras: Number(b.extras), extraType: b.extra_type || null, wicket: b.wicket === "1", target: b.target ? Number(b.target) : null });
+    list.push({ matchId: b.match_id, year: Number(b.date.slice(0, 4)), innings: 2, runsBatter: Number(b.runs_batter), extras: Number(b.extras), extraType: b.extra_type || null, wicket: b.wicket === "1", target: b.target ? Number(b.target) : null, bowler: b.bowler });
     byMatch.set(b.match_id, list);
   }
   // each sample also carries whether the chasing side went on to win (for calibration)
