@@ -1,0 +1,2718 @@
+{
+ "hash": "e71e0d20a44f454beec52604f4c5d890c6f7ecd42a23a76f9774fafd246b5f9d",
+ "source": "Cricsheet IPL ball-by-ball (cricsheet.org)",
+ "version": "v1",
+ "seasons": [
+  2024,
+  2025,
+  2026
+ ],
+ "outcomesHash": "26d4e16fbc44810e72f8cc4b876670237be6c4524ec97b131ca94a77af842ea6",
+ "optionsHash": "e61c896b36b30acf63b15828760c6f469535a3792d2994f7f201f4db884eacf1",
+ "leverageThreshold": 0.048918,
+ "statesScored": 22927,
+ "matchesExcluded": 11,
+ "caps": {
+  "perSeason": 18,
+  "perPhase": {
+   "powerplay": 12,
+   "middle": 25,
+   "death": 25
+  },
+  "perTeam": 14
+ },
+ "moments": [
+  {
+   "id": "gm-2026-1529296-106",
+   "sourceId": "cricsheet",
+   "matchId": "1529296",
+   "season": 2026,
+   "date": "2026-05-10",
+   "prelock": {
+    "battingTeam": "Chennai Super Kings",
+    "bowlingTeam": "Lucknow Super Giants",
+    "venue": "MA Chidambaram Stadium, Chepauk, Chennai",
+    "target": 204,
+    "ballsLeft": 14,
+    "wicketsInHand": 5,
+    "runsRequired": 22,
+    "overs": "17.4",
+    "phase": "death",
+    "requiredRate": 9.43,
+    "striker": "PR Veer",
+    "bowler": "Prince Yadav",
+    "recent": {
+     "deliveries": 12,
+     "runs": 13,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-05-10T15:58:00.000Z",
+   "leverage": 0.105889,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.462072,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.3991,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 6.297,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Chennai Super Kings"
+   }
+  },
+  {
+   "id": "gm-2024-1426303-107",
+   "sourceId": "cricsheet",
+   "matchId": "1426303",
+   "season": 2024,
+   "date": "2024-05-15",
+   "prelock": {
+    "battingTeam": "Punjab Kings",
+    "bowlingTeam": "Rajasthan Royals",
+    "venue": "Barsapara Cricket Stadium, Guwahati",
+    "target": 145,
+    "ballsLeft": 13,
+    "wicketsInHand": 5,
+    "runsRequired": 21,
+    "overs": "17.5",
+    "phase": "death",
+    "requiredRate": 9.69,
+    "striker": "SM Curran",
+    "bowler": "Sandeep Sharma",
+    "recent": {
+     "deliveries": 12,
+     "runs": 13,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2024-05-15T15:54:00.000Z",
+   "leverage": 0.105655,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.389617,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.317333,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 7.228,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Punjab Kings"
+   }
+  },
+  {
+   "id": "gm-2025-1473479-107",
+   "sourceId": "cricsheet",
+   "matchId": "1473479",
+   "season": 2025,
+   "date": "2025-04-24",
+   "prelock": {
+    "battingTeam": "Rajasthan Royals",
+    "bowlingTeam": "Royal Challengers Bengaluru",
+    "venue": "M Chinnaswamy Stadium, Bengaluru",
+    "target": 206,
+    "ballsLeft": 13,
+    "wicketsInHand": 5,
+    "runsRequired": 22,
+    "overs": "17.5",
+    "phase": "death",
+    "requiredRate": 10.15,
+    "striker": "Dhruv Jurel",
+    "bowler": "B Kumar",
+    "recent": {
+     "deliveries": 12,
+     "runs": 24,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2025-04-24T15:59:30.000Z",
+   "leverage": 0.104237,
+   "decision": {
+    "type": "chase-tempo",
+    "question": "What run rate should the chasing side aim for over the next two overs?",
+    "options": [
+     {
+      "option": "rate:2",
+      "label": "8–10 rpo",
+      "wp": 0.473689,
+      "n": 578
+     },
+     {
+      "option": "rate:3",
+      "label": "10–12 rpo",
+      "wp": 0.409326,
+      "n": 637
+     },
+     {
+      "option": "rate:4",
+      "label": "12–15 rpo",
+      "wp": 0.512282,
+      "n": 759
+     }
+    ],
+    "best": "rate:4",
+    "gapPts": 3.859,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 0,
+    "winner": "Royal Challengers Bengaluru"
+   }
+  },
+  {
+   "id": "gm-2025-1473483-107",
+   "sourceId": "cricsheet",
+   "matchId": "1473483",
+   "season": 2025,
+   "date": "2025-04-27",
+   "prelock": {
+    "battingTeam": "Royal Challengers Bengaluru",
+    "bowlingTeam": "Delhi Capitals",
+    "venue": "Arun Jaitley Stadium, Delhi",
+    "target": 163,
+    "ballsLeft": 13,
+    "wicketsInHand": 6,
+    "runsRequired": 18,
+    "overs": "17.5",
+    "phase": "death",
+    "requiredRate": 8.31,
+    "striker": "TH David",
+    "bowler": "PVD Chameera",
+    "recent": {
+     "deliveries": 12,
+     "runs": 20,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2025-04-27T15:56:00.000Z",
+   "leverage": 0.103628,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.62239,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.551374,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 7.102,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Royal Challengers Bengaluru"
+   }
+  },
+  {
+   "id": "gm-2024-1426282-107",
+   "sourceId": "cricsheet",
+   "matchId": "1426282",
+   "season": 2024,
+   "date": "2024-04-27",
+   "prelock": {
+    "battingTeam": "Rajasthan Royals",
+    "bowlingTeam": "Lucknow Super Giants",
+    "venue": "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow",
+    "target": 197,
+    "ballsLeft": 13,
+    "wicketsInHand": 7,
+    "runsRequired": 17,
+    "overs": "17.5",
+    "phase": "death",
+    "requiredRate": 7.85,
+    "striker": "SV Samson",
+    "bowler": "Mohsin Khan",
+    "recent": {
+     "deliveries": 12,
+     "runs": 26,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2024-04-27T15:58:00.000Z",
+   "leverage": 0.100537,
+   "decision": {
+    "type": "chase-tempo",
+    "question": "What run rate should the chasing side aim for over the next two overs?",
+    "options": [
+     {
+      "option": "rate:0",
+      "label": "up to 6 rpo",
+      "wp": 0.682842,
+      "n": 1082
+     },
+     {
+      "option": "rate:1",
+      "label": "6–8 rpo",
+      "wp": 0.743731,
+      "n": 438
+     },
+     {
+      "option": "rate:2",
+      "label": "8–10 rpo",
+      "wp": 0.695989,
+      "n": 402
+     }
+    ],
+    "best": "rate:1",
+    "gapPts": 4.774,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Rajasthan Royals"
+   }
+  },
+  {
+   "id": "gm-2025-1473507-105",
+   "sourceId": "cricsheet",
+   "matchId": "1473507",
+   "season": 2025,
+   "date": "2025-05-27",
+   "prelock": {
+    "battingTeam": "Royal Challengers Bengaluru",
+    "bowlingTeam": "Lucknow Super Giants",
+    "venue": "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow",
+    "target": 228,
+    "ballsLeft": 15,
+    "wicketsInHand": 6,
+    "runsRequired": 23,
+    "overs": "17.3",
+    "phase": "death",
+    "requiredRate": 9.2,
+    "striker": "JM Sharma",
+    "bowler": "W O'Rourke",
+    "recent": {
+     "deliveries": 12,
+     "runs": 17,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2025-05-27T15:58:00.000Z",
+   "leverage": 0.099109,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.501808,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.439662,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 6.215,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Royal Challengers Bengaluru"
+   }
+  },
+  {
+   "id": "gm-2025-1473467-105",
+   "sourceId": "cricsheet",
+   "matchId": "1473467",
+   "season": 2025,
+   "date": "2025-04-14",
+   "prelock": {
+    "battingTeam": "Chennai Super Kings",
+    "bowlingTeam": "Lucknow Super Giants",
+    "venue": "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow",
+    "target": 167,
+    "ballsLeft": 15,
+    "wicketsInHand": 5,
+    "runsRequired": 25,
+    "overs": "17.3",
+    "phase": "death",
+    "requiredRate": 10,
+    "striker": "S Dube",
+    "bowler": "Avesh Khan",
+    "recent": {
+     "deliveries": 12,
+     "runs": 23,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2025-04-14T15:59:30.000Z",
+   "leverage": 0.098556,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.365736,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.306258,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 5.948,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Chennai Super Kings"
+   }
+  },
+  {
+   "id": "gm-2025-1473510-104",
+   "sourceId": "cricsheet",
+   "matchId": "1473510",
+   "season": 2025,
+   "date": "2025-06-01",
+   "prelock": {
+    "battingTeam": "Punjab Kings",
+    "bowlingTeam": "Mumbai Indians",
+    "venue": "Narendra Modi Stadium, Ahmedabad",
+    "target": 204,
+    "ballsLeft": 16,
+    "wicketsInHand": 5,
+    "runsRequired": 26,
+    "overs": "17.2",
+    "phase": "death",
+    "requiredRate": 9.75,
+    "striker": "SS Iyer",
+    "bowler": "JJ Bumrah",
+    "recent": {
+     "deliveries": 12,
+     "runs": 23,
+     "wickets": 2
+    }
+   },
+   "observedCutoff": "2025-06-01T15:55:30.000Z",
+   "leverage": 0.097683,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.400663,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.3449,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 5.576,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Punjab Kings"
+   }
+  },
+  {
+   "id": "gm-2026-1527680-103",
+   "sourceId": "cricsheet",
+   "matchId": "1527680",
+   "season": 2026,
+   "date": "2026-04-03",
+   "prelock": {
+    "battingTeam": "Punjab Kings",
+    "bowlingTeam": "Chennai Super Kings",
+    "venue": "MA Chidambaram Stadium, Chepauk, Chennai",
+    "target": 210,
+    "ballsLeft": 17,
+    "wicketsInHand": 5,
+    "runsRequired": 24,
+    "overs": "17.1",
+    "phase": "death",
+    "requiredRate": 8.47,
+    "striker": "MP Stoinis",
+    "bowler": "MJ Henry",
+    "recent": {
+     "deliveries": 12,
+     "runs": 12,
+     "wickets": 2
+    }
+   },
+   "observedCutoff": "2026-04-03T16:00:00.000Z",
+   "leverage": 0.097533,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.579786,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.523151,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 5.664,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Punjab Kings"
+   }
+  },
+  {
+   "id": "gm-2026-1527683-107",
+   "sourceId": "cricsheet",
+   "matchId": "1527683",
+   "season": 2026,
+   "date": "2026-04-05",
+   "prelock": {
+    "battingTeam": "Lucknow Super Giants",
+    "bowlingTeam": "Sunrisers Hyderabad",
+    "venue": "Rajiv Gandhi International Stadium, Uppal, Hyderabad",
+    "target": 157,
+    "ballsLeft": 13,
+    "wicketsInHand": 5,
+    "runsRequired": 17,
+    "overs": "17.5",
+    "phase": "death",
+    "requiredRate": 7.85,
+    "striker": "RR Pant",
+    "bowler": "Harsh Dubey",
+    "recent": {
+     "deliveries": 12,
+     "runs": 13,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-04-05T15:54:30.000Z",
+   "leverage": 0.097339,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:2",
+      "label": "attack",
+      "wp": 0.69674,
+      "n": 578
+     },
+     {
+      "option": "rate:0",
+      "label": "consolidate",
+      "wp": 0.618624,
+      "n": 671
+     }
+    ],
+    "best": "rate:2",
+    "gapPts": 7.812,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Lucknow Super Giants"
+   }
+  },
+  {
+   "id": "gm-2026-1529306-107",
+   "sourceId": "cricsheet",
+   "matchId": "1529306",
+   "season": 2026,
+   "date": "2026-05-18",
+   "prelock": {
+    "battingTeam": "Sunrisers Hyderabad",
+    "bowlingTeam": "Chennai Super Kings",
+    "venue": "MA Chidambaram Stadium, Chepauk, Chennai",
+    "target": 181,
+    "ballsLeft": 13,
+    "wicketsInHand": 6,
+    "runsRequired": 19,
+    "overs": "17.5",
+    "phase": "death",
+    "requiredRate": 8.77,
+    "striker": "Ishan Kishan",
+    "bowler": "Mukesh Choudhary",
+    "recent": {
+     "deliveries": 12,
+     "runs": 18,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-05-18T16:00:30.000Z",
+   "leverage": 0.097228,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.581832,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.512838,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 6.899,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Sunrisers Hyderabad"
+   }
+  },
+  {
+   "id": "gm-2024-1426286-104",
+   "sourceId": "cricsheet",
+   "matchId": "1426286",
+   "season": 2024,
+   "date": "2024-04-30",
+   "prelock": {
+    "battingTeam": "Lucknow Super Giants",
+    "bowlingTeam": "Mumbai Indians",
+    "venue": "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow",
+    "target": 145,
+    "ballsLeft": 16,
+    "wicketsInHand": 5,
+    "runsRequired": 22,
+    "overs": "17.2",
+    "phase": "death",
+    "requiredRate": 8.25,
+    "striker": "A Badoni",
+    "bowler": "G Coetzee",
+    "recent": {
+     "deliveries": 12,
+     "runs": 5,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2024-04-30T15:57:00.000Z",
+   "leverage": 0.096794,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.579352,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.5118,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 6.755,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Lucknow Super Giants"
+   }
+  },
+  {
+   "id": "gm-2026-1529283-106",
+   "sourceId": "cricsheet",
+   "matchId": "1529283",
+   "season": 2026,
+   "date": "2026-04-28",
+   "prelock": {
+    "battingTeam": "Rajasthan Royals",
+    "bowlingTeam": "Punjab Kings",
+    "venue": "Maharaja Yadavindra Singh International Cricket Stadium, New Chandigarh",
+    "target": 223,
+    "ballsLeft": 14,
+    "wicketsInHand": 6,
+    "runsRequired": 24,
+    "overs": "17.4",
+    "phase": "death",
+    "requiredRate": 10.29,
+    "striker": "SB Dubey",
+    "bowler": "Arshdeep Singh",
+    "recent": {
+     "deliveries": 12,
+     "runs": 20,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2026-04-28T15:55:30.000Z",
+   "leverage": 0.095833,
+   "decision": {
+    "type": "chase-tempo",
+    "question": "What run rate should the chasing side aim for over the next two overs?",
+    "options": [
+     {
+      "option": "rate:2",
+      "label": "8–10 rpo",
+      "wp": 0.43681,
+      "n": 578
+     },
+     {
+      "option": "rate:3",
+      "label": "10–12 rpo",
+      "wp": 0.376872,
+      "n": 637
+     },
+     {
+      "option": "rate:4",
+      "label": "12–15 rpo",
+      "wp": 0.476747,
+      "n": 759
+     }
+    ],
+    "best": "rate:4",
+    "gapPts": 3.994,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Rajasthan Royals"
+   }
+  },
+  {
+   "id": "gm-2024-1426275-102",
+   "sourceId": "cricsheet",
+   "matchId": "1426275",
+   "season": 2024,
+   "date": "2024-04-21",
+   "prelock": {
+    "battingTeam": "Gujarat Titans",
+    "bowlingTeam": "Punjab Kings",
+    "venue": "Maharaja Yadavindra Singh International Cricket Stadium, Mullanpur",
+    "target": 143,
+    "ballsLeft": 18,
+    "wicketsInHand": 5,
+    "runsRequired": 25,
+    "overs": "17.0",
+    "phase": "death",
+    "requiredRate": 8.33,
+    "striker": "R Tewatia",
+    "bowler": "K Rabada",
+    "recent": {
+     "deliveries": 12,
+     "runs": 17,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2024-04-21T15:52:30.000Z",
+   "leverage": 0.091614,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.559893,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.496826,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 6.307,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Gujarat Titans"
+   }
+  },
+  {
+   "id": "gm-2026-1529277-100",
+   "sourceId": "cricsheet",
+   "matchId": "1529277",
+   "season": 2026,
+   "date": "2026-04-24",
+   "prelock": {
+    "battingTeam": "Royal Challengers Bengaluru",
+    "bowlingTeam": "Gujarat Titans",
+    "venue": "M Chinnaswamy Stadium, Bengaluru",
+    "target": 206,
+    "ballsLeft": 20,
+    "wicketsInHand": 5,
+    "runsRequired": 28,
+    "overs": "16.4",
+    "phase": "death",
+    "requiredRate": 8.4,
+    "striker": "TH David",
+    "bowler": "K Rabada",
+    "recent": {
+     "deliveries": 12,
+     "runs": 6,
+     "wickets": 2
+    }
+   },
+   "observedCutoff": "2026-04-24T15:52:00.000Z",
+   "leverage": 0.091282,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.583567,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.534047,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 4.952,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Royal Challengers Bengaluru"
+   }
+  },
+  {
+   "id": "gm-2026-1529278-105",
+   "sourceId": "cricsheet",
+   "matchId": "1529278",
+   "season": 2026,
+   "date": "2026-04-25",
+   "prelock": {
+    "battingTeam": "Punjab Kings",
+    "bowlingTeam": "Delhi Capitals",
+    "venue": "Arun Jaitley Stadium, Delhi",
+    "target": 265,
+    "ballsLeft": 15,
+    "wicketsInHand": 6,
+    "runsRequired": 20,
+    "overs": "17.3",
+    "phase": "death",
+    "requiredRate": 8,
+    "striker": "Shashank Singh",
+    "bowler": "Mukesh Kumar",
+    "recent": {
+     "deliveries": 12,
+     "runs": 31,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2026-04-25T16:01:30.000Z",
+   "leverage": 0.089474,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:2",
+      "label": "attack",
+      "wp": 0.689307,
+      "n": 578
+     },
+     {
+      "option": "rate:0",
+      "label": "consolidate",
+      "wp": 0.617435,
+      "n": 671
+     }
+    ],
+    "best": "rate:2",
+    "gapPts": 7.187,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Punjab Kings"
+   }
+  },
+  {
+   "id": "gm-2026-1529284-106",
+   "sourceId": "cricsheet",
+   "matchId": "1529284",
+   "season": 2026,
+   "date": "2026-04-29",
+   "prelock": {
+    "battingTeam": "Sunrisers Hyderabad",
+    "bowlingTeam": "Mumbai Indians",
+    "venue": "Wankhede Stadium, Mumbai",
+    "target": 244,
+    "ballsLeft": 14,
+    "wicketsInHand": 6,
+    "runsRequired": 18,
+    "overs": "17.4",
+    "phase": "death",
+    "requiredRate": 7.71,
+    "striker": "S Arora",
+    "bowler": "JJ Bumrah",
+    "recent": {
+     "deliveries": 12,
+     "runs": 19,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-04-29T16:00:00.000Z",
+   "leverage": 0.088945,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:2",
+      "label": "attack",
+      "wp": 0.722979,
+      "n": 578
+     },
+     {
+      "option": "rate:0",
+      "label": "consolidate",
+      "wp": 0.651752,
+      "n": 671
+     }
+    ],
+    "best": "rate:2",
+    "gapPts": 7.123,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Sunrisers Hyderabad"
+   }
+  },
+  {
+   "id": "gm-2024-1426280-105",
+   "sourceId": "cricsheet",
+   "matchId": "1426280",
+   "season": 2024,
+   "date": "2024-04-26",
+   "prelock": {
+    "battingTeam": "Punjab Kings",
+    "bowlingTeam": "Kolkata Knight Riders",
+    "venue": "Eden Gardens, Kolkata",
+    "target": 262,
+    "ballsLeft": 15,
+    "wicketsInHand": 8,
+    "runsRequired": 20,
+    "overs": "17.3",
+    "phase": "death",
+    "requiredRate": 8,
+    "striker": "Shashank Singh",
+    "bowler": "Harshit Rana",
+    "recent": {
+     "deliveries": 12,
+     "runs": 35,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2024-04-26T15:59:30.000Z",
+   "leverage": 0.088483,
+   "decision": {
+    "type": "chase-tempo",
+    "question": "What run rate should the chasing side aim for over the next two overs?",
+    "options": [
+     {
+      "option": "rate:0",
+      "label": "up to 6 rpo",
+      "wp": 0.665604,
+      "n": 1082
+     },
+     {
+      "option": "rate:1",
+      "label": "6–8 rpo",
+      "wp": 0.719435,
+      "n": 438
+     },
+     {
+      "option": "rate:2",
+      "label": "8–10 rpo",
+      "wp": 0.674398,
+      "n": 402
+     }
+    ],
+    "best": "rate:1",
+    "gapPts": 4.504,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Punjab Kings"
+   }
+  },
+  {
+   "id": "gm-2024-1422120-103",
+   "sourceId": "cricsheet",
+   "matchId": "1422120",
+   "season": 2024,
+   "date": "2024-03-23",
+   "prelock": {
+    "battingTeam": "Punjab Kings",
+    "bowlingTeam": "Delhi Capitals",
+    "venue": "Maharaja Yadavindra Singh International Cricket Stadium, Mullanpur",
+    "target": 175,
+    "ballsLeft": 17,
+    "wicketsInHand": 6,
+    "runsRequired": 27,
+    "overs": "17.1",
+    "phase": "death",
+    "requiredRate": 9.53,
+    "striker": "SM Curran",
+    "bowler": "MR Marsh",
+    "recent": {
+     "deliveries": 12,
+     "runs": 17,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2024-03-23T15:55:00.000Z",
+   "leverage": 0.088142,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.473237,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.415718,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 5.752,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Punjab Kings"
+   }
+  },
+  {
+   "id": "gm-2025-1473440-104",
+   "sourceId": "cricsheet",
+   "matchId": "1473440",
+   "season": 2025,
+   "date": "2025-03-23",
+   "prelock": {
+    "battingTeam": "Chennai Super Kings",
+    "bowlingTeam": "Mumbai Indians",
+    "venue": "MA Chidambaram Stadium, Chepauk, Chennai",
+    "target": 156,
+    "ballsLeft": 16,
+    "wicketsInHand": 5,
+    "runsRequired": 20,
+    "overs": "17.2",
+    "phase": "death",
+    "requiredRate": 7.5,
+    "striker": "R Ravindra",
+    "bowler": "V Puthur",
+    "recent": {
+     "deliveries": 12,
+     "runs": 15,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2025-03-23T15:55:30.000Z",
+   "leverage": 0.083168,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:2",
+      "label": "attack",
+      "wp": 0.738736,
+      "n": 578
+     },
+     {
+      "option": "rate:0",
+      "label": "consolidate",
+      "wp": 0.674702,
+      "n": 671
+     }
+    ],
+    "best": "rate:2",
+    "gapPts": 6.403,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Chennai Super Kings"
+   }
+  },
+  {
+   "id": "gm-2026-1529300-104",
+   "sourceId": "cricsheet",
+   "matchId": "1529300",
+   "season": 2026,
+   "date": "2026-05-13",
+   "prelock": {
+    "battingTeam": "Royal Challengers Bengaluru",
+    "bowlingTeam": "Kolkata Knight Riders",
+    "venue": "Shaheed Veer Narayan Singh International Stadium, Raipur",
+    "target": 193,
+    "ballsLeft": 16,
+    "wicketsInHand": 7,
+    "runsRequired": 20,
+    "overs": "17.2",
+    "phase": "death",
+    "requiredRate": 7.5,
+    "striker": "V Kohli",
+    "bowler": "Kartik Tyagi",
+    "recent": {
+     "deliveries": 12,
+     "runs": 23,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-05-13T15:57:00.000Z",
+   "leverage": 0.082053,
+   "decision": {
+    "type": "chase-tempo",
+    "question": "What run rate should the chasing side aim for over the next two overs?",
+    "options": [
+     {
+      "option": "rate:0",
+      "label": "up to 6 rpo",
+      "wp": 0.736038,
+      "n": 1082
+     },
+     {
+      "option": "rate:1",
+      "label": "6–8 rpo",
+      "wp": 0.786019,
+      "n": 438
+     },
+     {
+      "option": "rate:2",
+      "label": "8–10 rpo",
+      "wp": 0.746903,
+      "n": 402
+     }
+    ],
+    "best": "rate:1",
+    "gapPts": 3.912,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Royal Challengers Bengaluru"
+   }
+  },
+  {
+   "id": "gm-2026-1529268-104",
+   "sourceId": "cricsheet",
+   "matchId": "1529268",
+   "season": 2026,
+   "date": "2026-04-17",
+   "prelock": {
+    "battingTeam": "Gujarat Titans",
+    "bowlingTeam": "Kolkata Knight Riders",
+    "venue": "Narendra Modi Stadium, Ahmedabad",
+    "target": 181,
+    "ballsLeft": 16,
+    "wicketsInHand": 6,
+    "runsRequired": 21,
+    "overs": "17.2",
+    "phase": "death",
+    "requiredRate": 7.88,
+    "striker": "GD Phillips",
+    "bowler": "Kartik Tyagi",
+    "recent": {
+     "deliveries": 12,
+     "runs": 14,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-04-17T15:56:30.000Z",
+   "leverage": 0.079395,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:2",
+      "label": "attack",
+      "wp": 0.730354,
+      "n": 578
+     },
+     {
+      "option": "rate:0",
+      "label": "consolidate",
+      "wp": 0.665397,
+      "n": 671
+     }
+    ],
+    "best": "rate:2",
+    "gapPts": 6.496,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Gujarat Titans"
+   }
+  },
+  {
+   "id": "gm-2026-1529297-95",
+   "sourceId": "cricsheet",
+   "matchId": "1529297",
+   "season": 2026,
+   "date": "2026-05-10",
+   "prelock": {
+    "battingTeam": "Royal Challengers Bengaluru",
+    "bowlingTeam": "Mumbai Indians",
+    "venue": "Shaheed Veer Narayan Singh International Stadium, Raipur",
+    "target": 167,
+    "ballsLeft": 25,
+    "wicketsInHand": 5,
+    "runsRequired": 36,
+    "overs": "15.5",
+    "phase": "middle",
+    "requiredRate": 8.64,
+    "striker": "TH David",
+    "bowler": "C Bosch",
+    "recent": {
+     "deliveries": 12,
+     "runs": 23,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-05-10T15:51:30.000Z",
+   "leverage": 0.07809,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.470133,
+      "n": 807
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.432004,
+      "n": 375
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3.813,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Royal Challengers Bengaluru"
+   }
+  },
+  {
+   "id": "gm-2024-1422123-106",
+   "sourceId": "cricsheet",
+   "matchId": "1422123",
+   "season": 2024,
+   "date": "2024-03-24",
+   "prelock": {
+    "battingTeam": "Mumbai Indians",
+    "bowlingTeam": "Gujarat Titans",
+    "venue": "Narendra Modi Stadium, Ahmedabad",
+    "target": 169,
+    "ballsLeft": 14,
+    "wicketsInHand": 6,
+    "runsRequired": 27,
+    "overs": "17.4",
+    "phase": "death",
+    "requiredRate": 11.57,
+    "striker": "TH David",
+    "bowler": "MM Sharma",
+    "recent": {
+     "deliveries": 12,
+     "runs": 13,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2024-03-24T15:56:00.000Z",
+   "leverage": 0.078073,
+   "decision": {
+    "type": "chase-tempo",
+    "question": "What run rate should the chasing side aim for over the next two overs?",
+    "options": [
+     {
+      "option": "rate:2",
+      "label": "8–10 rpo",
+      "wp": 0.270481,
+      "n": 578
+     },
+     {
+      "option": "rate:3",
+      "label": "10–12 rpo",
+      "wp": 0.218489,
+      "n": 637
+     },
+     {
+      "option": "rate:4",
+      "label": "12–15 rpo",
+      "wp": 0.30732,
+      "n": 759
+     }
+    ],
+    "best": "rate:4",
+    "gapPts": 3.684,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 0,
+    "winner": "Gujarat Titans"
+   }
+  },
+  {
+   "id": "gm-2026-1529289-95",
+   "sourceId": "cricsheet",
+   "matchId": "1529289",
+   "season": 2026,
+   "date": "2026-05-03",
+   "prelock": {
+    "battingTeam": "Gujarat Titans",
+    "bowlingTeam": "Punjab Kings",
+    "venue": "Narendra Modi Stadium, Ahmedabad",
+    "target": 164,
+    "ballsLeft": 25,
+    "wicketsInHand": 6,
+    "runsRequired": 36,
+    "overs": "15.5",
+    "phase": "middle",
+    "requiredRate": 8.64,
+    "striker": "Washington Sundar",
+    "bowler": "XC Bartlett",
+    "recent": {
+     "deliveries": 12,
+     "runs": 13,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-05-03T15:51:00.000Z",
+   "leverage": 0.074307,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.502079,
+      "n": 807
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.463082,
+      "n": 375
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3.9,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Gujarat Titans"
+   }
+  },
+  {
+   "id": "gm-2025-1473480-92",
+   "sourceId": "cricsheet",
+   "matchId": "1473480",
+   "season": 2025,
+   "date": "2025-04-25",
+   "prelock": {
+    "battingTeam": "Sunrisers Hyderabad",
+    "bowlingTeam": "Chennai Super Kings",
+    "venue": "MA Chidambaram Stadium, Chepauk, Chennai",
+    "target": 155,
+    "ballsLeft": 28,
+    "wicketsInHand": 5,
+    "runsRequired": 38,
+    "overs": "15.2",
+    "phase": "middle",
+    "requiredRate": 8.14,
+    "striker": "PHKD Mendis",
+    "bowler": "Noor Ahmad",
+    "recent": {
+     "deliveries": 12,
+     "runs": 11,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2025-04-25T15:50:00.000Z",
+   "leverage": 0.074295,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.55547,
+      "n": 807
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.519882,
+      "n": 375
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3.559,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Sunrisers Hyderabad"
+   }
+  },
+  {
+   "id": "gm-2024-1422119-96",
+   "sourceId": "cricsheet",
+   "matchId": "1422119",
+   "season": 2024,
+   "date": "2024-03-22",
+   "prelock": {
+    "battingTeam": "Chennai Super Kings",
+    "bowlingTeam": "Royal Challengers Bengaluru",
+    "venue": "MA Chidambaram Stadium, Chepauk, Chennai",
+    "target": 174,
+    "ballsLeft": 24,
+    "wicketsInHand": 6,
+    "runsRequired": 34,
+    "overs": "16.0",
+    "phase": "death",
+    "requiredRate": 8.5,
+    "striker": "RA Jadeja",
+    "bowler": "AS Joseph",
+    "recent": {
+     "deliveries": 12,
+     "runs": 17,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2024-03-22T15:54:30.000Z",
+   "leverage": 0.07382,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.618566,
+      "n": 637
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.573536,
+      "n": 436
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 4.503,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Chennai Super Kings"
+   }
+  },
+  {
+   "id": "gm-2025-1473461-94",
+   "sourceId": "cricsheet",
+   "matchId": "1473461",
+   "season": 2025,
+   "date": "2025-04-10",
+   "prelock": {
+    "battingTeam": "Delhi Capitals",
+    "bowlingTeam": "Royal Challengers Bengaluru",
+    "venue": "M Chinnaswamy Stadium, Bengaluru",
+    "target": 164,
+    "ballsLeft": 26,
+    "wicketsInHand": 6,
+    "runsRequired": 37,
+    "overs": "15.4",
+    "phase": "middle",
+    "requiredRate": 8.54,
+    "striker": "T Stubbs",
+    "bowler": "Suyash Sharma",
+    "recent": {
+     "deliveries": 12,
+     "runs": 29,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2025-04-10T15:50:30.000Z",
+   "leverage": 0.073649,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.519306,
+      "n": 807
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.481218,
+      "n": 375
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3.809,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Delhi Capitals"
+   }
+  },
+  {
+   "id": "gm-2026-1527675-101",
+   "sourceId": "cricsheet",
+   "matchId": "1527675",
+   "season": 2026,
+   "date": "2026-03-29",
+   "prelock": {
+    "battingTeam": "Mumbai Indians",
+    "bowlingTeam": "Kolkata Knight Riders",
+    "venue": "Wankhede Stadium, Mumbai",
+    "target": 221,
+    "ballsLeft": 19,
+    "wicketsInHand": 7,
+    "runsRequired": 24,
+    "overs": "16.5",
+    "phase": "death",
+    "requiredRate": 7.58,
+    "striker": "Tilak Varma",
+    "bowler": "Kartik Tyagi",
+    "recent": {
+     "deliveries": 12,
+     "runs": 14,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-03-29T15:56:00.000Z",
+   "leverage": 0.071576,
+   "decision": {
+    "type": "chase-tempo",
+    "question": "What run rate should the chasing side aim for over the next two overs?",
+    "options": [
+     {
+      "option": "rate:0",
+      "label": "up to 6 rpo",
+      "wp": 0.732267,
+      "n": 1082
+     },
+     {
+      "option": "rate:1",
+      "label": "6–8 rpo",
+      "wp": 0.775322,
+      "n": 438
+     },
+     {
+      "option": "rate:2",
+      "label": "8–10 rpo",
+      "wp": 0.738879,
+      "n": 402
+     }
+    ],
+    "best": "rate:1",
+    "gapPts": 3.644,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Mumbai Indians"
+   }
+  },
+  {
+   "id": "gm-2025-1473486-95",
+   "sourceId": "cricsheet",
+   "matchId": "1473486",
+   "season": 2025,
+   "date": "2025-04-30",
+   "prelock": {
+    "battingTeam": "Punjab Kings",
+    "bowlingTeam": "Chennai Super Kings",
+    "venue": "MA Chidambaram Stadium, Chepauk, Chennai",
+    "target": 191,
+    "ballsLeft": 25,
+    "wicketsInHand": 7,
+    "runsRequired": 42,
+    "overs": "15.5",
+    "phase": "middle",
+    "requiredRate": 10.08,
+    "striker": "Shashank Singh",
+    "bowler": "Noor Ahmad",
+    "recent": {
+     "deliveries": 12,
+     "runs": 19,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2025-04-30T15:51:30.000Z",
+   "leverage": 0.069736,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:4",
+      "label": "attack",
+      "wp": 0.351103,
+      "n": 499
+     },
+     {
+      "option": "rate:2",
+      "label": "consolidate",
+      "wp": 0.313712,
+      "n": 1010
+     }
+    ],
+    "best": "rate:4",
+    "gapPts": 3.739,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Punjab Kings"
+   }
+  },
+  {
+   "id": "gm-2026-1529269-91",
+   "sourceId": "cricsheet",
+   "matchId": "1529269",
+   "season": 2026,
+   "date": "2026-04-18",
+   "prelock": {
+    "battingTeam": "Delhi Capitals",
+    "bowlingTeam": "Royal Challengers Bengaluru",
+    "venue": "M Chinnaswamy Stadium, Bengaluru",
+    "target": 176,
+    "ballsLeft": 29,
+    "wicketsInHand": 6,
+    "runsRequired": 45,
+    "overs": "15.1",
+    "phase": "middle",
+    "requiredRate": 9.31,
+    "striker": "AR Patel",
+    "bowler": "B Kumar",
+    "recent": {
+     "deliveries": 12,
+     "runs": 13,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2026-04-18T15:51:00.000Z",
+   "leverage": 0.069464,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.431664,
+      "n": 807
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.403374,
+      "n": 375
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 2.829,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Delhi Capitals"
+   }
+  },
+  {
+   "id": "gm-2024-1426310-90",
+   "sourceId": "cricsheet",
+   "matchId": "1426310",
+   "season": 2024,
+   "date": "2024-05-22",
+   "prelock": {
+    "battingTeam": "Rajasthan Royals",
+    "bowlingTeam": "Royal Challengers Bengaluru",
+    "venue": "Narendra Modi Stadium, Ahmedabad",
+    "target": 173,
+    "ballsLeft": 30,
+    "wicketsInHand": 6,
+    "runsRequired": 47,
+    "overs": "15.0",
+    "phase": "middle",
+    "requiredRate": 9.4,
+    "striker": "SO Hetmyer",
+    "bowler": "C Green",
+    "recent": {
+     "deliveries": 12,
+     "runs": 14,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2024-05-22T15:47:00.000Z",
+   "leverage": 0.068197,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.411649,
+      "n": 807
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.384339,
+      "n": 375
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 2.731,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Rajasthan Royals"
+   }
+  },
+  {
+   "id": "gm-2025-1473451-95",
+   "sourceId": "cricsheet",
+   "matchId": "1473451",
+   "season": 2025,
+   "date": "2025-04-02",
+   "prelock": {
+    "battingTeam": "Gujarat Titans",
+    "bowlingTeam": "Royal Challengers Bengaluru",
+    "venue": "M Chinnaswamy Stadium, Bengaluru",
+    "target": 170,
+    "ballsLeft": 25,
+    "wicketsInHand": 8,
+    "runsRequired": 33,
+    "overs": "15.5",
+    "phase": "middle",
+    "requiredRate": 7.92,
+    "striker": "JC Buttler",
+    "bowler": "Rasikh Salam",
+    "recent": {
+     "deliveries": 12,
+     "runs": 21,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2025-04-02T15:49:00.000Z",
+   "leverage": 0.066191,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:2",
+      "label": "attack",
+      "wp": 0.698439,
+      "n": 1010
+     },
+     {
+      "option": "rate:0",
+      "label": "consolidate",
+      "wp": 0.649934,
+      "n": 1035
+     }
+    ],
+    "best": "rate:2",
+    "gapPts": 4.851,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Gujarat Titans"
+   }
+  },
+  {
+   "id": "gm-2026-1529305-94",
+   "sourceId": "cricsheet",
+   "matchId": "1529305",
+   "season": 2026,
+   "date": "2026-05-17",
+   "prelock": {
+    "battingTeam": "Delhi Capitals",
+    "bowlingTeam": "Rajasthan Royals",
+    "venue": "Arun Jaitley Stadium, Delhi",
+    "target": 194,
+    "ballsLeft": 26,
+    "wicketsInHand": 7,
+    "runsRequired": 45,
+    "overs": "15.4",
+    "phase": "middle",
+    "requiredRate": 10.38,
+    "striker": "AR Patel",
+    "bowler": "AF Milne",
+    "recent": {
+     "deliveries": 12,
+     "runs": 22,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-05-17T15:51:30.000Z",
+   "leverage": 0.064704,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:4",
+      "label": "attack",
+      "wp": 0.299557,
+      "n": 499
+     },
+     {
+      "option": "rate:2",
+      "label": "consolidate",
+      "wp": 0.265239,
+      "n": 1010
+     }
+    ],
+    "best": "rate:4",
+    "gapPts": 3.432,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Delhi Capitals"
+   }
+  },
+  {
+   "id": "gm-2025-1485779-89",
+   "sourceId": "cricsheet",
+   "matchId": "1485779",
+   "season": 2025,
+   "date": "2025-05-24",
+   "prelock": {
+    "battingTeam": "Delhi Capitals",
+    "bowlingTeam": "Punjab Kings",
+    "venue": "Sawai Mansingh Stadium, Jaipur",
+    "target": 207,
+    "ballsLeft": 31,
+    "wicketsInHand": 7,
+    "runsRequired": 52,
+    "overs": "14.5",
+    "phase": "middle",
+    "requiredRate": 10.06,
+    "striker": "KK Nair",
+    "bowler": "Harpreet Brar",
+    "recent": {
+     "deliveries": 12,
+     "runs": 26,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2025-05-24T15:49:30.000Z",
+   "leverage": 0.064422,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:4",
+      "label": "attack",
+      "wp": 0.326832,
+      "n": 499
+     },
+     {
+      "option": "rate:2",
+      "label": "consolidate",
+      "wp": 0.294937,
+      "n": 1010
+     }
+    ],
+    "best": "rate:4",
+    "gapPts": 3.19,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Delhi Capitals"
+   }
+  },
+  {
+   "id": "gm-2024-1426283-83",
+   "sourceId": "cricsheet",
+   "matchId": "1426283",
+   "season": 2024,
+   "date": "2024-04-28",
+   "prelock": {
+    "battingTeam": "Royal Challengers Bengaluru",
+    "bowlingTeam": "Gujarat Titans",
+    "venue": "Narendra Modi Stadium, Ahmedabad",
+    "target": 201,
+    "ballsLeft": 37,
+    "wicketsInHand": 9,
+    "runsRequired": 54,
+    "overs": "13.5",
+    "phase": "middle",
+    "requiredRate": 8.76,
+    "striker": "WG Jacks",
+    "bowler": "Noor Ahmad",
+    "recent": {
+     "deliveries": 12,
+     "runs": 26,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2024-04-28T15:47:30.000Z",
+   "leverage": 0.063133,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.567227,
+      "n": 370
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.528003,
+      "n": 1239
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3.922,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Royal Challengers Bengaluru"
+   }
+  },
+  {
+   "id": "gm-2024-1426265-79",
+   "sourceId": "cricsheet",
+   "matchId": "1426265",
+   "season": 2024,
+   "date": "2024-04-13",
+   "prelock": {
+    "battingTeam": "Rajasthan Royals",
+    "bowlingTeam": "Punjab Kings",
+    "venue": "Maharaja Yadavindra Singh International Cricket Stadium, Mullanpur",
+    "target": 148,
+    "ballsLeft": 41,
+    "wicketsInHand": 8,
+    "runsRequired": 59,
+    "overs": "13.1",
+    "phase": "middle",
+    "requiredRate": 8.63,
+    "striker": "SV Samson",
+    "bowler": "K Rabada",
+    "recent": {
+     "deliveries": 12,
+     "runs": 9,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2024-04-13T15:43:00.000Z",
+   "leverage": 0.06297,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.409789,
+      "n": 2345
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.368504,
+      "n": 2337
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 4.129,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Rajasthan Royals"
+   }
+  },
+  {
+   "id": "gm-2025-1473499-78",
+   "sourceId": "cricsheet",
+   "matchId": "1473499",
+   "season": 2025,
+   "date": "2025-05-19",
+   "prelock": {
+    "battingTeam": "Sunrisers Hyderabad",
+    "bowlingTeam": "Lucknow Super Giants",
+    "venue": "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow",
+    "target": 206,
+    "ballsLeft": 42,
+    "wicketsInHand": 7,
+    "runsRequired": 58,
+    "overs": "13.0",
+    "phase": "middle",
+    "requiredRate": 8.29,
+    "striker": "PHKD Mendis",
+    "bowler": "DS Rathi",
+    "recent": {
+     "deliveries": 12,
+     "runs": 15,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2025-05-19T15:47:30.000Z",
+   "leverage": 0.062414,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.591456,
+      "n": 2345
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.563668,
+      "n": 2337
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 2.779,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Sunrisers Hyderabad"
+   }
+  },
+  {
+   "id": "gm-2025-1473490-93",
+   "sourceId": "cricsheet",
+   "matchId": "1473490",
+   "season": 2025,
+   "date": "2025-05-04",
+   "prelock": {
+    "battingTeam": "Rajasthan Royals",
+    "bowlingTeam": "Kolkata Knight Riders",
+    "venue": "Eden Gardens, Kolkata",
+    "target": 207,
+    "ballsLeft": 27,
+    "wicketsInHand": 5,
+    "runsRequired": 45,
+    "overs": "15.3",
+    "phase": "middle",
+    "requiredRate": 10,
+    "striker": "R Parag",
+    "bowler": "Harshit Rana",
+    "recent": {
+     "deliveries": 12,
+     "runs": 21,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2025-05-04T15:51:30.000Z",
+   "leverage": 0.062132,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.250695,
+      "n": 807
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.221108,
+      "n": 375
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 2.959,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 0,
+    "winner": "Kolkata Knight Riders"
+   }
+  },
+  {
+   "id": "gm-2025-1473466-92",
+   "sourceId": "cricsheet",
+   "matchId": "1473466",
+   "season": 2025,
+   "date": "2025-04-13",
+   "prelock": {
+    "battingTeam": "Delhi Capitals",
+    "bowlingTeam": "Mumbai Indians",
+    "venue": "Arun Jaitley Stadium, Delhi",
+    "target": 206,
+    "ballsLeft": 28,
+    "wicketsInHand": 5,
+    "runsRequired": 46,
+    "overs": "15.2",
+    "phase": "middle",
+    "requiredRate": 9.86,
+    "striker": "KL Rahul",
+    "bowler": "KV Sharma",
+    "recent": {
+     "deliveries": 12,
+     "runs": 15,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2025-04-13T15:48:30.000Z",
+   "leverage": 0.062123,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.266057,
+      "n": 807
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.236058,
+      "n": 375
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 0,
+    "winner": "Mumbai Indians"
+   }
+  },
+  {
+   "id": "gm-2026-1529286-91",
+   "sourceId": "cricsheet",
+   "matchId": "1529286",
+   "season": 2026,
+   "date": "2026-05-01",
+   "prelock": {
+    "battingTeam": "Delhi Capitals",
+    "bowlingTeam": "Rajasthan Royals",
+    "venue": "Sawai Mansingh Stadium, Jaipur",
+    "target": 226,
+    "ballsLeft": 29,
+    "wicketsInHand": 8,
+    "runsRequired": 49,
+    "overs": "15.1",
+    "phase": "middle",
+    "requiredRate": 10.14,
+    "striker": "KL Rahul",
+    "bowler": "JC Archer",
+    "recent": {
+     "deliveries": 12,
+     "runs": 23,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2026-05-01T15:48:30.000Z",
+   "leverage": 0.061915,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:4",
+      "label": "attack",
+      "wp": 0.331784,
+      "n": 499
+     },
+     {
+      "option": "rate:2",
+      "label": "consolidate",
+      "wp": 0.298224,
+      "n": 1010
+     }
+    ],
+    "best": "rate:4",
+    "gapPts": 3.356,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Delhi Capitals"
+   }
+  },
+  {
+   "id": "gm-2025-1473489-95",
+   "sourceId": "cricsheet",
+   "matchId": "1473489",
+   "season": 2025,
+   "date": "2025-05-03",
+   "prelock": {
+    "battingTeam": "Chennai Super Kings",
+    "bowlingTeam": "Royal Challengers Bengaluru",
+    "venue": "M Chinnaswamy Stadium, Bengaluru",
+    "target": 214,
+    "ballsLeft": 25,
+    "wicketsInHand": 8,
+    "runsRequired": 44,
+    "overs": "15.5",
+    "phase": "middle",
+    "requiredRate": 10.56,
+    "striker": "RA Jadeja",
+    "bowler": "Yash Dayal",
+    "recent": {
+     "deliveries": 12,
+     "runs": 22,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2025-05-03T15:49:30.000Z",
+   "leverage": 0.061751,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:4",
+      "label": "attack",
+      "wp": 0.290982,
+      "n": 499
+     },
+     {
+      "option": "rate:2",
+      "label": "consolidate",
+      "wp": 0.257073,
+      "n": 1010
+     }
+    ],
+    "best": "rate:4",
+    "gapPts": 3.391,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 0,
+    "winner": "Royal Challengers Bengaluru"
+   }
+  },
+  {
+   "id": "gm-2026-1529311-80",
+   "sourceId": "cricsheet",
+   "matchId": "1529311",
+   "season": 2026,
+   "date": "2026-05-23",
+   "prelock": {
+    "battingTeam": "Punjab Kings",
+    "bowlingTeam": "Lucknow Super Giants",
+    "venue": "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow",
+    "target": 197,
+    "ballsLeft": 40,
+    "wicketsInHand": 8,
+    "runsRequired": 57,
+    "overs": "13.2",
+    "phase": "middle",
+    "requiredRate": 8.55,
+    "striker": "SS Iyer",
+    "bowler": "Prince Yadav",
+    "recent": {
+     "deliveries": 12,
+     "runs": 23,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2026-05-23T15:45:00.000Z",
+   "leverage": 0.061016,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.569679,
+      "n": 2345
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.532941,
+      "n": 2337
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3.674,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Punjab Kings"
+   }
+  },
+  {
+   "id": "gm-2026-1529291-83",
+   "sourceId": "cricsheet",
+   "matchId": "1529291",
+   "season": 2026,
+   "date": "2026-05-05",
+   "prelock": {
+    "battingTeam": "Chennai Super Kings",
+    "bowlingTeam": "Delhi Capitals",
+    "venue": "Arun Jaitley Stadium, Delhi",
+    "target": 156,
+    "ballsLeft": 37,
+    "wicketsInHand": 8,
+    "runsRequired": 50,
+    "overs": "13.5",
+    "phase": "middle",
+    "requiredRate": 8.11,
+    "striker": "Kartik Sharma",
+    "bowler": "L Ngidi",
+    "recent": {
+     "deliveries": 12,
+     "runs": 10,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2026-05-05T15:43:00.000Z",
+   "leverage": 0.060751,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.640268,
+      "n": 2345
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.60167,
+      "n": 2337
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3.86,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Chennai Super Kings"
+   }
+  },
+  {
+   "id": "gm-2024-1426264-72",
+   "sourceId": "cricsheet",
+   "matchId": "1426264",
+   "season": 2024,
+   "date": "2024-04-12",
+   "prelock": {
+    "battingTeam": "Delhi Capitals",
+    "bowlingTeam": "Lucknow Super Giants",
+    "venue": "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow",
+    "target": 168,
+    "ballsLeft": 48,
+    "wicketsInHand": 8,
+    "runsRequired": 67,
+    "overs": "12.0",
+    "phase": "middle",
+    "requiredRate": 8.38,
+    "striker": "J Fraser-McGurk",
+    "bowler": "KH Pandya",
+    "recent": {
+     "deliveries": 12,
+     "runs": 25,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2024-04-12T15:39:30.000Z",
+   "leverage": 0.056671,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.539776,
+      "n": 2345
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.504775,
+      "n": 2337
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3.5,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Delhi Capitals"
+   }
+  },
+  {
+   "id": "gm-2025-1473477-81",
+   "sourceId": "cricsheet",
+   "matchId": "1473477",
+   "season": 2025,
+   "date": "2025-04-22",
+   "prelock": {
+    "battingTeam": "Delhi Capitals",
+    "bowlingTeam": "Lucknow Super Giants",
+    "venue": "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow",
+    "target": 160,
+    "ballsLeft": 39,
+    "wicketsInHand": 8,
+    "runsRequired": 51,
+    "overs": "13.3",
+    "phase": "middle",
+    "requiredRate": 7.85,
+    "striker": "AR Patel",
+    "bowler": "Ravi Bishnoi",
+    "recent": {
+     "deliveries": 12,
+     "runs": 5,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2025-04-22T15:41:30.000Z",
+   "leverage": 0.055159,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:2",
+      "label": "attack",
+      "wp": 0.678706,
+      "n": 3245
+     },
+     {
+      "option": "rate:0",
+      "label": "consolidate",
+      "wp": 0.646571,
+      "n": 1862
+     }
+    ],
+    "best": "rate:2",
+    "gapPts": 3.214,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Delhi Capitals"
+   }
+  },
+  {
+   "id": "gm-2025-1473506-70",
+   "sourceId": "cricsheet",
+   "matchId": "1473506",
+   "season": 2025,
+   "date": "2025-05-26",
+   "prelock": {
+    "battingTeam": "Punjab Kings",
+    "bowlingTeam": "Mumbai Indians",
+    "venue": "Sawai Mansingh Stadium, Jaipur",
+    "target": 185,
+    "ballsLeft": 50,
+    "wicketsInHand": 9,
+    "runsRequired": 75,
+    "overs": "11.4",
+    "phase": "middle",
+    "requiredRate": 9,
+    "striker": "Priyansh Arya",
+    "bowler": "HH Pandya",
+    "recent": {
+     "deliveries": 12,
+     "runs": 21,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2025-05-26T15:40:30.000Z",
+   "leverage": 0.053346,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.521579,
+      "n": 370
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.489957,
+      "n": 1239
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3.162,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Punjab Kings"
+   }
+  },
+  {
+   "id": "gm-2024-1426293-73",
+   "sourceId": "cricsheet",
+   "matchId": "1426293",
+   "season": 2024,
+   "date": "2024-05-06",
+   "prelock": {
+    "battingTeam": "Mumbai Indians",
+    "bowlingTeam": "Sunrisers Hyderabad",
+    "venue": "Wankhede Stadium, Mumbai",
+    "target": 174,
+    "ballsLeft": 47,
+    "wicketsInHand": 7,
+    "runsRequired": 68,
+    "overs": "12.1",
+    "phase": "middle",
+    "requiredRate": 8.68,
+    "striker": "SA Yadav",
+    "bowler": "M Jansen",
+    "recent": {
+     "deliveries": 12,
+     "runs": 20,
+     "wickets": 0
+    }
+   },
+   "observedCutoff": "2024-05-06T15:42:00.000Z",
+   "leverage": 0.05329,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.530448,
+      "n": 2345
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.500845,
+      "n": 2337
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 2.96,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Mumbai Indians"
+   }
+  },
+  {
+   "id": "gm-2025-1473443-64",
+   "sourceId": "cricsheet",
+   "matchId": "1473443",
+   "season": 2025,
+   "date": "2025-03-26",
+   "prelock": {
+    "battingTeam": "Kolkata Knight Riders",
+    "bowlingTeam": "Rajasthan Royals",
+    "venue": "Barsapara Cricket Stadium, Guwahati",
+    "target": 152,
+    "ballsLeft": 56,
+    "wicketsInHand": 8,
+    "runsRequired": 79,
+    "overs": "10.4",
+    "phase": "middle",
+    "requiredRate": 8.46,
+    "striker": "Q de Kock",
+    "bowler": "PWH de Silva",
+    "recent": {
+     "deliveries": 12,
+     "runs": 14,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2025-03-26T15:34:30.000Z",
+   "leverage": 0.052926,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.484556,
+      "n": 2345
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.452687,
+      "n": 2337
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 3.187,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Kolkata Knight Riders"
+   }
+  },
+  {
+   "id": "gm-2024-1426276-59",
+   "sourceId": "cricsheet",
+   "matchId": "1426276",
+   "season": 2024,
+   "date": "2024-04-22",
+   "prelock": {
+    "battingTeam": "Rajasthan Royals",
+    "bowlingTeam": "Mumbai Indians",
+    "venue": "Sawai Mansingh Stadium, Jaipur",
+    "target": 180,
+    "ballsLeft": 61,
+    "wicketsInHand": 9,
+    "runsRequired": 91,
+    "overs": "9.5",
+    "phase": "middle",
+    "requiredRate": 8.95,
+    "striker": "YBK Jaiswal",
+    "bowler": "PP Chawla",
+    "recent": {
+     "deliveries": 12,
+     "runs": 15,
+     "wickets": 1
+    }
+   },
+   "observedCutoff": "2024-04-22T15:34:00.000Z",
+   "leverage": 0.051785,
+   "decision": {
+    "type": "next-over-intent",
+    "question": "Next over: should the chasing side attack or consolidate?",
+    "options": [
+     {
+      "option": "rate:3",
+      "label": "attack",
+      "wp": 0.472532,
+      "n": 4871
+     },
+     {
+      "option": "rate:1",
+      "label": "consolidate",
+      "wp": 0.447363,
+      "n": 12328
+     }
+    ],
+    "best": "rate:3",
+    "gapPts": 2.517,
+    "calibration": "provisional"
+   },
+   "reveal": {
+    "chaseWon": 1,
+    "winner": "Rajasthan Royals"
+   }
+  }
+ ]
+}
