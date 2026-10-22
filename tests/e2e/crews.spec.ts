@@ -23,8 +23,7 @@ test("crews: create, invite by link, join, rotate code, leave; outsiders get 404
   await friendPage.getByLabel("Email").fill(friend.email);
   await friendPage.getByLabel("Password").fill(friend.password);
   await friendPage.getByRole("button", { name: /sign in/i }).click();
-  // sign-in (slow password hashing) then the join render and redirect: allow for a fully parallel suite
-  await expect(friendPage).toHaveURL(crewUrl, { timeout: 20_000 });
+  await expect(friendPage).toHaveURL(crewUrl);
   await expect(friendPage.getByTestId("members")).toContainText("Owner Asha");
   await expect(friendPage.getByTestId("members")).toContainText("Friend Bilal (you)");
   await expect(friendPage.getByRole("button", { name: "New code" })).toHaveCount(0);

@@ -115,5 +115,11 @@ export async function joinOrOpen(userId: string, inviteCode: string): Promise<{ 
   const crew = await repo.findCrewByCode(inviteCode);
   if (!crew) throw new DomainError("NOT_FOUND", "No crew has that invite code.");
   if (await repo.findMembership(userId, crew.id)) return { id: crew.id, joined: false };
-  return { id: (await joinCrew(userId, inviteCode)).id, joined: true };
+  try {
+    return { id: (await joinCrew(userId, inviteCode)).id, joined: true };
+  } catch (e) {
+    // the same link opened twice at once (e.g. a prefetch and a navigation): the other request joined first
+    if (e instanceof DomainError && e.code === "CONFLICT") return { id: crew.id, joined: false };
+    throw e;
+  }
 }
