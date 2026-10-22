@@ -19,3 +19,7 @@ export function incidentsObservedBy(eventId: string, observedCutoff: Date, effec
     select: { id: true, t: true, seq: true, type: true, actor: true, payload: true, sourceId: true, sourceClass: true, observedAt: true, effectiveAt: true, supersedesId: true },
   });
 }
+
+export async function eventExists(eventId: string): Promise<boolean> {
+  return (await prisma.event.count({ where: { id: eventId } })) > 0;
+}

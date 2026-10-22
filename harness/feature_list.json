@@ -502,8 +502,8 @@
       "depends_on": [
         "F-D-05"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "GET /api/replay/[eventId] (src/app/api/replay/[eventId]/route.ts) streams text/event-stream frames planned by src/domain/facts/replay.ts: incidents in observedAt order, gap = Δ observedAt ÷ speed (1–3600, default 60), running per-innings cricket score, receipts (sourceId, sourceClass, observedAt), resumes after Last-Event-ID, ends with an 'end' event; display rights filtered. npm test -- replay 3/3 on the ingested real fixture 335982 (30 s deliveries → 500 ms at 60×, KKR 222/3 then RCB 82 all out, deterministic plan, 404/400 paths)."
     },
     {
       "id": "F-E-01",
