@@ -27,6 +27,8 @@ export function loadChaseSamples(dir = "data/derived") {
   // rain-affected (revised target), tied and no-result matches don't feed the chase model
   const excluded = new Set(matches.filter((m) => m.method || m.result).map((m) => m.match_id));
   const balls = parseCsv(gunzipSync(readFileSync(`${dir}/ipl-balls.csv.gz`)).toString("utf8"));
+  // chases over fewer than 20 overs (a shortened match without a recorded method) don't fit the 120-ball model
+  for (const b of balls) if (b.innings === "2" && b.target_overs && Number(b.target_overs) < 20) excluded.add(b.match_id);
   const winner = new Map(matches.map((m) => [m.match_id, m.winner]));
   const chaser = new Map<string, string>();
   const byMatch = new Map<string, ChaseBall[]>();

@@ -26,11 +26,14 @@ export interface ChasePoint { wp: number; i: IncidentInput; s: ChaseState }
 
 /** WP after every legal ball of the chase (and after the ball that ends it); null when there is no exact WP. */
 export function chaseSeries(e: ParsedEvent, wp: WinProbability): { team: string; target: number; start: number; series: ChasePoint[] } | null {
-  // rain-affected chases (revised targets) have no exact WP
+  // rain-affected chases (revised targets) and shortened chases have no exact WP
   if (e.sport !== "cricket" || typeof e.outcome.method === "string") return null;
   const chase = e.incidents.filter((i) => i.type === "ball" && i.payload.innings === 2 && i.payload.superOver !== true);
   const target = chase.find((i) => typeof i.payload.target === "number")?.payload.target as number | undefined;
   if (target === undefined) return null;
+  // a chase over fewer than 20 overs (shortened without a recorded method) is not a 120-ball chase
+  const overs = chase.find((i) => typeof i.payload.targetOvers === "number")?.payload.targetOvers as number | undefined;
+  if (overs !== undefined && overs < 20) return null;
   let s: ChaseState = { b: 120, w: 10, r: target };
   const series: ChasePoint[] = [];
   for (const i of chase) {
