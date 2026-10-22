@@ -10,3 +10,8 @@
 .desk-stories li::marker{color:var(--receipt-ink)}
 .desk-pending{padding:1rem}
 .desk-pending ul{margin:.3rem 0 0;padding-left:1.1rem}
+.desk-depth{display:flex;flex-wrap:wrap;gap:.4rem 1rem;align-items:center;border:1px solid var(--line);border-radius:var(--radius);padding:.5rem .8rem;margin:0}
+.desk-depth legend{font:700 var(--step--1)/1 var(--font-text);text-transform:uppercase;letter-spacing:.08em;color:var(--text-2);padding:0 .3rem}
+.desk-depth label{display:inline-flex;gap:.35rem;align-items:center;cursor:pointer}
+.desk-depth input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.desk-text p{margin:0 0 .3rem;font-family:var(--font-reading);line-height:1.5}

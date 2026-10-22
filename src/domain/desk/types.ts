@@ -18,3 +18,6 @@ export interface DeskItem {
 export interface DeskPending { sport: SportSlug; reason: string }
 
 export interface DeskBrief { items: DeskItem[]; pending: DeskPending[] }
+
+export const DEPTHS = ["quick", "tactical", "analyst"] as const;
+export type Depth = (typeof DEPTHS)[number];
