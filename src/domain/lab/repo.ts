@@ -59,3 +59,7 @@ export const calledMomentIds = async (userId: string): Promise<Set<string>> => n
 export const deleteReviews = (userId: string) => prisma.decisionReview.deleteMany({ where: { userId } });
 
 export const findCallForShare = (callId: string) => prisma.labCall.findUnique({ where: { id: callId }, select: { momentId: true, option: true, confidence: true, user: { select: { name: true } }, review: { select: reviewSelect } } });
+
+/** Other fans' picks on these moments: count per moment and option (for the crowd comparison). */
+export const crowdCounts = (momentIds: string[], excludeUserId: string) =>
+  prisma.labCall.groupBy({ by: ["momentId", "option"], where: { momentId: { in: momentIds }, userId: { not: excludeUserId } }, _count: { _all: true } });
