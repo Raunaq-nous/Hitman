@@ -34,3 +34,15 @@ export const lockInput = z.object({
 export type LockInput = z.infer<typeof lockInput>;
 
 export interface LockedCall { id: string; momentId: string; option: string; confidence: number; lockedAt: string }
+
+/** A graded call as the Review shows it: the grade, the rating change, the reveal and the receipts. */
+export interface CallReview {
+  momentId: string;
+  call: { option: string; confidence: number; lockedAt: string };
+  grade: { graded: boolean; coinFlip: boolean; best: string; readPoints: number | null; hit: boolean | null; brier: number | null; calibration: "provisional" };
+  rating: { before: number; after: number; difficulty: number };
+  options: { option: string; label: string; wp: number }[];
+  reveal: { chaseWon: 0 | 1; winner: string };
+  receipts: { momentsHash: string; outcomesHash: string; optionsHash: string };
+  gradedAt: string;
+}

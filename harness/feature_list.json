@@ -618,7 +618,7 @@
         "F-E-06"
       ],
       "passes": true,
-      "evidence": "src/engine/readRating.ts: difficulty-weighted Elo — start 1200, K = 40 for the first 20 graded calls then 24, floor 100; moment difficulty from option gap and leverage (moments update at K = 8). npm test -- rating 4/4: K schedule, monotonicity (better reads and harder moments earn more), bounds (floor, scores clamped to [0,1]), difficulty behaviour; engine coverage 100%; verify --ci PASS at 49fc322."
+      "evidence": "src/engine/readRating.ts: difficulty-weighted Elo — start 1200, K = 40 for the first 20 graded calls then 24, floor 100; moment difficulty from option gap and leverage (moments update at K = 8). npm test -- rating 4/4: K schedule, monotonicity (better reads and harder moments earn more), bounds (floor, scores clamped to [0,1]), difficulty behaviour; engine coverage 100%; verify --ci PASS at 49fc322. D-041: the Elo result is whether the pick was the best option, weighted by the read margin, so a wrong pick never gains and the best pick never loses (tested over ratings 300–2000 and difficulties 400–2400)."
     },
     {
       "id": "F-E-08",
@@ -713,8 +713,8 @@
         "F-L-02",
         "F-E-07"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "GET /api/lab/calls/[momentId]/review → src/domain/lab/service.ts reviewCall: only the caller's own locked call (401 / 404 otherwise, so no reveal without a lock). Deterministic grading writes DecisionReview (migration 20261023070000_decision_review): read points from the exact model's option WPs stored in the golden-moment fixture (D-034), coin flips 'no grade' (graded false, no read points, no Brier, no rating change), calibration hit = pick was the best option and Brier (confidence − hit)², Read Rating in lock order (pending earlier calls graded first; D-041), receipts (moments, outcomes and options hashes), labelled provisional. regradeUser rebuilds identical reviews from the fixtures and calls. npm test -- review-pipeline 6/6 on Postgres; verify --ci PASS (e2e 57/57)."
     },
     {
       "id": "F-L-04",

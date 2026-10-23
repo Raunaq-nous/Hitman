@@ -11,8 +11,14 @@ export interface StoredMoment {
   reveal: { chaseWon: 0 | 1; winner: string };
 }
 
+export interface MomentsFile { hash: string; outcomesHash: string; optionsHash: string; moments: StoredMoment[] }
+
+export function momentsFile(): MomentsFile {
+  return JSON.parse(readFileSync(join(process.cwd(), "data/fixtures/moments/golden-moments.json"), "utf8")) as MomentsFile;
+}
+
 export function storedMoments(): StoredMoment[] {
-  return (JSON.parse(readFileSync(join(process.cwd(), "data/fixtures/moments/golden-moments.json"), "utf8")) as { moments: StoredMoment[] }).moments;
+  return momentsFile().moments;
 }
 
 /** Insert a call; the database's (userId, momentId) unique key makes a second lock fail, even when simultaneous. */
@@ -24,3 +30,25 @@ export async function insertCall(userId: string, c: { momentId: string; option: 
     throw e;
   }
 }
+
+const reviewSelect = { momentId: true, graded: true, coinFlip: true, best: true, readPoints: true, hit: true, brier: true, ratingBefore: true, ratingAfter: true, difficulty: true, momentsHash: true, outcomesHash: true, optionsHash: true, calibration: true, gradedAt: true } as const;
+
+export const findCall = (userId: string, momentId: string) => prisma.labCall.findUnique({ where: { userId_momentId: { userId, momentId } }, select: { id: true, momentId: true, option: true, confidence: true, lockedAt: true, review: { select: reviewSelect } } });
+
+/** The user's calls in lock order, each with its review if graded. */
+export const callsInLockOrder = (userId: string) => prisma.labCall.findMany({ where: { userId }, orderBy: [{ lockedAt: "asc" }, { id: "asc" }], select: { id: true, momentId: true, option: true, confidence: true, lockedAt: true, review: { select: reviewSelect } } });
+
+export type ReviewRow = NonNullable<NonNullable<Awaited<ReturnType<typeof findCall>>>["review"]>;
+export type ReviewData = Omit<ReviewRow, "gradedAt" | "calibration">;
+
+/** Store a review; a review that already exists for the call (a concurrent request) is kept. */
+export async function insertReview(userId: string, callId: string, data: ReviewData): Promise<void> {
+  try {
+    await prisma.decisionReview.create({ data: { userId, callId, ...data } });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") return;
+    throw e;
+  }
+}
+
+export const deleteReviews = (userId: string) => prisma.decisionReview.deleteMany({ where: { userId } });
