@@ -50,6 +50,7 @@ Scripts that don't exist yet are features in `harness/feature_list.json`; create
 - `src/adapters/<sport>/` one adapter per source · `src/rights/` policies and enforcement
 - `src/llm/` provider interface (Gemini + templates), generation contract, claim verifier, prompts
 - `src/personas/` the five analysts' playbooks · `src/ui/` design system (tokens, components, pictograms)
+- `src/providers/` the only entry for cross-cutting concerns (auth, env, rights, llm, cache, rate limits, logging) · `src/components/` app shell (nav) · `src/lib/` Prisma client and legacy helpers · `src/content/` static copy · `src/proxy.ts` request proxy (Desk language rewrite)
 - `prisma/` schema and migrations · `data/fixtures/` small committed datasets · `data/raw/` (gitignored)
 - `tests/unit/`, `tests/e2e/` · `harness/` · `docs/`
 

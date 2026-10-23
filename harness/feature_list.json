@@ -1298,8 +1298,8 @@
       "depends_on": [
         "F-Z-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "Docs gardened (docs/evidence/F-Z-02/review-2026-10-23.md): drift audit of every indexed doc plus README, AGENTS and ARCHITECTURE against the code, all drift fixed; db-schema regenerated; QUALITY_SCORE grades current (84/85); WALKTHROUGH links 1280/390 light/dark evidence for every screen and the e2e journeys; HUMAN_TODO final (owner-only items with safe fallbacks); tech-debt tracker updated (TD-003, TD-005 closed)."
     },
     {
       "id": "F-Z-03",

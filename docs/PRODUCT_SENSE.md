@@ -15,14 +15,14 @@ Four scoreboards: Trust (freshness, corrections, leakage), Product (conversion, 
 
 ## The four pillars
 1. **The Desk** — a cross-sport brief ranked by swing (how far win probability moved), a receipt on every number, a depth switch (Quick / Tactical / Analyst), English and Hindi, Event Rooms for five sports.
-2. **Make the Call / Decision Lab** — a pre-outcome decision with confidence (50–99%), locked at feed time, graded on counterfactual win probability, reviewed in three columns, scored with Brier calibration and a Read Rating. Historical first; live only after a licensed feed.
+2. **Make the Call / Decision Lab** — a pre-outcome decision with confidence (50–99%), locked at feed time, graded on the exact model’s option-conditioned win probabilities (D-034), reviewed in three columns, scored with Brier calibration and a Read Rating. Historical first; live only after a licensed feed.
 3. **The Roster** — five original analyst characters with skill words and playbooks.
 4. **Alter Ego and the Notebook** — an identity earned from your calling style, calibration charts, cross-sport skill domains, a Season File.
 
 ## The Roster (public names only in product)
 | Public name | Sport | Skill domain | Signature tool |
 |---|---|---|---|
-| The Opener | Cricket | TIMING | Over Call: leverage-ranked overs and the bowling decisions behind them |
+| The Opener | Cricket | TIMING | Over Call: the next-over batting intent at a high-leverage chase moment — attack, hold or ease off (D-039) |
 | The Closer | Basketball | CRAFT | Clutch-time leverage and late-game choices |
 | The Architect | Football | TEMPO | Possession value and build-up choices |
 | The Professor | Formula 1 | RACECRAFT | Pit-window and strategy reads |

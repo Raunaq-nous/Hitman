@@ -31,6 +31,8 @@ software licence ≠ data licence ≠ media rights ≠ trademark rights ≠ athl
 - **Cricsheet**: IPL ball-by-ball JSON (download `ipl_male_json.zip`, `npm run data:cricsheet`). Raw files go to `data/raw/` (gitignored); `npm run data:fixtures` commits a small subset (7 matches, including a tie and a D/L match) to `data/fixtures/cricsheet/` with its own `MANIFEST.json`. Derived tables `data/derived/ipl-matches.csv.gz` and `ipl-balls.csv.gz` feed model fitting.
 - **OpenF1** (historical, prototype only): 18 endpoints; no key for historical data at 3 requests per second; live data requires a paid subscription — not used. Committed sample: 2023 race sessions and laps for session 7953 in `data/fixtures/openf1/`; OpenF1 has no pit records for that session, recorded as missing in `data/manifest.json`, never filled in.
 - **StatsBomb open data** (GitHub): event data for selected competitions; attribution required; terms in the repository. Committed sample: competitions, competition 43 season 3 matches and match 7525 events in `data/fixtures/statsbomb/`.
+- **Wikidata** (CC0): bowling styles (P2545) matched through the Cricsheet people register, fetched by the courier into `data/derived/bowling-styles.csv`; used only to train option counts (D-036).
+- **CricketData.org**: legacy delayed live-score widget (`/commentary`); policy `cricketdata` (display only, prototype-only).
 - Adapters: one per source in `src/adapters/{cricket,f1,football}/`, registered in `src/adapters/index.ts`; basketball and tennis return `sourcePending`.
 
 ## How real data reaches the repo (D-020)
