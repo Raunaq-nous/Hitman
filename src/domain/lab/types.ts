@@ -38,6 +38,7 @@ export interface LockedCall { id: string; momentId: string; option: string; conf
 /** A graded call as the Review shows it: the grade, the rating change, the reveal and the receipts. */
 export interface CallReview {
   momentId: string;
+  callId: string;
   call: { option: string; confidence: number; lockedAt: string };
   grade: { graded: boolean; coinFlip: boolean; best: string; readPoints: number | null; hit: boolean | null; brier: number | null; calibration: "provisional" };
   rating: { before: number; after: number; difficulty: number };

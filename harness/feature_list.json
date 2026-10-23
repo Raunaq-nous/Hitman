@@ -775,8 +775,8 @@
         "F-L-04",
         "F-A-01"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "tests/e2e/journey.spec.ts on a 390×844 viewport: sign in, then /lab → moment → pick → Lock → See your review → Next read → next moment's ticket, measured at ~3.6 s locally (asserted < 60 s), no horizontal scroll. Analytics events recorded and checked in the database: moment_viewed ×2 (client, /api/events), call_locked (server, confidence 60), call_graded (server, once per review), review_viewed (server), next_read_started (client, keepalive). npm run test:e2e -- journey PASS; verify --ci PASS."
     },
     {
       "id": "F-L-08",
