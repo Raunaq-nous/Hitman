@@ -174,3 +174,47 @@ export async function notebook(userId: string, filter: { type?: string | null } 
     warnings,
   };
 }
+
+/** Monday 00:00 UTC of the week containing `d`. */
+export function weekStart(d: Date): Date {
+  const day = (d.getUTCDay() + 6) % 7;
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - day));
+}
+
+type TowerCall = { lockedAt: Date; review: { graded: boolean; hit: boolean | null; brier: number | null; ratingAfter: number } | null };
+export interface TowerRow { id: string; rank: number; name: string; readRating: number; brier: number | null; callsThisWeek: number; form: ("good" | "poor" | "none")[]; change: number }
+
+const ratingOf = (calls: TowerCall[]): number => [...calls].reverse().find((c) => c.review)?.review?.ratingAfter ?? START;
+const rankBy = (rows: { id: string; name: string; rating: number }[]): Map<string, number> =>
+  new Map([...rows].sort((a, b) => b.rating - a.rating || a.name.localeCompare(b.name)).map((r, i) => [r.id, i + 1]));
+
+/**
+ * The crew timing tower (F-C-02), pure: rank by Read Rating (ties by name), mean Brier over graded calls, calls
+ * locked this ISO week, form over the last five calls (good = best pick, poor = not, none = coin flip), and the
+ * change in rank since the week began. Calls are in lock order.
+ */
+export function towerEntries(members: { id: string; name: string; calls: TowerCall[] }[], now: Date): TowerRow[] {
+  const start = weekStart(now);
+  const nowRank = rankBy(members.map((m) => ({ id: m.id, name: m.name, rating: ratingOf(m.calls) })));
+  const before = rankBy(members.map((m) => ({ id: m.id, name: m.name, rating: ratingOf(m.calls.filter((c) => c.lockedAt < start)) })));
+  return members.map((m) => {
+    const graded = m.calls.filter((c) => c.review?.graded);
+    return {
+      id: m.id, name: m.name, rank: nowRank.get(m.id) as number, readRating: Math.round(ratingOf(m.calls)),
+      brier: graded.length ? graded.reduce((a, c) => a + (c.review?.brier ?? 0), 0) / graded.length : null,
+      callsThisWeek: m.calls.filter((c) => c.lockedAt >= start && c.lockedAt <= now).length,
+      form: m.calls.filter((c) => c.review).slice(-5).map((c) => (!c.review?.graded ? "none" : c.review.hit ? "good" : "poor")),
+      change: (before.get(m.id) as number) - (nowRank.get(m.id) as number),
+    };
+  }).sort((a, b) => a.rank - b.rank);
+}
+
+/** The tower for a crew the viewer belongs to: grades members' pending calls first. */
+export async function crewTower(members: { id: string; name: string }[], now = new Date()): Promise<TowerRow[]> {
+  const withCalls = [];
+  for (const m of members) {
+    await gradePending(m.id);
+    withCalls.push({ ...m, calls: await repo.callsInLockOrder(m.id) });
+  }
+  return towerEntries(withCalls, now);
+}

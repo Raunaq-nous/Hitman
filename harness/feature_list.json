@@ -820,8 +820,8 @@
         "F-C-01",
         "F-L-06"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "/crews/[crewId]/tower (members only): TimingTowerRow per member — rank by Read Rating (ties by name), Read Rating, calibration as mean Brier over graded calls, calls locked this ISO week (Monday 00:00 UTC), form over the last five calls (+ best pick, − not, · coin flip), position change since Monday (▲/▼); 'Provisional calibration' badge. Pure towerEntries/weekStart unit-tested (npm test -- tower 3/3); tests/e2e/tower.spec.ts: two members with real locked calls via the Lock API, ranks, Brier, calls this week, form, change markers, axe clean. npm run test:e2e -- tower PASS; verify --ci PASS."
     },
     {
       "id": "F-C-03",
