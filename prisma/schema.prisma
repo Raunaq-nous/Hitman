@@ -24,6 +24,7 @@ model User {
   fantasyTeams    FantasyTeam[]
   ownedCrews      Crew[]        @relation("CrewOwner")
   crewMembers     CrewMember[]
+  labCalls        LabCall[]
 }
 
 /// A private group of fans. Replaces the legacy fantasy "leagues" (renamed in place; no fee or prize fields).
@@ -291,4 +292,21 @@ model LlmCall {
   createdAt    DateTime @default(now())
 
   @@index([createdAt])
+}
+
+/// A locked Decision Lab call (F-L-02): one per user and moment, immutable, server-timestamped.
+model LabCall {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// golden-moment id (data/fixtures/moments/golden-moments.json)
+  momentId   String
+  /// the option id picked, one of the moment's options
+  option     String
+  /// confidence in the pick, 0.50–0.99
+  confidence Float
+  lockedAt   DateTime @default(now())
+
+  @@unique([userId, momentId])
+  @@index([userId, lockedAt])
 }

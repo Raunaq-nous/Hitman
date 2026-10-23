@@ -697,8 +697,8 @@
         "F-L-01",
         "F-F-04"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "POST /api/lab/calls (src/app/api/lab/calls/route.ts → src/domain/lab/service.ts lockCall): signed in (401 otherwise), zod body (momentId, one option, confidence 0.50–0.99; arrays, strings, out-of-range values and bad JSON are 400), the option must be one of the moment's (400), unknown moment 404, server timestamp (client lockedAt ignored), one call per user and moment enforced by a unique key (second or simultaneous lock 409, first kept), 20 locks a minute per user (429), no reveal or model estimate in the response. LabCall table (migration 20261023060000_lab_call), exported with the account and deleted with it. D-040. npm test -- lock 6/6 integration tests on Postgres; verify --ci PASS (unit, build, e2e 57/57)."
     },
     {
       "id": "F-L-03",

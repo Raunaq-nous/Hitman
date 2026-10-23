@@ -20,6 +20,7 @@ Generated from `prisma/schema.prisma` by `node scripts/gen-db-schema.mjs`. Do no
 | fantasyTeams | FantasyTeam[] |  |
 | ownedCrews | Crew[] | @relation("CrewOwner") |
 | crewMembers | CrewMember[] |  |
+| labCalls | LabCall[] |  |
 
 ## Crew
 
@@ -333,3 +334,20 @@ One LLM generation (or template fallback). No prompt or output text is stored.
 | createdAt | DateTime | @default(now()) |
 
 - `@@index([createdAt])`
+
+## LabCall
+
+A locked Decision Lab call (F-L-02): one per user and moment, immutable, server-timestamped.
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id @default(cuid()) |
+| userId | String |  |
+| user | User | @relation(fields: [userId], references: [id], onDelete: Cascade) |
+| momentId | String |  |
+| option | String |  |
+| confidence | Float |  |
+| lockedAt | DateTime | @default(now()) |
+
+- `@@unique([userId, momentId])`
+- `@@index([userId, lockedAt])`
