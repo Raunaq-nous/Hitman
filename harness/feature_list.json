@@ -1129,8 +1129,8 @@
         "F-R-03",
         "F-C-03"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "/lab/alter-ego (src/app/lab/alter-ego/page.tsx, Dossier.tsx): CLASSIFIED stamp and calls-to-go before 10 graded calls; then the case file opens with a REVEALED stamp (motion off under prefers-reduced-motion), persona + modifier label, evidence sentences, five explained axes and 'Provisional calibration'; alter_ego_revealed and share_clicked events. Share card /api/og/alter-ego/[userId]: 1200×630 PNG with display name, label, lead evidence, graded-call count, rate-limited, 404 until revealed (D-044). tests/e2e/reveal.spec.ts: 9 calls → classified, 10th → revealed, axes, share image 200 image/png, axe clean. Evidence docs/evidence/F-R-04/ (desktop, mobile, card). verify --ci PASS."
     },
     {
       "id": "F-R-05",

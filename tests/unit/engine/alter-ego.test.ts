@@ -58,6 +58,6 @@ describe("Alter Ego identity model (alter-ego)", () => {
     expect(sharp.revealed && sharp.modifier).toBe("Sharp");
     const balanced = alterEgo(calls(10, (i) => ({ relation: i % 2 ? "higher" : "current", hit: i < 2, confidence: 0.9 })));
     expect(balanced.revealed && balanced.modifier).toBe("Balanced");
-    expect(balanced.revealed && balanced.evidence[1]).toBe("Balanced: No single habit dominates your calls.");
+    expect(balanced.revealed && balanced.evidence[1]).toBe("Balanced: no single habit dominates your calls.");
   });
 });

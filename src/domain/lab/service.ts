@@ -281,3 +281,12 @@ export async function alterEgoFor(userId: string): Promise<Identity> {
   }
   return identityOf(input);
 }
+
+/** The Alter Ego share card (F-R-04): display name, persona and the lead evidence; null until revealed. */
+export async function alterEgoCard(userId: string): Promise<{ displayName: string; label: string; evidence: string; graded: number; calibration: "Provisional calibration" } | null> {
+  const name = await repo.displayName(userId);
+  if (!name) return null;
+  const id = await alterEgoFor(userId);
+  if (!id.revealed) return null;
+  return { displayName: name, label: id.label, evidence: id.evidence[0], graded: id.graded, calibration: "Provisional calibration" };
+}

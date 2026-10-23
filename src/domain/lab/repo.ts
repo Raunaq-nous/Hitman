@@ -65,3 +65,5 @@ export const findCallForShare = (callId: string) => prisma.labCall.findUnique({ 
 /** Other fans' picks on these moments: count per moment and option (for the crowd comparison). */
 export const crowdCounts = (momentIds: string[], excludeUserId: string) =>
   prisma.labCall.groupBy({ by: ["momentId", "option"], where: { momentId: { in: momentIds }, userId: { not: excludeUserId } }, _count: { _all: true } });
+
+export const displayName = async (userId: string): Promise<string | null> => (await prisma.user.findUnique({ where: { id: userId }, select: { name: true } }))?.name ?? null;
