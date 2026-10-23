@@ -22,6 +22,7 @@ Generated from `prisma/schema.prisma` by `node scripts/gen-db-schema.mjs`. Do no
 | crewMembers | CrewMember[] |  |
 | labCalls | LabCall[] |  |
 | reviews | DecisionReview[] |  |
+| alterEgoShare | AlterEgoShare? |  |
 
 ## Crew
 
@@ -382,3 +383,14 @@ The deterministic grade of a locked call (F-L-03). Reproducible from the moment 
 | gradedAt | DateTime | @default(now()) |
 
 - `@@index([userId, gradedAt])`
+
+## AlterEgoShare
+
+A fan's opt-in link to their Alter Ego share card (F-R-04): created when they choose to share, revocable.
+
+| Field | Type | Attributes |
+|---|---|---|
+| token | String | @id |
+| userId | String | @unique |
+| user | User | @relation(fields: [userId], references: [id], onDelete: Cascade) |
+| createdAt | DateTime | @default(now()) |

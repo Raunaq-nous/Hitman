@@ -3,10 +3,11 @@
 STATUS: IN PROGRESS
 CURRENT PHASE: 1
 LAST GATE: none
-NEXT PROMPT: Branch `overhaul` (68/85 passing). Phase 2 is complete: F-E-04 passes after the Gate 2 review fixes (D-038), golden moments rebalanced and leak-free (D-039). Gate 2: tag `gate-2` with the tagger (request file under data/requests/tags/) at a commit whose CI is green, then update PR Raunaq-nous/Hitman#1. Next feature: F-L-02 Lock API (POST /api/lab/calls: authenticated, one pick from the moment's options, before cutoff, server time, rate-limited), then F-L-03..07, F-C-02/03 (gate 3), F-U-07, F-R-02..05 (gate 5), F-T-05 (gate 6), F-Z-01..03 (gate 7), v0.1.0-beta, merge PR #1 (merge commit). Restart Postgres after a VM restart (`npm run db:up`).
+NEXT PROMPT: Branch `overhaul` (84/85 passing after F-Z-02). Gates 0–6 tagged (tagger workflow). Remaining: F-Z-03 release — gate-7 and v0.1.0-beta tags via the tagger at a green commit, exec plan moved to docs/exec-plans/completed/, PR Raunaq-nous/Hitman#1 merged into main with a merge commit through the API (never squash), then CI green on main. Local DB: run `npm run db:up`; for migration diffs use the `alterego_shadow` database as the shadow DB (never the dev DB).
 
 ## Session log
 <!-- Append newest first: date (UTC), features touched, commits, verification results, blockers, NEXT PROMPT -->
+- 2026-10-23 (UTC) | F-L-02..07, F-C-02/03, F-U-07, F-R-02..05, F-T-05, F-Z-01, F-Z-02; Gate 2/3/5/6 reviews and fixes (D-038..D-045); tags gate-2, gate-3, gate-5, gate-6 | verify --ci and verify --clean PASS; CI green | NEXT: F-Z-03 release
 - 2026-10-23 (UTC) | Gate 2 review fixes: F-E-04 passes (out-of-sample map window, clamp; D-038), Wikidata rights policy, style-name dedupe, DR exploratory, courier + tagger hardening, golden moments leak-free and balanced (D-039) | commits e0a55d5, 116e1e8, eaa6223; verify --ci PASS | NEXT: tag gate-2, F-L-02
 - 2026-10-22 (UTC) | owner decisions D-027/D-028 recorded; gate tags created via tagger workflow; F-E-04 rolling-origin gate implemented (matchCalibration engine, calibration-v2) and failed after 3 attempts (D-029) | verify --quick PASS | NEXT: owner decision on F-E-04
 - 2026-10-22 (UTC) | F-K-02..05, review-gate (12 findings + npm audit) fixed, courier re-derive + refit, crews invite-link race fixed, gates 0/1/4 closed (tags pending push), PR #1 opened | verify + verify --clean PASS, CI green 109c20c | blocked on F-E-04 | NEXT: owner decision
