@@ -1099,8 +1099,8 @@
         "F-R-01",
         "F-E-10"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "Signature tool on each Roster page (src/domain/roster/service.ts personaTool; src/app/roster/[persona]/page.tsx): The Opener's Over Call is live in the Lab (links to next-over intent golden moments; those moments are tagged 'Over Call · The Opener's signature tool'); The Architect's possession value on StatsBomb open data (xG created per team per 30-minute phase, receipt + attribution); The Professor's pit window on OpenF1 open data (first-stint tyre degradation by least squares, window vs an illustrative 22 s pit loss, actual stop lap; 'Source pending' when PROTOTYPE_DATA=false since OpenF1 is prototype-only); The Iceman's Pressure Index and The Closer's clutch-time leverage on labelled illustrative data. New pure engine src/engine/f1.ts and src/engine/basketball.ts (npm test -- persona-tools 3/3, 100% coverage). tests/e2e/persona-tools.spec.ts PASS with PROTOTYPE_DATA unset (Professor pending) and true (open data); evidence docs/evidence/F-R-02/. verify --ci PASS."
     },
     {
       "id": "F-R-03",

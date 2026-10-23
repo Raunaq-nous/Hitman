@@ -208,3 +208,4 @@
 @keyframes flap-in{from{transform:rotateX(-90deg);opacity:.2}to{transform:rotateX(0);opacity:1}}
 @media (prefers-reduced-motion:reduce){.flap{animation:none}}
 .ui-delay[data-live="false"]{color:var(--text-2)} .ui-delay[data-live="true"]{color:var(--win-ink)}
+.roster-tool{width:100%;border-collapse:collapse;font-size:var(--step--1)} .roster-tool th,.roster-tool td{text-align:left;padding:.3rem .4rem;border-bottom:1px solid var(--line)} .roster-tool th{font-weight:600}
