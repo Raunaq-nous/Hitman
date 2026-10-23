@@ -760,8 +760,8 @@
       "depends_on": [
         "F-L-05"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "Read Rating section of /lab/notebook: current rating, 'Provisional rating' tag until 20 graded calls, 'Provisional calibration' badge, history chart (rating after each graded call from 1200, scaled to the data) with description and data table; every grade on the page is labelled provisional calibration. tests/e2e/rating.spec.ts: 1200 at start, two best picks raise it, history shows 3 points. npm run test:e2e -- rating PASS; verify --ci PASS."
     },
     {
       "id": "F-L-07",
