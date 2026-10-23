@@ -52,3 +52,22 @@ export interface CallReview {
   /** the best option other than the pick: its scenario model estimate (the counterfactual ghost) */
   scenario: { option: string; label: string; wp: number };
 }
+
+export const DECISION_TYPE_LABEL: Record<string, string> = { "next-over-intent": "Next-over intent", "chase-tempo": "Chase tempo", "death-bowling": "Death bowling" };
+
+export interface NotebookCall {
+  momentId: string; season: number; teams: string; phase: string; decisionType: string; question: string;
+  pick: string; best: string; confidence: number; lockedAt: string; graded: boolean; readPoints: number | null; hit: boolean | null; brier: number | null;
+}
+
+export interface Notebook {
+  sport: "cricket";
+  filter: { type: string | null };
+  decisionTypes: string[];
+  calls: NotebookCall[];
+  reliability: { lo: number; hi: number; n: number; meanConfidence: number | null; hitRate: number | null; small: boolean }[];
+  brier: { i: number; brier: number; mean: number }[];
+  domains: { domain: string; n: number; meanRead: number | null; hitRate: number | null; small: boolean }[];
+  rating: { current: number; graded: number; provisional: boolean; history: { i: number; rating: number }[] };
+  warnings: string[];
+}

@@ -745,8 +745,8 @@
       "depends_on": [
         "F-L-04"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "/lab/notebook (src/app/lab/notebook/page.tsx, charts.tsx; src/domain/lab/service.ts notebook; src/engine/reliability.ts): call history table (newest first, links to each review) with sport and decision-type filters; reliability diagram in 10-point confidence buckets (hollow dots = small samples), Brier running mean over time, skill-domain radar (intent, tempo, middle, death) — each chart an image with a text description and data table; small-sample warnings (< 10 graded calls in view; rating provisional < 20). Engine maths unit-tested (npm test -- reliability 3/3, 100% engine coverage). tests/e2e/notebook.spec.ts: real calls via the Lock API, filters, charts, warnings, axe clean, signed-out redirect. Screenshots docs/evidence/F-L-05/. npm run test:e2e -- notebook PASS; verify --ci PASS."
     },
     {
       "id": "F-L-06",
