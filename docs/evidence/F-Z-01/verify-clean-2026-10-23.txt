@@ -1,0 +1,9 @@
+node harness/verify.mjs --clean at 4f90a6e, 2026-10-23T12:04Z; fresh git worktree, init copies .env.example (no GEMINI_API_KEY, no CRICKET_API_KEY, LIVE_CALLS=false)
+PASS     init
+  PASS     feature list node harness/check-features.mjs (0.1s)
+  PASS     lint         npm run lint --silent (12.4s)
+  PASS     typecheck    npm run typecheck --silent (10.1s)
+  PASS     unit tests   npm test --silent (129.8s)
+  PASS     build        npm run build --silent (64.9s)
+  PASS     e2e          npm run test:e2e --silent (109.8s)
+RESULT: PASS
