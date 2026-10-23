@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 export async function exportRows(userId: string) {
-  const [user, memberships, ownedCrews, reports, blocks, teams, scoring, events, labCalls] = await Promise.all([
+  const [user, memberships, ownedCrews, reports, blocks, teams, scoring, events, labCalls, reviews] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { id: true, name: true, email: true, avatar: true, xp: true, favouriteSports: true, language: true, createdAt: true, updatedAt: true } }),
     prisma.crewMember.findMany({ where: { userId }, select: { joinedAt: true, crew: { select: { id: true, name: true } } } }),
     prisma.crew.findMany({ where: { ownerId: userId }, select: { id: true, name: true, createdAt: true } }),
@@ -11,8 +11,9 @@ export async function exportRows(userId: string) {
     prisma.scoringEvent.findMany({ where: { userId }, select: { matchId: true, playerId: true, armband: true, points: true, configVersion: true, createdAt: true } }),
     prisma.analyticsEvent.findMany({ where: { userId }, select: { name: true, props: true, createdAt: true } }),
     prisma.labCall.findMany({ where: { userId }, orderBy: { lockedAt: "asc" }, select: { momentId: true, option: true, confidence: true, lockedAt: true } }),
+    prisma.decisionReview.findMany({ where: { userId }, orderBy: { gradedAt: "asc" }, select: { momentId: true, graded: true, coinFlip: true, best: true, readPoints: true, hit: true, brier: true, ratingBefore: true, ratingAfter: true, gradedAt: true } }),
   ]);
-  return { user, memberships, ownedCrews, reports, blocks, teams, scoring, events, labCalls };
+  return { user, memberships, ownedCrews, reports, blocks, teams, scoring, events, labCalls, reviews };
 }
 
 /** Hard delete in one transaction. Owned crews pass to the longest-standing member, or are deleted if empty. */
@@ -31,6 +32,7 @@ export async function eraseUser(userId: string): Promise<void> {
     await tx.fantasyTeamPlayer.deleteMany({ where: { fantasyTeam: { userId } } });
     await tx.fantasyTeam.deleteMany({ where: { userId } });
     await tx.analyticsEvent.deleteMany({ where: { userId } });
+    await tx.decisionReview.deleteMany({ where: { userId } });
     await tx.labCall.deleteMany({ where: { userId } });
     await tx.user.delete({ where: { id: userId } });
   });

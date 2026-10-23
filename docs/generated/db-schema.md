@@ -21,6 +21,7 @@ Generated from `prisma/schema.prisma` by `node scripts/gen-db-schema.mjs`. Do no
 | ownedCrews | Crew[] | @relation("CrewOwner") |
 | crewMembers | CrewMember[] |  |
 | labCalls | LabCall[] |  |
+| reviews | DecisionReview[] |  |
 
 ## Crew
 
@@ -348,6 +349,36 @@ A locked Decision Lab call (F-L-02): one per user and moment, immutable, server-
 | option | String |  |
 | confidence | Float |  |
 | lockedAt | DateTime | @default(now()) |
+| review | DecisionReview? |  |
 
 - `@@unique([userId, momentId])`
 - `@@index([userId, lockedAt])`
+
+## DecisionReview
+
+The deterministic grade of a locked call (F-L-03). Reproducible from the moment fixture and the user's calls in lock order; coin flips are "no grade" (graded = false, no read points, no rating change).
+
+| Field | Type | Attributes |
+|---|---|---|
+| id | String | @id @default(cuid()) |
+| callId | String | @unique |
+| call | LabCall | @relation(fields: [callId], references: [id], onDelete: Cascade) |
+| userId | String |  |
+| user | User | @relation(fields: [userId], references: [id], onDelete: Cascade) |
+| momentId | String |  |
+| graded | Boolean |  |
+| coinFlip | Boolean |  |
+| best | String |  |
+| readPoints | Float? |  |
+| hit | Boolean? |  |
+| brier | Float? |  |
+| ratingBefore | Float |  |
+| ratingAfter | Float |  |
+| difficulty | Float |  |
+| momentsHash | String |  |
+| outcomesHash | String |  |
+| optionsHash | String |  |
+| calibration | String | @default("provisional") |
+| gradedAt | DateTime | @default(now()) |
+
+- `@@index([userId, gradedAt])`

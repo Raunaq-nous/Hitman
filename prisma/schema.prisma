@@ -25,6 +25,7 @@ model User {
   ownedCrews      Crew[]        @relation("CrewOwner")
   crewMembers     CrewMember[]
   labCalls        LabCall[]
+  reviews         DecisionReview[]
 }
 
 /// A private group of fans. Replaces the legacy fantasy "leagues" (renamed in place; no fee or prize fields).
@@ -306,7 +307,38 @@ model LabCall {
   /// confidence in the pick, 0.50–0.99
   confidence Float
   lockedAt   DateTime @default(now())
+  review     DecisionReview?
 
   @@unique([userId, momentId])
   @@index([userId, lockedAt])
+}
+
+/// The deterministic grade of a locked call (F-L-03). Reproducible from the moment fixture and the user's calls in
+/// lock order; coin flips are "no grade" (graded = false, no read points, no rating change).
+model DecisionReview {
+  id            String   @id @default(cuid())
+  callId        String   @unique
+  call          LabCall  @relation(fields: [callId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  momentId      String
+  graded        Boolean
+  coinFlip      Boolean
+  /// model's best option and the read: WP(pick) − max WP(others), percentage points (null when not graded)
+  best          String
+  readPoints    Float?
+  /// calibration: hit = the pick was the best option; brier = (confidence − hit)² (null when not graded)
+  hit           Boolean?
+  brier         Float?
+  ratingBefore  Float
+  ratingAfter   Float
+  difficulty    Float
+  /// receipts: the fixture and model versions the grade came from
+  momentsHash   String
+  outcomesHash  String
+  optionsHash   String
+  calibration   String   @default("provisional")
+  gradedAt      DateTime @default(now())
+
+  @@index([userId, gradedAt])
 }
