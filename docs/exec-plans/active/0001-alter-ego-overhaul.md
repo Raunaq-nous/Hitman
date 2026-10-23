@@ -30,12 +30,12 @@ Features: F-G-01, F-G-02, F-G-03, F-G-04, F-K-01, F-K-02, F-K-03, F-K-04, F-K-05
 
 ### Phase 5 — Design system, Roster and Alter Ego
 Features: F-U-03, F-U-05, F-U-06, F-U-07, F-R-01, F-R-02, F-R-03, F-R-04, F-R-05
-- [ ] Gate 5: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-5`; default branch fast-forwarded and pushed; CI green.
+- [x] Gate 5: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-5` (bc60780, tagger workflow); CI green. The default branch moves only by merging PR #1.
   - Review-gate findings for Gates 5 and 6 (2026-10-23), all fixed (D-045): (1) zero-score fallback named the Opener with a contradicting sentence → honest no-trait fallback; (2) timing judged on one call → ≥ 3 per phase; (3) calibration wasn't Brier-based → Brier vs expected Brier, Iceman needs sharpness; (4) share card public by account id → opt-in revocable token; (5) public card ran grading writes → read-only path; (6) reveal event on every visit → server-side once; (7) contrarian against "most fans" wrong with three options → against the crowd's favourite; (8) anti-cheat flags could fail a saved lock, re-log forever and be dodged by one 98% call → try/catch, last-hour window, share-based rule; (9) pit-window loop and stint start → closed form, lap-2 start, fuel-burn note; (10) car numbers identify drivers → Car A–E; (11) Season File named the best options → "the best call / not the best call"; (12) stale docs → QUALITY_SCORE, ARCHITECTURE, alter-ego spec.
 
 ### Phase 6 — Trust, legal and analytics
 Features: F-T-01, F-T-02, F-T-03, F-T-04, F-T-05, F-A-02, F-A-03
-- [ ] Gate 6: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-6`; default branch fast-forwarded and pushed; CI green.
+- [x] Gate 6: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-6` (bc60780, tagger workflow); CI green. The default branch moves only by merging PR #1.
   - Reviewed together with Gate 5 (findings above).
 
 ### Phase 7 — Release
