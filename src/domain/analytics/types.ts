@@ -22,4 +22,6 @@ export type EventName = keyof typeof EVENT_SCHEMAS;
 export const EVENT_NAMES = Object.keys(EVENT_SCHEMAS) as EventName[];
 export type EventProps<N extends EventName> = z.infer<(typeof EVENT_SCHEMAS)[N]>;
 
-export const clientEventInput = z.object({ name: z.enum(EVENT_NAMES as [EventName, ...EventName[]]), props: z.record(z.string(), z.unknown()).default({}) });
+/** Events a browser may send. call_locked, call_graded and review_viewed are recorded by the server only (they feed the KPIs). */
+export const CLIENT_EVENTS = ["moment_viewed", "next_read_started", "share_clicked", "receipt_opened", "depth_changed", "language_changed", "alter_ego_revealed"] as const satisfies readonly EventName[];
+export const clientEventInput = z.object({ name: z.enum(CLIENT_EVENTS), props: z.record(z.string(), z.unknown()).default({}) });

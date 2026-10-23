@@ -56,6 +56,8 @@ export async function insertReview(userId: string, callId: string, data: ReviewD
 
 export const calledMomentIds = async (userId: string): Promise<Set<string>> => new Set((await prisma.labCall.findMany({ where: { userId }, select: { momentId: true } })).map((c) => c.momentId));
 
+export const deleteReviewsFor = (callIds: string[]) => prisma.decisionReview.deleteMany({ where: { callId: { in: callIds } } });
+
 export const deleteReviews = (userId: string) => prisma.decisionReview.deleteMany({ where: { userId } });
 
 export const findCallForShare = (callId: string) => prisma.labCall.findUnique({ where: { id: callId }, select: { momentId: true, option: true, confidence: true, user: { select: { name: true } }, review: { select: reviewSelect } } });

@@ -73,5 +73,8 @@ export interface Notebook {
   warnings: string[];
 }
 
-/** A "Called it" share card: display name and the call only (no email, id or other personal data). */
-export interface ShareCardData { displayName: string; title: string; pick: string; grade: string; moment: string; calibration: "Provisional calibration" }
+/**
+ * A "Called it" share card: display name and the call only (no email, id or other personal data). The pick itself
+ * is left off, so a card never gives away a golden moment's best option to someone who hasn't called it (D-043).
+ */
+export interface ShareCardData { displayName: string; heading: "CALLED IT" | "MY READ"; title: string; confidence: string; grade: string; moment: string; calibration: "Provisional calibration" }

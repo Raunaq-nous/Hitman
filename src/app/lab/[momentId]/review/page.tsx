@@ -6,6 +6,7 @@ import { nextMomentFor, reviewCall } from "@/domain/lab/service";
 import { track } from "@/domain/analytics/service";
 import { NextReadLink } from "../../_components/LabEvents";
 import type { CallReview } from "@/domain/lab/types";
+import { COIN_FLIP_BAND_PTS } from "@/engine/grader";
 import { ProvisionalBadge, Receipt, SwingSeismograph } from "@/ui";
 import "../../lab.css";
 
@@ -22,7 +23,7 @@ function lesson(r: CallReview): string {
   const best = r.options.find((o) => o.option === r.grade.best);
   const second = [...r.options].filter((o) => o.option !== r.grade.best).sort((a, b) => b.wp - a.wp)[0];
   if (!best || !second) return "";
-  if (!r.grade.graded) return `Here the options were within 2 points of each other: a coin flip, so no grade.`;
+  if (!r.grade.graded) return `Here the options were within ${COIN_FLIP_BAND_PTS} points of each other: a coin flip, so no grade.`;
   const lead = `Needing ${r.moment.runsRequired} off ${r.moment.ballsLeft} with ${r.moment.wicketsInHand} wickets in hand, “${best.label}” was worth ${((best.wp - second.wp) * 100).toFixed(1)} points more than “${second.label}”.`;
   return r.grade.hit ? `${lead} You read it.` : `${lead} Look for this shape next time.`;
 }

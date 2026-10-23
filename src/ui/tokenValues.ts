@@ -3,9 +3,18 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+const memo = new Map<string, string>();
+const tokensCss = (): string => {
+  const hit = memo.get("css");
+  if (hit !== undefined) return hit;
+  const css = readFileSync(join(process.cwd(), "src/ui/tokens.css"), "utf8");
+  memo.set("css", css);
+  return css;
+};
+
 /** The light-theme value of each named token, following var(--x) references. */
 export function tokenValues(names: string[]): Record<string, string> {
-  const css = readFileSync(join(process.cwd(), "src/ui/tokens.css"), "utf8");
+  const css = tokensCss();
   const first = (name: string): string | undefined => new RegExp(`--${name}:\\s*([^;]+);`).exec(css)?.[1].trim();
   const resolve = (name: string, depth = 0): string => {
     const v = first(name);

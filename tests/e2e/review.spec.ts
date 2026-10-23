@@ -45,8 +45,16 @@ test.describe("lab review", () => {
     const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(axe.violations.map((v) => v.id)).toEqual([]);
 
-    // next read: a different moment, ready to call
+    // reload the moment and try to lock again: refused, with the way back to the review
     const current = page.url().replace(/\/review$/, "");
+    await page.goto(current);
+    await page.getByTestId("ticket").getByRole("radio").first().check();
+    await page.getByTestId("ticket").getByRole("button", { name: /lock/i }).click();
+    await expect(page.getByText("You've already locked a call on this moment.")).toBeVisible();
+    await page.getByTestId("see-review").click();
+    await expect(page).toHaveURL(/\/review$/);
+
+    // next read: a different moment, ready to call
     await page.getByTestId("next-read").click();
     await expect(page).toHaveURL(/\/lab\/gm-[\d-]+$/);
     expect(page.url()).not.toBe(current);

@@ -23,6 +23,10 @@ describe("“Called it” share cards (og)", () => {
     expect(card).not.toBeNull();
     expect(card?.displayName).toBe("Share Fan");
     expect(card?.grade).toMatch(/^[+−]\d+\.\d pts$/);
+    expect(card?.heading).toBe("CALLED IT");
+    // the pick is never on the card: it would give away the moment's best option
+    const m = storedMoment(listMoments()[0].id)!;
+    for (const o of m.decision.options) expect(JSON.stringify(card)).not.toContain(`"${o.label}`);
     expect(card?.calibration).toBe("Provisional calibration");
     const text = JSON.stringify(card);
     expect(text).not.toContain(fan.email);
@@ -34,6 +38,7 @@ describe("“Called it” share cards (og)", () => {
     const res = await get(callId);
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toBe("image/png");
+    expect(res.headers.get("cache-control")).toContain("max-age=86400");
     const png = Buffer.from(await res.arrayBuffer());
     expect(png.subarray(1, 4).toString()).toBe("PNG");
     expect(png.readUInt32BE(16)).toBe(1200);
