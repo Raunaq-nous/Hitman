@@ -1,0 +1,16 @@
+{
+  "source_id": "wikidata",
+  "display_name": "Wikidata",
+  "may_display_raw": true,
+  "may_store_history": true,
+  "may_create_derivatives": true,
+  "may_embed_for_retrieval": true,
+  "may_train_models": true,
+  "may_show_video": false,
+  "commercial_use": "yes",
+  "territories": ["*"],
+  "attribution_required": false,
+  "attribution_text": "Bowling styles from Wikidata (CC0)",
+  "prototype_only": false,
+  "notes": "Structured data is CC0 1.0 (wikidata.org/wiki/Wikidata:Copyright). Used only for bowling style (P2545), matched through the Cricsheet people register."
+}

@@ -7,7 +7,7 @@ import { calibrationSlopeTest, matchBrier, type MatchSample } from "@/engine/mat
 interface Row { match: string; date: string; y: 0 | 1; delta: number; walkForward: number[]; exact: number[]; baseline: number[] }
 const file = JSON.parse(readFileSync("data/models/calibration-v3.json", "utf8")) as {
   hash: string; pass: boolean; tuning: { seasons: number[]; grid: { eta: number; brier: number }[]; eta: number };
-  gate: { boot: number }; pooled: { matches: number; wald: number; reject: boolean; brier: { walkForward: number; exact: number; runRateLogistic: number } };
+  gate: { boot: number }; pooled: { matches: number; wald: number; critical: number; reject: boolean; brier: { walkForward: number; exact: number; runRateLogistic: number } };
   simulation: { runs: number; calibratedPassRate: number; minDetectableShiftPts: number | null };
   checks: Record<string, boolean>; seasons: { season: number; chaseWinRate: number; rows: Row[] }[];
 };
@@ -41,9 +41,12 @@ describe("walk-forward calibration gate on real seasons (calibration)", () => {
     expect(matchBrier(flat(pooled, "baseline"))).toBeCloseTo(file.pooled.brier.runRateLogistic, 4);
   });
 
-  it("records the result honestly: (b), (c), (d) pass and (a) fails on 2026's drift, so F-E-04 is a known issue (D-031)", () => {
-    expect(file.checks).toEqual({ a_calibrationNotRejected: false, b_brierBeatsExact: true, b_brierWithinLogistic: true, c_calibratedPassRate: true, d_minDetectableShift: true });
-    expect(file.pass).toBe(false);
+  it("passes all four D-030 checks with the map's window seasons scored out of sample (D-038)", () => {
+    expect(file.checks).toEqual({ a_calibrationNotRejected: true, b_brierBeatsExact: true, b_brierWithinLogistic: true, c_calibratedPassRate: true, d_minDetectableShift: true });
+    expect(file.pass).toBe(true);
+    expect(file.pooled.wald).toBeLessThan(file.pooled.critical);
+    expect(file.pooled.brier.walkForward).toBeLessThan(file.pooled.brier.exact);
+    expect(file.pooled.brier.walkForward).toBeLessThanOrEqual(file.pooled.brier.runRateLogistic + 0.002);
     expect(file.simulation.calibratedPassRate).toBeGreaterThanOrEqual(0.9);
     expect(file.simulation.minDetectableShiftPts).toBeLessThanOrEqual(15);
     expect(file.seasons.find((s) => s.season === 2026)?.chaseWinRate).toBeCloseTo(0.6429, 4);

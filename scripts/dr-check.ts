@@ -50,7 +50,8 @@ export function buildDrCheck() {
   }
   const ci = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); return [round(s[Math.floor(0.025 * s.length)]), round(s[Math.floor(0.975 * s.length) - 1])]; };
   return {
-    version: "v1", decisionType: "death-bowling (pace vs spin)", outcomesHash: outcomes.hash, optionsHash: options.hash,
+    // the death-bowling decision is never graded (too few labelled pace balls: insufficient), so this is exploratory
+    version: "v1", status: "exploratory", decisionType: "death-bowling (pace vs spin)", outcomesHash: outcomes.hash, optionsHash: options.hash,
     loggedDecisions: logged.length, matches: groups.length, pace: logged.filter((r) => r.action === 1).length, spin: logged.filter((r) => r.action === 0).length,
     propensityModel: { a: round(prop.a), b: round(prop.b), feature: "required run rate", clip: [0.05, 0.95] },
     estimates: {

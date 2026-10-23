@@ -1,10 +1,13 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseCricsheet } from "@/adapters/cricket/cricsheet";
 import { chaseSamples, predictOutcome, predictStyles, type OutcomeArtifact } from "@/engine/outcomeModel";
+import { checkRight } from "@/rights";
 import { momentDecision, momentOptions, shrinkToward, situationKey, type OptionArtifact } from "@/engine/options";
-import { buildOptions, styleClass } from "../../../scripts/fit-options";
+import { buildOptions, loadStyles, styleClass } from "../../../scripts/fit-options";
 
 // Fitted on Cricsheet IPL 2008–2023 (the outcomes-v1 training seasons); bowling styles from Wikidata via the courier.
 const outcomes = JSON.parse(readFileSync("data/models/outcomes-v1.json", "utf8")) as OutcomeArtifact;
@@ -68,5 +71,14 @@ describe("option-conditioned win probability on real data (options)", () => {
       expect(d.coinFlip).toBe(d.gapPts < 2);
       if (d.coinFlip) expect(d.best).toBeNull();
     }
+  });
+
+  it("styles come from a source whose policy allows training, and names two register entries share are dropped", () => {
+    expect(checkRight("wikidata", "train", { prototypeData: false }).ok).toBe(true);
+    const dir = mkdtempSync(join(tmpdir(), "styles-"));
+    const f = join(dir, "s.csv");
+    writeFileSync(f, "cricsheet_id,name,cricinfo_id,wikidata,bowling_style\na1,Harmeet Singh,1,Q1,left-arm orthodox spin\na2,Harmeet Singh,2,Q2,right-arm medium\na3,JJ Bumrah,3,Q3,right-arm fast\n");
+    expect([...loadStyles(f)]).toEqual([["JJ Bumrah", "pace"]]);
+    expect(loadStyles(join(dir, "missing.csv")).size).toBe(0);
   });
 });

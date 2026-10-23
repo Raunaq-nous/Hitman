@@ -46,24 +46,37 @@ function exactWp(outcomes: OutcomeArtifact, balls: Ball[]): number[] {
 
 export interface SeasonData { season: number; outcomes: OutcomeArtifact; matches: (WalkForwardMatch & { exact: number[]; baseline: number[] })[] }
 
-/** Pre-season map and baseline from S-3..S-1, and every S match's base (map-only), exact and baseline predictions. */
+const ownExact = new Map<number, { balls: Ball[]; exact: number[]; outcomes: OutcomeArtifact }>();
+/** Every ball of season y scored by a model fitted only on seasons before y (out of sample for y). */
+function seasonExact(y: number): { balls: Ball[]; exact: number[]; outcomes: OutcomeArtifact } {
+  let hit = ownExact.get(y);
+  if (!hit) {
+    const outcomes = outcomeModelFor(y);
+    const balls = all.filter((b) => b.year === y);
+    hit = { balls, exact: exactWp(outcomes, balls), outcomes };
+    ownExact.set(y, hit);
+  }
+  return hit;
+}
+
+/**
+ * Pre-season map and baseline from S-3..S-1, each window season scored out of sample (by a model fitted only on
+ * seasons before it), and every S match's base (map-only), exact and baseline predictions.
+ */
 export function seasonData(season: number): SeasonData {
-  const outcomes = outcomeModelFor(season);
-  const balls = all.filter((b) => b.year >= season - 3 && b.year <= season);
-  const exact = exactWp(outcomes, balls);
-  const win = balls.map((b, i) => ({ b, p: exact[i] })).filter(({ b }) => b.year < season);
+  const win = [season - 3, season - 2, season - 1].flatMap((y) => { const e = seasonExact(y); return e.balls.map((b, i) => ({ b, p: e.exact[i] })); });
   const per = new Map<string, number>();
   for (const { b } of win) per.set(b.matchId, (per.get(b.matchId) ?? 0) + 1);
   const map = fitIsotonic(win.map(({ b, p }) => ({ p, y: b.chaseWon, w: 1 / (per.get(b.matchId) as number) })));
   const baseline = fitLogistic(win.map(({ b }) => rrr(b)), win.map(({ b }) => b.chaseWon), win.map(({ b }) => 1 / (per.get(b.matchId) as number)));
+  const own = seasonExact(season);
   const byMatch = new Map<string, SeasonData["matches"][number]>();
-  balls.forEach((b, i) => {
-    if (b.year !== season) return;
+  own.balls.forEach((b, i) => {
     let m = byMatch.get(b.matchId);
     if (!m) { m = { match: b.matchId, date: b.date, y: b.chaseWon, preds: [], exact: [], baseline: [] }; byMatch.set(b.matchId, m); }
-    m.preds.push(applyIsotonic(map, exact[i])); m.exact.push(exact[i]); m.baseline.push(logistic(baseline, rrr(b)));
+    m.preds.push(applyIsotonic(map, own.exact[i])); m.exact.push(own.exact[i]); m.baseline.push(logistic(baseline, rrr(b)));
   });
-  return { season, outcomes, matches: [...byMatch.values()] };
+  return { season, outcomes: own.outcomes, matches: [...byMatch.values()] };
 }
 
 const flat = (ms: { match: string; y: 0 | 1 }[], key: (m: never) => number[]): MatchSample[] => ms.flatMap((m) => key(m as never).map((p) => ({ p, y: m.y, match: m.match })));
@@ -95,8 +108,8 @@ function simulate(datas: SeasonData[], seed: number) {
     let up = 0, down = 0;
     for (let r = 0; r < SHIFT_RUNS; r++) {
       const s = season();
-      if (calibrationSlopeTest(s.map((x) => ({ ...x, p: Math.min(1, x.p + d) })), { boot: SIM_BOOT, seed: seed + 10_000 + r }).reject) up++;
-      if (calibrationSlopeTest(s.map((x) => ({ ...x, p: Math.max(0, x.p - d) })), { boot: SIM_BOOT, seed: seed + 20_000 + r }).reject) down++;
+      if (calibrationSlopeTest(s.map((x) => ({ ...x, p: Math.min(0.99, x.p + d) })), { boot: SIM_BOOT, seed: seed + 10_000 + r }).reject) up++;
+      if (calibrationSlopeTest(s.map((x) => ({ ...x, p: Math.max(0.01, x.p - d) })), { boot: SIM_BOOT, seed: seed + 20_000 + r }).reject) down++;
     }
     power.push({ shiftPts: d * 100, upRejectRate: up / SHIFT_RUNS, downRejectRate: down / SHIFT_RUNS });
     console.log(`  shift ${d * 100} pts: up ${up / SHIFT_RUNS} down ${down / SHIFT_RUNS}`);
@@ -150,7 +163,7 @@ function main(): void {
     pooled: { matches: new Set(pooled.map((m) => m.match)).size, a: round(line.a), b: round(line.b), wald: round(test.wald, 4), critical: round(test.critical, 4), reject: test.reject, brier: { walkForward: round(brier.walkForward), exact: round(brier.exact), runRateLogistic: round(brier.runRateLogistic) } },
     simulation: sim, checks, pass: Object.values(checks).every(Boolean),
     seasons: perSeason,
-    production: { method: "before season S: outcome model on seasons < S, isotonic map on S-3..S-1, δ = 0; after each completed date: δ += η × Σ (result − adjusted pre-match probability)", eta },
+    production: { method: "before season S: outcome model on seasons < S, isotonic map on S-3..S-1 (each window season scored by a model fitted only on seasons before it), δ = 0; after each completed date: δ += η × Σ (result − adjusted pre-match probability)", eta },
   };
   const hash = createHash("sha256").update(JSON.stringify(artifact)).digest("hex");
   writeFileSync("data/models/calibration-v3.json", JSON.stringify({ hash, ...artifact }) + "\n");
