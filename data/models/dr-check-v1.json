@@ -1,16 +1,17 @@
 {
- "hash": "7fd5ff5a3cf2761451c9707da31589f4d01de01ca4e6f9e576cb74a3faed64ad",
+ "hash": "89f38c14ef83ed612dffd676c68e43da1eb7f9cb46381f2d32347e2d149a7b85",
  "version": "v1",
+ "status": "exploratory",
  "decisionType": "death-bowling (pace vs spin)",
  "outcomesHash": "26d4e16fbc44810e72f8cc4b876670237be6c4524ec97b131ca94a77af842ea6",
- "optionsHash": "e61c896b36b30acf63b15828760c6f469535a3792d2994f7f201f4db884eacf1",
- "loggedDecisions": 232,
- "matches": 196,
+ "optionsHash": "677cf427ca7960c93ef830937db26a76c56f35d4ac4c540e937b1030a8697011",
+ "loggedDecisions": 225,
+ "matches": 191,
  "pace": 32,
- "spin": 200,
+ "spin": 193,
  "propensityModel": {
-  "a": -1.9643,
-  "b": 0.0095,
+  "a": -1.9184,
+  "b": 0.0087,
   "feature": "required run rate",
   "clip": [
    0.05,
@@ -19,21 +20,21 @@
  },
  "estimates": {
   "pace": {
-   "model": 0.4558,
-   "dr": 0.545,
-   "disagreementPts": 8.92,
+   "model": 0.4553,
+   "dr": 0.5443,
+   "disagreementPts": 8.91,
    "ci95Pts": [
-    -0.21,
-    20
+    -0.09,
+    19.48
    ]
   },
   "spin": {
-   "model": 0.4627,
-   "dr": 0.5723,
-   "disagreementPts": 10.96,
+   "model": 0.4623,
+   "dr": 0.5827,
+   "disagreementPts": 12.04,
    "ci95Pts": [
-    6.67,
-    15.71
+    7.8,
+    16.5
    ]
   }
  },

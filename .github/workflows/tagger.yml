@@ -1,7 +1,8 @@
 # Creates annotated tags with GITHUB_TOKEN (D-023: the agent's git proxy refuses tag pushes).
 # Run it by API (workflow_dispatch: tag, sha, message) or by pushing data/requests/tags/<name>.json
 # containing {"tags":[{"tag":"gate-0","sha":"<40-hex>","message":"..."}]}.
-# Only gate-<0..7> and vX.Y.Z[-pre] names are allowed; an existing tag at a different commit fails the run.
+# Only gate-<0..7> and vX.Y.Z[-pre] names are allowed; the commit must be reachable from overhaul or main; an
+# existing tag at a different commit fails the run. Request files are read only on pushes to overhaul or main.
 name: Tagger
 on:
   workflow_dispatch:
@@ -10,6 +11,7 @@ on:
       sha: { description: "Full 40-character commit SHA", required: true }
       message: { description: "Annotation", required: false, default: "" }
   push:
+    branches: [overhaul, main]
     paths: ["data/requests/tags/*.json"]
 permissions:
   contents: write
@@ -18,7 +20,8 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with: { fetch-depth: 0 }
       - name: Collect requests
         env:
           IN_TAG: ${{ inputs.tag }}
@@ -27,11 +30,16 @@ jobs:
           EVENT: ${{ github.event_name }}
           BEFORE: ${{ github.event.before }}
         run: |
+          set -euo pipefail
           if [ "$EVENT" = "workflow_dispatch" ]; then
             jq -n --arg t "$IN_TAG" --arg s "$IN_SHA" --arg m "$IN_MSG" '[{tag:$t,sha:$s,message:$m}]' > /tmp/req.json
           else
-            files=$(git diff --name-only "$BEFORE" "$GITHUB_SHA" -- 'data/requests/tags/*.json' 2>/dev/null || ls data/requests/tags/*.json)
-            jq -s '[.[].tags[]]' $files > /tmp/req.json
+            # added or modified request files only (a deletion carries no request)
+            if ! git diff --name-only --diff-filter=AM -z "$BEFORE" "$GITHUB_SHA" -- 'data/requests/tags/*.json' > /tmp/files 2>/dev/null; then
+              find data/requests/tags -name '*.json' -print0 > /tmp/files
+            fi
+            mapfile -d '' files < /tmp/files
+            if [ "${#files[@]}" -eq 0 ]; then echo '[]' > /tmp/req.json; else jq -s '[.[].tags[]]' -- "${files[@]}" > /tmp/req.json; fi
           fi
           cat /tmp/req.json
       - name: Create tags
@@ -45,6 +53,13 @@ jobs:
             [[ "$TAG" =~ ^(gate-[0-7]|v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?)$ ]] || { echo "refusing tag name: $TAG"; exit 1; }
             [[ "$SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "refusing sha: $SHA"; exit 1; }
             gh api "repos/$GITHUB_REPOSITORY/commits/$SHA" --jq .sha >/dev/null
+            # reachable from overhaul or main: the branch is identical to or ahead of the commit
+            reach=no
+            for b in overhaul main; do
+              st=$(gh api "repos/$GITHUB_REPOSITORY/compare/$SHA...$b" --jq .status 2>/dev/null || echo missing)
+              if [ "$st" = "identical" ] || [ "$st" = "ahead" ]; then reach=yes; fi
+            done
+            [ "$reach" = yes ] || { echo "refusing $SHA: not reachable from overhaul or main"; exit 1; }
             if existing=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" --jq .object.sha 2>/dev/null); then
               target=$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$existing" --jq .object.sha 2>/dev/null || echo "$existing")
               [ "$target" = "$SHA" ] && { echo "$TAG already at $SHA"; continue; }

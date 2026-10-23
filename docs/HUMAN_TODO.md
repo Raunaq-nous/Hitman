@@ -7,7 +7,7 @@ The agent keeps this list current and never blocks on it. Each item has a safe f
 - [x] **F-E-04 calibration gate (decide)**: owner decided 2026-10-22 (D-027): rolling-origin calibration with a match-level test.
 - [x] **Push the gate tags**: done 2026-10-22 through the tagger workflow (D-028); gate-0, gate-1 and gate-4 exist on GitHub at 109c20c.
 - [x] **F-E-04, second decision (D-029)**: owner decided D-030/D-031 on 2026-10-22.
-- [ ] **Known issue: calibration (F-E-04, D-032)**: under the walk-forward gate (D-030) checks (b), (c), (d) pass but the pooled 2025+2026 intercept/slope test rejects (Wald 7.45 > 5.99), driven by 2026 (chasers won 64.3%); η tuned on 2023–2024 is 0 because updating didn't help those seasons. The product runs on the exact model with "provisional calibration" labels (D-031). Revisit after the 2027 season or with in-match features that explain 2026.
+- [x] **Calibration (F-E-04)**: was a known issue (D-032); passes after the Gate 2 review fixes (D-038). Still worth a look after the 2027 season: 2026 shows a slope of 1.74 and the gate cannot detect shifts under about 15 points.
 - [ ] **Bowling styles for pace vs spin (D-036)**: Wikidata (CC0) has a style for only 51 of 576 IPL bowlers, so the death-over pace/spin decision says "insufficient data". A licensed bowler-style dataset (or curated Wikidata statements) would enable it; the courier picks up new Wikidata statements on its next run.
 - [ ] Rotate `NEXTAUTH_SECRET` in Vercel (Production and Preview) and set `ADMIN_EMAILS` and `CRON_SECRET`.
 - [ ] Check `NEXTAUTH_URL` in Vercel: either unset or the full site URL (an empty value breaks builds).

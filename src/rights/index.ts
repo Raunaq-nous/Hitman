@@ -5,6 +5,7 @@ import cricketdata from "./policies/cricketdata.json";
 import cricsheet from "./policies/cricsheet.json";
 import openf1 from "./policies/openf1.json";
 import statsbomb from "./policies/statsbomb.json";
+import wikidata from "./policies/wikidata.json";
 
 export const rightsPolicy = z.object({
   source_id: z.string().regex(/^[a-z0-9-]+$/),
@@ -37,7 +38,7 @@ export class RightsError extends Error {
   }
 }
 
-const POLICIES: ReadonlyMap<string, RightsPolicy> = new Map([cricsheet, openf1, statsbomb, cricketdata].map((p) => {
+const POLICIES: ReadonlyMap<string, RightsPolicy> = new Map([cricsheet, openf1, statsbomb, cricketdata, wikidata].map((p) => {
   const parsed = rightsPolicy.parse(p);
   return [parsed.source_id, parsed];
 }));

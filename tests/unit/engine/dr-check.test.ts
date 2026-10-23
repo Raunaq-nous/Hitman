@@ -23,5 +23,6 @@ describe("offline doubly robust check of scenario estimates (dr)", () => {
       expect(e.ci95Pts[0]).toBeLessThanOrEqual(e.ci95Pts[1]);
     }
     expect(file.note).toMatch(/never shown as what would have happened/);
+    expect(file.status).toBe("exploratory");
   });
 });

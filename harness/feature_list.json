@@ -568,8 +568,8 @@
       "depends_on": [
         "F-E-02"
       ],
-      "passes": false,
-      "evidence": "Known issue (D-031, D-032). Walk-forward recalibration per D-030 (npm run model:calibration → data/models/calibration-v3.json, sha256 854771c2a742; npm test -- calibration recomputes the pooled verdict). η tuned on 2023–2024 = 0 (three attempts: first-ball and mean-residual signals by Brier, log-loss check). Pooled 2025+2026: (a) joint intercept/slope test REJECTED (Wald 7.45 > 5.99; 2026 chasers won 64.3%); (b) Brier 0.1218 vs exact 0.1813 and run-rate logistic 0.1279 — pass; (c) calibrated pass 96% — pass; (d) minimum detectable shift 10 pts — pass.",
+      "passes": true,
+      "evidence": "Passes (D-038). npm run model:calibration → data/models/calibration-v3.json (sha256 ae09d66a967c); npm test -- calibration: 4 files, 22 tests pass and recompute the pooled verdict. η tuned on 2023–2024 = 0. 2025+2026 pooled, 138 matches: (a) Wald 2.11 < 5.99 (intercept 0.34, slope 1.13, match-clustered bootstrap 1,000); (b) Brier 0.116307 vs exact 0.181286 and run-rate logistic 0.127944; (c) calibrated pass rate 0.96 (200 sims); (d) min detectable shift 15 points. Per season: 2025 Wald 0.15, 2026 Wald 5.09 (slope 1.74). The first D-030 run scored the map window in sample and failed (a), Wald 7.45 (D-032); fixed after the Gate 2 review. docs/QUALITY_SCORE.md, docs/design-docs/models-and-grading.md.",
       "acceptance_history": "Until 2026-10-22 (owner decision D-027): calibration map fitted on training seasons (2008-2023) and versioned; held-out seasons 2024-2026: every 10-point bucket with >= 200 samples within 5 points; reliability diagram data exported for the Notebook. | D-027 (superseded by D-030): rolling-origin map on S-3..S-1 without looking at S; 2025 and 2026 gated separately with >=40-match buckets, 95% match-level bootstrap intervals, match-weighted error <= 5 points, Brier beating exact and run-rate logistic, and a fairness simulation; intent kept: each season tested out of sample at the match level."
     },
     {
@@ -586,7 +586,7 @@
         "F-E-02"
       ],
       "passes": true,
-      "evidence": "src/engine/options.ts: option-conditioned WP (exact backward induction with the option's distribution for its window, then the base model), shrinkage toward the state's distribution (k = 200), insufficient-data threshold (300 balls), coin-flip band 2 points. Decision types (D-036): next-over intent (attack/consolidate = sides one required-rate band above/below), chase tempo (target rate bands for two overs), death-over pace vs spin (Wikidata P2545 styles via the courier; reports insufficient data: 110 pace / 983 spin labelled death balls). data/models/options-v1.json (2008–2023, sha256 e61c896b36b3) refits identically. npm test -- options 9/9 incl. real states from 2017 GL v MI; verify --ci PASS."
+      "evidence": "src/engine/options.ts: option-conditioned WP (exact backward induction with the option's distribution for its window, then the base model), shrinkage toward the state's distribution (k = 200), insufficient-data threshold (300 balls), coin-flip band 2 points. Decision types (D-036): next-over intent (attack/consolidate = sides one required-rate band above/below), chase tempo (target rate bands for two overs), death-over pace vs spin (Wikidata P2545 styles via the courier; reports insufficient data: 110 pace / 945 spin labelled death balls; names two register entries share are dropped; Wikidata has a CC0 rights policy and training asserts it). data/models/options-v1.json (2008–2023, sha256 677cf427ca79) refits identically. npm test -- options 10/10 incl. real states from 2017 GL v MI; verify --ci PASS."
     },
     {
       "id": "F-E-06",
@@ -650,7 +650,7 @@
         "F-E-05"
       ],
       "passes": true,
-      "evidence": "scripts/dr-check.ts (npm run model:dr) compares F-E-05 scenario estimates with doubly robust estimates (src/engine/doublyRobust.ts) on 232 logged death overs of IPL chases with recorded bowler style (32 pace, 200 spin): DR − model = +8.9 pts pace (95% −0.2 to +20.0), +11.0 pts spin (+6.7 to +15.7) — consistent with the calibration known issue; summarised in docs/QUALITY_SCORE.md; offline only, never shown to users as fact. npm test -- dr 4/4 (synthetic recovery and degenerate-input tests, plus reproducible artifact); verify --quick PASS."
+      "evidence": "scripts/dr-check.ts (npm run model:dr, sha256 89f38c14ef83) compares F-E-05 scenario estimates with doubly robust estimates (src/engine/doublyRobust.ts) on 225 logged death overs of IPL chases with recorded bowler style (32 pace, 193 spin): DR − model = +8.9 pts pace (95% −0.1 to +19.5), +12.0 pts spin (+7.8 to +16.5), the exact model's under-prediction of chasers. Labelled exploratory (status in the artifact): the death-bowling decision is never graded (insufficient pace data). Summarised in docs/QUALITY_SCORE.md; offline only, never shown to users as fact. npm test -- dr 4/4 (synthetic recovery and degenerate-input tests, plus reproducible artifact); verify --quick PASS."
     },
     {
       "id": "F-E-10",

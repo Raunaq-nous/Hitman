@@ -21,16 +21,36 @@ for (const f of readdirSync(rawDir).filter((x) => /^\d+\.json$/.test(x))) {
 }
 // 2. Cricsheet register → ESPNcricinfo ids
 const regUrl = 'https://cricsheet.org/register/people.csv';
-const reg = await (await fetch(regUrl, { headers: UA })).text();
-const [head, ...rows] = reg.trim().split('\n').map((l) => l.split(','));
+const regRes = await fetch(regUrl, { headers: UA });
+if (!regRes.ok) { done('register-failed', { httpStatus: regRes.status }); process.exit(0); }
+const reg = await regRes.text();
+// RFC 4180 rows: quoted fields may hold commas, doubled quotes and newlines
+function parseCsv(text) {
+  const out = []; let row = [], f = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"' && text[i + 1] === '"') { f += '"'; i++; } else if (c === '"') q = false; else f += c; }
+    else if (c === '"') q = true;
+    else if (c === ',') { row.push(f); f = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(f); out.push(row); row = []; f = ''; }
+    else f += c;
+  }
+  if (f || row.length) { row.push(f); out.push(row); }
+  return out;
+}
+const [head, ...rows] = parseCsv(reg);
 const iId = head.indexOf('identifier'), iCi = head.indexOf('key_cricinfo');
-const cricinfo = new Map(rows.map((r) => [r[iId], r[iCi]]).filter(([, c]) => c));
+if (iId < 0 || iCi < 0) { done('register-unrecognised', { header: head }); process.exit(0); }
+// ESPNcricinfo ids are numeric; anything else is dropped (and never interpolated into SPARQL)
+const cricinfo = new Map(rows.map((r) => [r[iId], r[iCi]]).filter(([id, c]) => id && /^\d+$/.test(c ?? '')));
 meta.register = { url: regUrl, sha256: createHash('sha256').update(reg).digest('hex') };
 // 3. the bowling-style property, found by its label (not guessed)
-const search = await (await fetch('https://www.wikidata.org/w/api.php?action=wbsearchentities&search=bowling%20style&language=en&type=property&format=json', { headers: UA })).json();
+const searchRes = await fetch('https://www.wikidata.org/w/api.php?action=wbsearchentities&search=bowling%20style&language=en&type=property&format=json', { headers: UA });
+if (!searchRes.ok) { done('property-search-failed', { httpStatus: searchRes.status }); process.exit(0); }
+const search = await searchRes.json();
 const prop = (search.search ?? []).find((p) => /bowling style/i.test(p.label ?? ''));
 meta.propertyCandidates = (search.search ?? []).map((p) => ({ id: p.id, label: p.label, description: p.description }));
-if (!prop) { done('no-property'); process.exit(0); }
+if (!prop || !/^P\d+$/.test(prop.id)) { done('no-property'); process.exit(0); }
 meta.property = { id: prop.id, label: prop.label, description: prop.description };
 // 4. styles by ESPNcricinfo id (P2697), in batches
 const ids = [...bowlers.keys()].map((b) => [b, cricinfo.get(b)]).filter(([, c]) => c);
