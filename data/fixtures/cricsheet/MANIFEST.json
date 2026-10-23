@@ -1,0 +1,103 @@
+{
+  "source": "https://cricsheet.org/downloads/ipl_male_json.zip",
+  "attribution": "Data from Cricsheet (cricsheet.org)",
+  "files": [
+    {
+      "file": "1082625.json",
+      "season": "2017",
+      "teams": [
+        "Gujarat Lions",
+        "Mumbai Indians"
+      ],
+      "outcome": {
+        "eliminator": "Mumbai Indians",
+        "result": "tie"
+      }
+    },
+    {
+      "file": "1082648.json",
+      "season": "2017",
+      "teams": [
+        "Sunrisers Hyderabad",
+        "Kolkata Knight Riders"
+      ],
+      "outcome": {
+        "by": {
+          "wickets": 7
+        },
+        "method": "D/L",
+        "winner": "Kolkata Knight Riders"
+      }
+    },
+    {
+      "file": "335982.json",
+      "season": "2007/08",
+      "teams": [
+        "Royal Challengers Bangalore",
+        "Kolkata Knight Riders"
+      ],
+      "outcome": {
+        "by": {
+          "runs": 140
+        },
+        "winner": "Kolkata Knight Riders"
+      }
+    },
+    {
+      "file": "1082591.json",
+      "season": "2017",
+      "teams": [
+        "Sunrisers Hyderabad",
+        "Royal Challengers Bangalore"
+      ],
+      "outcome": {
+        "by": {
+          "runs": 35
+        },
+        "winner": "Sunrisers Hyderabad"
+      }
+    },
+    {
+      "file": "1422119.json",
+      "season": "2024",
+      "teams": [
+        "Royal Challengers Bengaluru",
+        "Chennai Super Kings"
+      ],
+      "outcome": {
+        "winner": "Chennai Super Kings",
+        "by": {
+          "wickets": 6
+        }
+      }
+    },
+    {
+      "file": "1473438.json",
+      "season": "2025",
+      "teams": [
+        "Kolkata Knight Riders",
+        "Royal Challengers Bengaluru"
+      ],
+      "outcome": {
+        "winner": "Royal Challengers Bengaluru",
+        "by": {
+          "wickets": 7
+        }
+      }
+    },
+    {
+      "file": "1527674.json",
+      "season": "2026",
+      "teams": [
+        "Sunrisers Hyderabad",
+        "Royal Challengers Bengaluru"
+      ],
+      "outcome": {
+        "winner": "Royal Challengers Bengaluru",
+        "by": {
+          "wickets": 6
+        }
+      }
+    }
+  ]
+}

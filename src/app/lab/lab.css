@@ -1,0 +1,45 @@
+.lab-moments{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.lab-moment{display:grid;gap:.25rem;padding:1rem;text-decoration:none}
+.lab-moment-title{font:800 var(--step-1)/1.15 var(--font-display)}
+.lab-moment-meta{color:var(--text-2);font-size:var(--step--1)}
+.lab-call{display:grid;gap:.8rem}
+.lab-note{color:var(--text-2);font-size:var(--step--1);margin:0}
+.lab-error{color:var(--brick)}
+.lab-review{display:grid;gap:1.2rem}
+.lab-verdict{display:grid;gap:.35rem;padding:1rem;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.lab-verdict p{margin:0}
+.lab-columns{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+.lab-col{display:grid;gap:.5rem;align-content:start;padding:1rem;border:1px solid var(--line);border-radius:12px}
+.lab-col h2{font:800 var(--step-0)/1.2 var(--font-display);margin:0}
+.lab-col p{margin:0}
+.lab-options{margin:0;padding-left:1.1rem}
+.lab-lesson{font-size:var(--step-0);margin:0}
+.crew-page .lab-btn,.crew-page .lab-btn:visited,.lab-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.6em 1.2em;border-radius:999px;background:var(--text);color:var(--bg);font-weight:700;text-decoration:none}
+.lab-btn:focus-visible{outline:3px solid var(--call);outline-offset:2px}
+.nb-h{font:800 var(--step-1)/1.2 var(--font-display);margin:0}
+.nb-rating{margin:0;font-size:var(--step-1)}
+.nb-tag{margin-left:.6rem;font-size:var(--step--1);border:1px solid var(--line);border-radius:999px;padding:.1rem .5rem}
+.nb-warnings{margin:0;padding:.8rem 1.2rem;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.nb-filters{display:flex;flex-wrap:wrap;gap:.4rem .9rem;align-items:center}
+.nb-filters a{min-height:44px;display:inline-flex;align-items:center}
+.nb-filters a[aria-current=page]{font-weight:800}
+.nb-chart{margin:0}
+.nb-chart svg{width:100%;height:auto;display:block}
+.nb-table{width:100%;border-collapse:collapse;font-size:var(--step--1);display:block;overflow-x:auto}
+.nb-table th,.nb-table td{text-align:left;padding:.35rem .5rem;border-bottom:1px solid var(--line)}
+.dossier{display:grid;gap:.8rem;padding:1.2rem;border:2px dashed var(--line);border-radius:12px;background:var(--surface)}
+.dossier-stamp{min-height:3rem}
+.dossier-name{font:800 var(--step-2)/1.1 var(--font-display);margin:0}
+.dossier-body{display:grid;gap:.8rem}
+@media (prefers-reduced-motion:no-preference){.dossier[data-open=true] .dossier-body{animation:dossier-open .45s ease-out both}}
+@keyframes dossier-open{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.dossier-evidence{margin:0;padding-left:1.1rem}
+.dossier-axes{margin:0;display:grid;gap:.6rem}
+.dossier-axes dt{font-weight:800}
+.dossier-axes dd{margin:0;color:var(--text-2)}
+@media print{
+  .appnav,footer,.sf-noprint{display:none !important}
+  .season-file{max-width:none;padding:0;background:var(--surface)}
+  .season-file details{display:none}
+  .season-file .lab-col,.season-file .lab-verdict{break-inside:avoid}
+}

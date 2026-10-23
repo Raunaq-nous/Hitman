@@ -4,8 +4,8 @@
   --ink:#13233A; --ink-2:#4A5A70; --line:#D6DFEA;
   --opener:#1E9A55; --closer:#E06A10; --architect:#2C58D4; --professor:#7540CC; --iceman:#1F8FC4;
   --call:#FFD23F; --call-ink:#13233A; --on-band:#FFFFFF; --minus:#B4462F; --focus:#13233A;
-  --font-text:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --font-display:"Archivo","Arial Narrow","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
+  --font-text:"Archivo Variable","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-display:"Archivo Variable","Arial Narrow","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);}
@@ -26,6 +26,7 @@
 .ae{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-text);font-size:1.0625rem;line-height:1.55;-webkit-font-smoothing:antialiased}
 .ae h1,.ae h2,.ae h3,.ae h4{font-family:var(--font-display)}
 .ae a{color:inherit}
+.ae p a{text-decoration:underline;text-underline-offset:.15em}
 .ae ::selection{background:var(--call);color:var(--call-ink)}
 .ae :focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
 .ae .sr{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

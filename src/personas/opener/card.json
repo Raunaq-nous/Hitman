@@ -1,0 +1,16 @@
+{
+  "slug": "opener",
+  "name": "The Opener",
+  "sport": "Cricket",
+  "sportKey": "cricket",
+  "skillDomain": "TIMING",
+  "colorToken": "--opener",
+  "signatureTool": "Over Call",
+  "skillWords": [
+    "timing",
+    "tempo",
+    "pressure overs",
+    "set batter",
+    "death overs"
+  ]
+}

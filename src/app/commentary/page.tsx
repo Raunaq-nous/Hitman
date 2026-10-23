@@ -1,30 +1,17 @@
-"use client";
-
 import LiveMatchCenter from "@/components/LiveMatchCenter";
 
-export default function CommentaryPage() {
-  return (
-    <main className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#111] to-[#0a0a0a] py-20 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-block px-4 py-1.5 rounded-sm border border-red-500/30 bg-red-500/10 mb-4">
-            <span className="text-red-500 font-mono text-xs font-bold tracking-[0.3em] flex items-center space-x-2">
-              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-              <span>LIVE CRICKET SCORES</span>
-            </span>
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
-            MATCH <span className="text-red-500">CENTER</span>
-          </h1>
-          <p className="text-gray-500 font-mono text-sm mt-2 tracking-widest">
-            Real-time scores from CricketData.org
-          </p>
-        </div>
+export const metadata = { title: "Cricket scores" };
 
-        {/* Live Match Center */}
-        <LiveMatchCenter />
-      </div>
+export default function CommentaryPage(): React.JSX.Element {
+  return (
+    <main className="legacy-dark" style={{ maxWidth: "56rem", margin: "0 auto" }}>
+      <header style={{ textAlign: "center", margin: "1rem 0 1.5rem" }}>
+        <h1 style={{ margin: 0, font: "800 var(--step-3)/1.1 var(--font-display)", fontStretch: "72%" }}>Cricket scores</h1>
+        <p style={{ margin: ".5rem 0 0", color: "var(--mist)" }}>
+          From CricketData.org, a third-party aggregator. This is not a licensed live feed: scores can lag, and each update shows when we fetched it.
+        </p>
+      </header>
+      <LiveMatchCenter />
     </main>
   );
 }

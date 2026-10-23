@@ -1,0 +1,1319 @@
+{
+  "version": 1,
+  "note": "Agents may set passes and evidence; never delete or weaken acceptance criteria.",
+  "features": [
+    {
+      "id": "F-H-00",
+      "phase": "0",
+      "title": "CI green on the current codebase",
+      "acceptance": [
+        "node harness/verify.mjs --ci passes on the overhaul branch (fix existing lint and build errors without changing behaviour)",
+        "no feature work beyond what CI needs"
+      ],
+      "verify": "node harness/verify.mjs --ci",
+      "depends_on": [],
+      "passes": true,
+      "evidence": "Redone 2026-10-21 after audit: reverted the rule downgrades (no-explicit-any, set-state-in-effect, no-unescaped-entities etc. back to eslint-config-next defaults) and fixed all 20 lint errors in code (typed icons/members, escaped entities, justified any on legacy payloads pending F-F-03). node harness/verify.mjs --ci -> RESULT: PASS (feature list, lint, build PASS). CI run on overhaul green."
+    },
+    {
+      "id": "F-H-01",
+      "phase": "0",
+      "title": "Phase 0 work is on the overhaul branch as separate commits",
+      "acceptance": [
+        "git log shows the eight Phase 0 commit subjects from _incoming/phase0-patches/manifest.tsv (applied by harness/prepare-repo.sh)",
+        "if any *.FAILED.patch remains in _incoming/phase0-patches/, apply it by hand, then delete _incoming/",
+        "_incoming/ no longer exists"
+      ],
+      "verify": "git log --oneline; test ! -d _incoming",
+      "depends_on": [
+        "F-H-00"
+      ],
+      "passes": true,
+      "evidence": "Audit 2026-10-21: git log main shows the 8 Phase 0 commits (541b4f1..e460de1) authored Raunaq-nous noreply; test ! -d _incoming -> true; CI run 39077633057 success."
+    },
+    {
+      "id": "F-H-02",
+      "phase": "0",
+      "title": "Harness and docs in place",
+      "acceptance": [
+        "AGENTS.md, GEMINI.md, ARCHITECTURE.md, .agents/, docs/, harness/ present",
+        "root .gitignore ignores .worktrees/, data/raw/ and harness/.agent-heartbeat",
+        "node harness/check-features.mjs exits 0"
+      ],
+      "verify": "node harness/check-features.mjs",
+      "depends_on": [
+        "F-H-01"
+      ],
+      "passes": true,
+      "evidence": "node harness/check-features.mjs exited 0; root .gitignore updated; node harness/verify.mjs --ci passed"
+    },
+    {
+      "id": "F-H-03",
+      "phase": "0",
+      "title": "Sensitive history purge verified",
+      "acceptance": [
+        "after git fetch --unshallow (if the clone is shallow), searching the full history (git log --all -p) with the handle pattern defined in harness/cloud/prepare.sh finds no UPI handle, and no dev.db files appear in any revision",
+        "record the commands and their empty output as evidence"
+      ],
+      "verify": "commands recorded in evidence return nothing",
+      "depends_on": [
+        "F-H-02"
+      ],
+      "passes": true,
+      "evidence": "Audit 2026-10-21 (non-shallow clone): git log --all -p | grep -i -E -c '<handle pattern from harness/prepare-repo.sh>' -> 0; git log --all --name-only --format= | grep -E '(^|/)dev\\.db$' | wc -l -> 0."
+    },
+    {
+      "id": "F-H-04",
+      "phase": "0",
+      "title": "Commits are authored by the owner",
+      "acceptance": [
+        "git log -10 --format=\"%an <%ae>\" shows the owner (or the owner's GitHub noreply address), not a bot, for recent feature commits",
+        "if not, fix git config user.email (owner noreply address) for future commits"
+      ],
+      "verify": "git log -10 --format=\"%an <%ae>\"",
+      "depends_on": [
+        "F-H-03"
+      ],
+      "passes": true,
+      "evidence": "Audit 2026-10-21: git log main..overhaul --format='%an <%ae>' -> all Raunaq-nous (raunaq1509 / 164249000+Raunaq-nous noreply); git config user.email set to the noreply address for future commits."
+    },
+    {
+      "id": "F-H-05",
+      "phase": "0",
+      "title": "Standard npm scripts exist and work",
+      "acceptance": [
+        "scripts: dev, build (no automatic production migrations), start, lint, typecheck, test, test:e2e, db:up, db:migrate, db:seed, data:cricsheet",
+        "docker-compose.yml with a db service (Postgres) used by db:up",
+        "node harness/init.mjs completes in the cloud VM"
+      ],
+      "verify": "node harness/verify.mjs --quick",
+      "depends_on": [
+        "F-H-04"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: package.json scripts dev, build (prisma generate && next build, no migrate), start, lint, typecheck, test, test:e2e, db:up, db:migrate, db:seed, data:cricsheet (+db:local). docker-compose.yml db service (postgres:16) used by scripts/db-up.mjs, which falls back to embedded-postgres when no Docker daemon (this VM). node harness/init.mjs -> exit 0 (npm ci, db:up, db:migrate applied prisma/migrations/20261021000000_init, db:seed, init complete). node harness/verify.mjs --quick -> RESULT: PASS."
+    },
+    {
+      "id": "F-H-06",
+      "phase": "0",
+      "title": "Vitest configured with first engine tests",
+      "acceptance": [
+        "vitest config with coverage",
+        "tests for parseOvers, formatOvers, runRate (10.4 → 64; 85/64 ≈ 7.97)"
+      ],
+      "verify": "npm test",
+      "depends_on": [
+        "F-H-05"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: vitest.config.ts (v8 coverage, 100% threshold on src/engine/**, dot reporter). tests/unit/engine/legalBalls.test.ts: 'parses 10.4 overs as 64 legal balls', 'computes run rate on legal balls: 85 off 64 ≈ 7.97', formatOvers/round-trip/required rate. npm test -> 6 passed, coverage 100% statements/branches/functions/lines."
+    },
+    {
+      "id": "F-H-07",
+      "phase": "0",
+      "title": "Playwright configured with smoke and accessibility tests",
+      "acceptance": [
+        "landing page renders with no console errors",
+        "axe check passes on the landing page"
+      ],
+      "verify": "npm run test:e2e",
+      "depends_on": [
+        "F-H-05"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: playwright.config.ts (webServer next start :3100) + tests/e2e/smoke.spec.ts: 'landing page renders with no console errors', 'landing page passes axe accessibility checks' (wcag2a/aa, after entrance animations settle). Fixed axe link-in-text-block by underlining in-text links in src/app/landing.css. npm run test:e2e -> 2 passed; node harness/verify.mjs -> RESULT: PASS."
+    },
+    {
+      "id": "F-H-08",
+      "phase": "0",
+      "title": "CI workflow green with real gates",
+      "acceptance": [
+        ".github/workflows/ci.yml passes on the overhaul branch with lint, typecheck, unit tests, build and e2e all running rather than skipped"
+      ],
+      "verify": "node harness/verify.mjs --ci shows no SKIP lines",
+      "depends_on": [
+        "F-H-06",
+        "F-H-07"
+      ],
+      "passes": true,
+      "evidence": "2026-10-22: GitHub Actions CI run 39742306306 on overhaul (head 3cb2a9c) concluded success: Postgres service, npm ci, prisma generate, Playwright install, db:migrate, then node harness/verify.mjs --ci in ~93 s (unit tests hit the vitest schema; build and e2e ran). With F-H-05/06/07 passing, verify --ci skips nothing: local run shows PASS for feature list, lint, typecheck, unit tests, build, e2e and no SKIP lines."
+    },
+    {
+      "id": "F-H-09",
+      "phase": "0",
+      "title": "Architecture enforced mechanically",
+      "acceptance": [
+        "lint rules or a structural test enforce the layering in ARCHITECTURE.md",
+        "error messages explain the fix",
+        "a deliberately bad import in a test fixture is caught"
+      ],
+      "verify": "npm run lint && npm test",
+      "depends_on": [
+        "F-H-06"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: tests/architecture/layering.ts checks types→config→repo→service→api|ui inside src/domain/<area>, pure src/engine, no Prisma/repo in src/ui, cross-cutting via src/providers, no cross-domain repo/config; every message says how to fix. tests/unit/architecture.test.ts: 'src/ has no layering violations', 'catches the deliberately bad imports in the fixture, with fix-it messages' (tests/fixtures/arch-bad: types→service, engine→node:fs, ui→@prisma/client). eslint.config.mjs no-restricted-imports for src/engine and src/ui (probe file importing node:fs in src/engine -> error with remediation). npm run lint && npm test -> PASS."
+    },
+    {
+      "id": "F-F-01",
+      "phase": "1",
+      "title": "Environment parsed with Zod at startup",
+      "acceptance": [
+        "DATABASE_URL required; NEXTAUTH_SECRET ≥ 32 chars in production; NEXTAUTH_URL must be a URL or unset",
+        "an empty NEXTAUTH_URL no longer breaks the build",
+        "unit tests cover each rule"
+      ],
+      "verify": "npm test -- env",
+      "depends_on": [
+        "F-H-09"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/providers/env.ts parses env with Zod (DATABASE_URL required postgresql://; NEXTAUTH_SECRET >= 32 chars in production; NEXTAUTH_URL URL or unset, empty = unset; flags LIVE_CALLS=false, PROTOTYPE_DATA, LLM_ENABLED from GEMINI_API_KEY; ALLOW_SEED refused in production); src/instrumentation.ts parses at startup; auth/admin/seed/live-score use env(). tests/unit/providers/env.test.ts (6 tests, one per rule) pass via npm test -- env. NEXTAUTH_URL=\"\" npm run build -> exit 0."
+    },
+    {
+      "id": "F-F-02",
+      "phase": "1",
+      "title": "PostgreSQL everywhere with a migration history",
+      "acceptance": [
+        "Prisma provider postgresql; baseline migration committed",
+        "docker-compose.yml for local Postgres plus embedded fallback",
+        "build never runs migrations against production"
+      ],
+      "verify": "npm run db:migrate && npm test",
+      "depends_on": [
+        "F-F-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: prisma provider postgresql; baseline prisma/migrations/20261021000000_init committed with migration_lock.toml; docker-compose.yml db (postgres:16) + embedded-postgres fallback in scripts/db-up.mjs; build = prisma generate && next build (no migrate). npm run db:migrate -> No pending migrations; tests/unit/infra/postgres.test.ts (4 tests incl. 'never runs migrations during build or install') pass in npm test."
+    },
+    {
+      "id": "F-F-03",
+      "phase": "1",
+      "title": "DTOs at the server boundary",
+      "acceptance": [
+        "no Prisma model or password hash reaches a client component or API response",
+        "a test asserts that serialised user payloads never contain password fields"
+      ],
+      "verify": "npm test -- dto",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/domain/{users,crews,contests} return DTOs built from explicit selects (PUBLIC_USER_SELECT has no password/email); league pages, APIs and LeagueTabsClient now receive CrewDetailDTO/MatchDTO instead of Prisma rows (previously full user rows incl. password hashes reached a client component). tests/unit/dto.test.ts: 'toPublicUser drops password and email even when given a full row', 'crew detail, crew list, contest entries and standings never contain password fields' (DB-backed), 'no route or component selects whole user rows'. npm test -- dto -> 3 passed; node harness/verify.mjs -> RESULT: PASS."
+    },
+    {
+      "id": "F-F-04",
+      "phase": "1",
+      "title": "Membership enforced on every crew and contest read and write",
+      "acceptance": [
+        "non-members get 404 or 403 on crew pages and APIs",
+        "integration tests for cross-user access"
+      ],
+      "verify": "npm test -- authz",
+      "depends_on": [
+        "F-F-03"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: crews/contests services check membership on every read and write (requireMembership/memberIds); non-members and unknown crews both get NOT_FOUND (404), pages render notFound() via providers/page.orNotFound, APIs map DomainError to status via providers/http.route. tests/unit/authz.test.ts (DB-backed, 7 tests): 'non-members get 404 on every crew and contest read', 'route handlers require a session and scope results to the caller', 'pages turn a non-member's request into a 404'. npm test -- authz -> 7 passed."
+    },
+    {
+      "id": "F-F-05",
+      "phase": "1",
+      "title": "One team (or one call) per user per match enforced by the database",
+      "acceptance": [
+        "unique constraint plus migration",
+        "API returns a clear conflict error"
+      ],
+      "verify": "npm test -- unique",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: prisma FantasyTeam @@unique([userId, matchId]) + migration 20261021214246_one_team_per_user_per_match (removes pre-existing duplicates, keeps earliest). contests.service.submitTeam maps P2002 to DomainError CONFLICT (409, 'You’ve already submitted a team for this match…'); /api/team goes through it. tests/unit/unique.test.ts: 'the database rejects a second team…', 'the service turns a duplicate into a clear 409 conflict', 'two concurrent submits produce exactly one team', 'the API returns 409 with a readable message'. npm test -- unique -> 4 passed."
+    },
+    {
+      "id": "F-F-06",
+      "phase": "1",
+      "title": "No unkeyed global caches",
+      "acceptance": [
+        "module-level cache replaced by a keyed, bounded TTL cache provider",
+        "tests cover expiry and key isolation"
+      ],
+      "verify": "npm test -- cache",
+      "depends_on": [
+        "F-F-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/providers/cache.ts TtlCache (keyed, TTL, LRU-bounded maxEntries, peek() for honest stale age) + namedCache registry; live-score's module-level 'let cache' replaced by namedCache('live-score', ttl 30s, max 8) keyed per feed query. tests/unit/providers/cache.test.ts: expiry, 'isolates keys', bounded LRU eviction, config guards, named-cache isolation, 'no module-level cache variables remain'. npm test -- cache -> 6 passed."
+    },
+    {
+      "id": "F-F-07",
+      "phase": "1",
+      "title": "Source authority policy replaces ad-hoc fallbacks",
+      "acceptance": [
+        "SourceClass priority table implemented",
+        "simulated or mock data can never be labelled live",
+        "tests for choosing between sources and staleness"
+      ],
+      "verify": "npm test -- authority",
+      "depends_on": [
+        "F-F-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/domain/sources (SourceClass priority table OFFICIAL_LIVE 100 > LICENSED_LIVE 90 > VERIFIED_DELAYED 70 > EDITORIAL_PROJECTION 30 > SIMULATION 0; choose() picks highest-priority fresh source, else newest factual as 'Stale · N min', else source pending; present() never labels SIMULATION/EDITORIAL_PROJECTION or anything with LIVE_CALLS=false as live). live-score route labels CricketData.org VERIFIED_DELAYED with receipt and dataLabel; ad-hoc stale fallback now goes through the policy. Removed unused simulation engine src/lib/matchEngine.ts and random playing-XI in /api/seed. tests/unit/sources/authority.test.ts (10 tests incl. 'simulated or projected data is never labelled live…', 'skips a stale high-priority source…', route test with stubbed fetch). npm test -- authority -> 10 passed."
+    },
+    {
+      "id": "F-F-08",
+      "phase": "1",
+      "title": "Legal-ball primitives used everywhere",
+      "acceptance": [
+        "all overs arithmetic goes through src/engine/legalBalls.ts",
+        "grep shows no decimal-overs arithmetic elsewhere"
+      ],
+      "verify": "npm test -- legalBalls",
+      "depends_on": [
+        "F-H-06"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: all overs arithmetic goes through src/engine/legalBalls.ts (parseOvers/tryParseOvers/completedOvers/runRate): live-score route and LiveMatchCenter no longer use parseFloat(overs) (which treated 10.4 as 10.4 overs); simulation engine removed. tests/unit/engine/legalBalls.usage.test.ts 'no decimal-overs arithmetic outside src/engine/legalBalls.ts' greps src for parseFloat/Number(overs), overs*/÷ and split('.') -> none; npm test -- legalBalls -> 8 passed, engine coverage 100%."
+    },
+    {
+      "id": "F-F-09",
+      "phase": "1",
+      "title": "Scoring ledger: append-only, versioned, idempotent",
+      "acceptance": [
+        "scoring events stored append-only with config version",
+        "re-running scoring produces no duplicates",
+        "tests"
+      ],
+      "verify": "npm test -- scoring",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: ScoringEvent ledger (migration 20261021214700_scoring_ledger) with unique idempotencyKey match:team:player:vN, configVersion, statLine, points; Postgres trigger rejects UPDATE/DELETE. src/domain/scoring.service.scoreMatch appends with skipDuplicates in one transaction, derives FantasyTeam.totalPoints from the latest version's events, awards XP only when new events were written; /api/score uses it. tests/unit/scoring/scoring.test.ts: 'writes one versioned event per scored pick…', 're-running scoring produces no duplicates and awards XP once' (incl. concurrent reruns), 'a new config version appends new events…', 'the database refuses to update or delete ledger rows'. npm test -- scoring -> 6 passed."
+    },
+    {
+      "id": "F-F-10",
+      "phase": "1",
+      "title": "Public brand is ALTER EGO everywhere users can see",
+      "acceptance": [
+        "package name, manifest, metadata, UI copy use ALTER EGO and public persona names",
+        "an e2e test scans rendered pages for internal codenames and fails if found"
+      ],
+      "verify": "npm run test:e2e -- brand",
+      "depends_on": [
+        "F-H-07"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: package name alter-ego, manifest ALTER EGO (description no longer promises live calls), vercel.json name alter-ego, metadata title template '%s | ALTER EGO', navbar logo alt no longer 'Hitman'; athlete nicknames removed from roster lineage copy (verified facts kept). tests/e2e/brand.spec.ts scans rendered text, title, meta content and img alt on /, /login, /register, /schedule, /teams, /commentary, /leaderboard for HITMAN|MAMBA|ARCHITETTO|ICEBORG|PITCH11 and checks the manifest. npm run test:e2e -- brand -> 8 passed (full e2e 10 passed)."
+    },
+    {
+      "id": "F-F-11",
+      "phase": "1",
+      "title": "No-money audit in CI",
+      "acceptance": [
+        "a test scans source and rendered routes for payment, QR, UPI, wallet, entry-fee and prize terms (docs excluded)",
+        "legacy fee and prize fields removed from the schema"
+      ],
+      "verify": "npm test -- no-money",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: tests/audit/money-terms.ts (payment, QR, UPI, wallet, entry fee, prize, cash, deposit, payout, voucher, withdraw, betting, odds, ₹, PSP names; 'no …' disclaimers allowed). tests/unit/no-money.test.ts scans src, public, prisma (schema + migrations), config, scripts (docs excluded) -> 0 hits; 'the schema has no fee, prize, wallet or payment fields' (legacy fee/prize fields were dropped in Phase 0; none remain); self-test of the matcher. tests/e2e/no-money.spec.ts scans rendered text of 7 routes and checks for QR/payment elements. npm test -- no-money -> 3 passed; npm run test:e2e -- no-money -> 7 passed. Runs in CI via verify --ci."
+    },
+    {
+      "id": "F-F-12",
+      "phase": "1",
+      "title": "Auth hardening",
+      "acceptance": [
+        "rate limits on login and registration",
+        "password policy (≥ 10 characters)",
+        "security headers set",
+        "tests"
+      ],
+      "verify": "npm test -- auth",
+      "depends_on": [
+        "F-F-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/domain/auth (register + verifyCredentials; bcrypt cost 12; generic duplicate-email error; dummy-hash compare for unknown emails) with RateLimiter (src/providers/rateLimit.ts) on login (10/15 min per email, 30/15 min per IP) and registration (5/h per IP); password policy >= 10 chars (Zod, plus minLength on the form); security headers (CSP, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy, HSTS, COOP, no x-powered-by) via next.config.ts. tests/unit/auth/auth.test.ts (9 tests: limiter window, policy, hashing, generic error, register/login rate limits, route 400, headers) + tests/e2e/headers.spec.ts. npm test -- auth -> pass; node harness/verify.mjs -> RESULT: PASS."
+    },
+    {
+      "id": "F-U-01",
+      "phase": "1",
+      "title": "Design tokens light and dark",
+      "acceptance": [
+        "tokens.css per DESIGN.md; no raw hex in components (lint); no pure black or red"
+      ],
+      "verify": "npm run lint && npm test -- tokens",
+      "depends_on": [
+        "F-H-09"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/ui/tokens.css with DESIGN.md palette (exact hex) + semantic tokens, light and dark (prefers-color-scheme and data-theme); imported by globals.css; Tailwind black/red utilities remapped to ink-night/brick so no pure black or red renders. ESLint no-restricted-syntax bans raw hex literals in src/app, src/components, src/ui (message names the token fix); theme-color literals live in src/providers/themeColor.ts and are checked against tokens. tests/unit/ui/tokens.test.ts (6 tests: DESIGN hex, dark parity, WCAG AA contrast light+dark, theme-color sync, no pure black/red in src). npm run lint && npm test -- tokens -> pass. Screenshots: docs/evidence/F-U-01/{landing,login}-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-U-02",
+      "phase": "1",
+      "title": "Self-hosted fonts and type scale",
+      "acceptance": [
+        "Archivo, Literata, JetBrains Mono via fontsource; tabular numerals; build needs no font network"
+      ],
+      "verify": "npm run build",
+      "depends_on": [
+        "F-U-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: Archivo (variable wdth+wght), Literata and JetBrains Mono self-hosted via @fontsource-variable/* imported in src/app/layout.tsx; Google Fonts links and CSP hosts removed; tokens --font-display/text/reading/receipt, fluid type scale --step--1..4, .tabular/[data-num] tabular-nums. npm run build with HTTP(S)_PROXY pointed at a dead port (no network) -> exit 0, 16 woff2 files in .next/static/media. tests/unit/ui/fonts.test.ts (4) + tests/e2e/fonts.spec.ts ('fonts load from our own origin and numerals are tabular'). Screenshots docs/evidence/F-U-02/{landing,login}-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-U-04",
+      "phase": "1",
+      "title": "Component library and /design gallery",
+      "acceptance": [
+        "Ticket, Stamp, Receipt, Meter, Timing Tower row, Persona Chip, data-state badge, share card",
+        "gallery route for development"
+      ],
+      "verify": "npm run test:e2e -- design",
+      "depends_on": [
+        "F-U-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/ui components (tokens only): Ticket (options, confidence 50–99 default 60, Lock, LOCKED stamp, keyboard + screen-reader), Stamp, Receipt (source/class/observedAt), Meter (role=meter), TimingTowerRow, PersonaChip (always 'AI analyst'), DataStateBadge, ShareCard; src/personas cards. /design gallery (on outside production, DESIGN_GALLERY=true opt-in in production). tests/e2e/design.spec.ts: 'shows every component', 'ticket: pick, set confidence, lock with the keyboard', 'receipt opens…', axe light + dark -> 5 passed. Screenshots docs/evidence/F-U-04/design-{390,1280}-{light,dark}.png (full page)."
+    },
+    {
+      "id": "F-A-01",
+      "phase": "1",
+      "title": "Analytics events",
+      "acceptance": [
+        "server-side AnalyticsEvent with the events in the spec; tests"
+      ],
+      "verify": "npm test -- analytics",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: AnalyticsEvent model (id, userId nullable, name, props Json, createdAt; migration *_analytics_events). src/domain/analytics: strict Zod schema per spec event (moment_viewed, call_locked, review_viewed, next_read_started, share_clicked, receipt_opened, depth_changed, language_changed, alter_ego_revealed); track() rejects unknown events/props; POST /api/events (rate-limited) records client events with the session user. tests/unit/analytics.test.ts (5 tests) -> pass via npm test -- analytics."
+    },
+    {
+      "id": "F-D-01",
+      "phase": "2",
+      "title": "Multi-sport domain schema",
+      "acceptance": [
+        "Sport, Competition, Season, Event, Participant, Incident (append-only, effectiveAt, observedAt, sourceRef, sourceClass, rightsPolicyId, supersedes)",
+        "seed the five sports",
+        "migration and tests"
+      ],
+      "verify": "npm run db:migrate && npm test -- domain",
+      "depends_on": [
+        "F-F-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: Prisma models Sport, Competition, Season, Event, Participant, EventParticipant, Incident (t, seq, actor, type, payload, sourceId/sourceRef, sourceClass, rightsPolicyId, effectiveAt, observedAt, supersedesId unique) in migration 20261021221114_multi_sport_facts, which seeds the five sports and adds an append-only trigger on Incident. src/domain/facts/types.ts incidentInput Zod. tests/unit/facts/schema.test.ts (5 tests: seeds five sports, both clocks, append-only + supersede, unique source record, boundary parse) -> pass."
+    },
+    {
+      "id": "F-D-02",
+      "phase": "2",
+      "title": "Rights control plane",
+      "acceptance": [
+        "policy JSON per source with the schema in data-and-rights.md",
+        "assertRight() used by repos, services and retrieval",
+        "tests for allow and deny of each action; prototype-only sources off when PROTOTYPE_DATA=false"
+      ],
+      "verify": "npm test -- rights",
+      "depends_on": [
+        "F-D-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/rights/policies/{cricsheet,openf1,statsbomb,cricketdata}.json validated by a strict Zod schema matching data-and-rights.md; assertRight/checkRight (unknown source denied; prototype_only off when PROTOTYPE_DATA=false) exposed to domains via src/providers/rights.ts. Used by the incident repo (store, src/domain/facts/repo.ts), the live-score service (display) and retrieval (embed, src/domain/retrieval/service.ts). tests/unit/rights/rights.test.ts (8 tests: schema+registry, allow/deny of each of 6 actions for every policy, prototype flag, unknown source, repo refuses before writing, live-score refuses without fetching, retrieval filter) -> pass. Also enabled TypeScript strict (0 errors)."
+    },
+    {
+      "id": "F-D-03",
+      "phase": "2",
+      "title": "Cricsheet ingest",
+      "acceptance": [
+        "npm run data:cricsheet downloads IPL JSON to data/raw/ and ingests events and ball incidents",
+        "attribution recorded",
+        "fixtures subset (≥ 5 matches incl. a tie and a rain-affected match) committed under data/fixtures/cricsheet/"
+      ],
+      "verify": "npm test -- cricsheet",
+      "depends_on": [
+        "F-D-02"
+      ],
+      "passes": true,
+      "evidence": "Courier run 39743455392 (data-courier.yml on eef1491) ran npm run data:cricsheet on the runner: downloaded ipl_male_json.zip (5,187,774 B, sha256 6fe9142d…, 1245 match files) and ingested events + ball incidents; data/manifest.json records URL, time, SHA-256 and attribution 'Data from Cricsheet (cricsheet.org)'. 7 fixtures in data/fixtures/cricsheet incl. tie 1082625 and D/L 1082648; npm test -- cricsheet 7/7 (ingest from fixtures stores events+incidents, idempotent re-run)."
+    },
+    {
+      "id": "F-D-04",
+      "phase": "2",
+      "title": "Data contract checks",
+      "acceptance": [
+        "monotonic balls, wickets and runs; winner agreement; rain-affected chases excluded from chase WP",
+        "tests on fixtures"
+      ],
+      "verify": "npm test -- contract",
+      "depends_on": [
+        "F-D-03"
+      ],
+      "passes": true,
+      "evidence": "src/domain/facts/contract.ts: ordering, ≤6 legal balls/over, legal-ball cap, ≤10 wickets, non-negative runs (monotonic), tie/winner agreement with totals; rain-affected (method set), no-result and missing-chase matches marked not chase-eligible. npm test -- contract 4/4 on the 7 real fixtures plus broken-data cases."
+    },
+    {
+      "id": "F-D-05",
+      "phase": "2",
+      "title": "Bitemporal reads and leakage tests",
+      "acceptance": [
+        "getStateAt(eventId, effectiveAt, observedCutoff)",
+        "injected post-cutoff incident has no effect (test)"
+      ],
+      "verify": "npm test -- leakage",
+      "depends_on": [
+        "F-D-03"
+      ],
+      "passes": true,
+      "evidence": "getStateAt(eventId, effectiveAt, observedCutoff) in src/domain/facts/service.ts; npm test -- leakage 4/4 incl. an injected post-cutoff incident having no effect. Depends on F-D-03 now passing."
+    },
+    {
+      "id": "F-D-06",
+      "phase": "2",
+      "title": "Adapters for five sports",
+      "acceptance": [
+        "adapter interface; cricket (Cricsheet), F1 (OpenF1 historical, prototype flag), football (StatsBomb open data), basketball and tennis honest source-pending adapters",
+        "rights checks in each adapter; tests with recorded fixtures (no network in tests)"
+      ],
+      "verify": "npm test -- adapters",
+      "depends_on": [
+        "F-D-02"
+      ],
+      "passes": true,
+      "evidence": "src/adapters/index.ts: SourceAdapter interface + registry for every sport — cricket (Cricsheet), F1 (OpenF1 historical, prototype-only policy), football (StatsBomb open data); basketball and tennis are honest source-pending entries. Each adapter calls assertRight(source,'store') before parsing (F1 refused when PROTOTYPE_DATA=false). npm test -- adapters 13/13 on courier-recorded fixtures (OpenF1 Bahrain 2023 race 1058 laps, null lap times kept null; StatsBomb 7525 Russia 5–0 Saudi Arabia: 20 shots, 5 goals); no network in tests."
+    },
+    {
+      "id": "F-D-07",
+      "phase": "2",
+      "title": "Historical replay stream",
+      "acceptance": [
+        "SSE endpoint replays incidents on a replay clock with deterministic observedAt",
+        "tests"
+      ],
+      "verify": "npm test -- replay",
+      "depends_on": [
+        "F-D-05"
+      ],
+      "passes": true,
+      "evidence": "GET /api/replay/[eventId] (src/app/api/replay/[eventId]/route.ts) streams text/event-stream frames planned by src/domain/facts/replay.ts: incidents in observedAt order, gap = Δ observedAt ÷ speed (1–3600, default 60), running per-innings cricket score, receipts (sourceId, sourceClass, observedAt), resumes after Last-Event-ID, ends with an 'end' event; display rights filtered. npm test -- replay 3/3 on the ingested real fixture 335982 (30 s deliveries → 500 ms at 60×, KKR 222/3 then RCB 82 all out, deterministic plan, 404/400 paths)."
+    },
+    {
+      "id": "F-E-01",
+      "phase": "2",
+      "title": "Per-ball outcome model",
+      "acceptance": [
+        "distribution over {0..6, W} by state bucket with smoothing and era weights",
+        "trained on older seasons; artifact versioned with a hash",
+        "tests"
+      ],
+      "verify": "npm test -- outcomes",
+      "depends_on": [
+        "F-D-04"
+      ],
+      "passes": true,
+      "evidence": "src/engine/outcomeModel.ts: P(0..6,W) by (target band, balls, wickets, required-rate) bucket, shrinkage bucket→parent→global (pseudo-counts 200/500), era weights (half-life 4 y); predictStyles offers styles of sides with fewer wickets (D-021). Trained on Cricsheet IPL 2008–2023 (109,812 legal chase balls; rain-affected, no-result and shortened chases excluded), 2024–26 held out; data/models/outcomes-v1.json versioned by sha256 26d4e16fbc44… and refits byte-identically (npm run model:outcomes). npm test -- outcomes 7/7."
+    },
+    {
+      "id": "F-E-02",
+      "phase": "2",
+      "title": "Exact chase win probability",
+      "acceptance": [
+        "memoised backward induction over (balls, wickets, runs); tie = 0.5",
+        "tests: terminal states, monotonicity, martingale property"
+      ],
+      "verify": "npm test -- wp",
+      "depends_on": [
+        "F-E-01"
+      ],
+      "passes": true,
+      "evidence": "src/engine/chaseWp.ts: memoised backward induction over (balls, wickets, runs), tie = 0.5; outcome model may offer several playing styles and the chaser plays the best (free disposal, D-021). npm test -- wp 9/9: terminal states, monotonicity and martingale on synthetic models, and on the fitted IPL model outcomes-v1 (sha256 26d4e16f…): monotonic in runs and wickets across the grid, martingale under the played style, every offered style ≤ WP."
+    },
+    {
+      "id": "F-E-03",
+      "phase": "2",
+      "title": "Leverage and swing",
+      "acceptance": [
+        "leverage = std dev of next-ball WP; swing = |ΔWP| over a window",
+        "test: death-over leverage exceeds powerplay leverage on fixtures"
+      ],
+      "verify": "npm test -- leverage",
+      "depends_on": [
+        "F-E-02"
+      ],
+      "passes": true,
+      "evidence": "leverage = std dev of next-ball WP (ChaseModel.leverage), swing = |ΔWP| over a window (swing). npm test -- leverage 3/3 on the chase-eligible Cricsheet fixtures scored with outcomes-v1: mean death-over (b ≤ 24) leverage exceeds mean powerplay (b > 84) leverage; powerplay swing = |WP(after 6 overs) − WP(start)|."
+    },
+    {
+      "id": "F-E-04",
+      "phase": "2",
+      "title": "Walk-forward recalibration with a pooled match-level calibration gate",
+      "acceptance": [
+        "walk-forward recalibration: each season S starts from an isotonic map fitted on S-3..S-1 and is updated after every completed match (online logit-intercept adjustment); a match is scored only with matches completed before it; update settings tuned on 2023-2024 only; documented as the production method in docs/design-docs/models-and-grading.md",
+        "2025 and 2026 walk-forward predictions evaluated pooled (match as the sample unit) and reported per season (not gated per season)",
+        "(a) joint test of calibration intercept = 0 and slope = 1 with a match-clustered bootstrap is not rejected at the 5% level",
+        "(b) Brier score beats the exact model and is no more than 0.002 worse than the run-rate logistic baseline",
+        "(c) simulation on the same matches: a perfectly calibrated model passes >= 90% of the time",
+        "(d) the smallest shift detected with 80% power is reported and is <= 15 points",
+        "per-season results and the 2026 drift recorded in docs/QUALITY_SCORE.md; artifact versioned (data/models/calibration-v3.json)"
+      ],
+      "verify": "npm test -- calibration",
+      "depends_on": [
+        "F-E-02"
+      ],
+      "passes": true,
+      "evidence": "Passes (D-038). npm run model:calibration → data/models/calibration-v3.json (sha256 ae09d66a967c); npm test -- calibration: 4 files, 22 tests pass and recompute the pooled verdict. η tuned on 2023–2024 = 0. 2025+2026 pooled, 138 matches: (a) Wald 2.11 < 5.99 (intercept 0.34, slope 1.13, match-clustered bootstrap 1,000); (b) Brier 0.116307 vs exact 0.181286 and run-rate logistic 0.127944; (c) calibrated pass rate 0.96 (200 sims); (d) min detectable shift 15 points. Per season: 2025 Wald 0.15, 2026 Wald 5.09 (slope 1.74). The first D-030 run scored the map window in sample and failed (a), Wald 7.45 (D-032); fixed after the Gate 2 review. docs/QUALITY_SCORE.md, docs/design-docs/models-and-grading.md.",
+      "acceptance_history": "Until 2026-10-22 (owner decision D-027): calibration map fitted on training seasons (2008-2023) and versioned; held-out seasons 2024-2026: every 10-point bucket with >= 200 samples within 5 points; reliability diagram data exported for the Notebook. | D-027 (superseded by D-030): rolling-origin map on S-3..S-1 without looking at S; 2025 and 2026 gated separately with >=40-match buckets, 95% match-level bootstrap intervals, match-weighted error <= 5 points, Brier beating exact and run-rate logistic, and a fairness simulation; intent kept: each season tested out of sample at the match level."
+    },
+    {
+      "id": "F-E-05",
+      "phase": "2",
+      "title": "Option-conditioned win probability",
+      "acceptance": [
+        "decision types: death-over pace vs spin; next-over intent; chase tempo",
+        "shrinkage toward unconditional; insufficient-data threshold; coin-flip band 2 points",
+        "tests"
+      ],
+      "verify": "npm test -- options",
+      "depends_on": [
+        "F-E-02"
+      ],
+      "passes": true,
+      "evidence": "src/engine/options.ts: option-conditioned WP (exact backward induction with the option's distribution for its window, then the base model), shrinkage toward the state's distribution (k = 200), insufficient-data threshold (300 balls), coin-flip band 2 points. Decision types (D-036): next-over intent (attack / hold / ease off = sides one required-rate band above / in / below the current one; D-039), chase tempo (target rate bands for two overs), death-over pace vs spin (Wikidata P2545 styles via the courier; reports insufficient data: 110 pace / 945 spin labelled death balls; names two register entries share are dropped; Wikidata has a CC0 rights policy and training asserts it). data/models/options-v1.json (2008–2023, sha256 677cf427ca79) refits identically. npm test -- options 10/10 incl. real states from 2017 GL v MI; verify --ci PASS."
+    },
+    {
+      "id": "F-E-06",
+      "phase": "2",
+      "title": "Grader and Brier score",
+      "acceptance": [
+        "read_points = WP(pick) − max WP(others) using the exact model's option differences (D-031; F-E-04 is a known issue)",
+        "brier = (confidence − happened)^2; example 0.7 and 0 gives 0.49",
+        "tests",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
+      ],
+      "verify": "npm test -- grader",
+      "depends_on": [
+        "F-E-05"
+      ],
+      "passes": true,
+      "evidence": "src/engine/grader.ts: read_points = WP(pick) − max WP(others) in points from the exact model's option-conditioned WP (gradeDecision over F-E-05 decisions; D-031/D-034), coin-flip band 2 points, decisions with insufficient data never graded; every Grade carries calibration: 'provisional' for the UI label (D-035); brier = (confidence − happened)², 0.7 and 0 → 0.49. npm test -- grader 5/5 incl. a real 2017 GL v MI moment; verify --ci PASS."
+    },
+    {
+      "id": "F-E-07",
+      "phase": "2",
+      "title": "Read Rating",
+      "acceptance": [
+        "difficulty-weighted Elo: start 1200, K 40 for 20 calls then 24, floor 100",
+        "tests for monotonicity and bounds"
+      ],
+      "verify": "npm test -- rating",
+      "depends_on": [
+        "F-E-06"
+      ],
+      "passes": true,
+      "evidence": "src/engine/readRating.ts: difficulty-weighted Elo — start 1200, K = 40 for the first 20 graded calls then 24, floor 100; moment difficulty from option gap and leverage (moments update at K = 8). npm test -- rating 4/4: K schedule, monotonicity (better reads and harder moments earn more), bounds (floor, scores clamped to [0,1]), difficulty behaviour; engine coverage 100%; verify --ci PASS at 49fc322. D-041: the Elo result is whether the pick was the best option, weighted by the read margin, so a wrong pick never gains and the best pick never loses (tested over ratings 300–2000 and difficulties 400–2400)."
+    },
+    {
+      "id": "F-E-08",
+      "phase": "2",
+      "title": "Fifty golden moments",
+      "acceptance": [
+        "auto-selected by leverage and diversified; validated against the data contract; stored with pre-lock state and cutoff",
+        "committed as fixtures"
+      ],
+      "verify": "npm test -- moments",
+      "depends_on": [
+        "F-E-05",
+        "F-D-05"
+      ],
+      "passes": true,
+      "evidence": "scripts/select-golden-moments.ts (npm run data:moments) → data/fixtures/moments/golden-moments.json (sha256 2955056d6bfe): 50 moments from IPL 2024–2026 chases (outcomes-v1 fitted on 2008–2023), top-decile leverage (≥ 0.0488 of 21,908 states), gradeable decisions (intent 31, tempo 19; ≥300 balls per option, gap ≥ 2 pts, provisional), diversified one per match (seasons 14/16/20, death 40, middle 10, ≤16 per team) and balanced by answer (25 higher band, 25 current: a fixed answer scores 50%, the best phase rule 70%; D-039). States with a wide or no-ball since the previous legal ball are excluded; the test rebuilds each pre-lock state from the deliveries up to its observedCutoff. Each validated by the data contract on its rebuilt match, stored with pre-lock state, cutoff and a separate reveal. npm test -- moments 9/9; verify --ci PASS."
+    },
+    {
+      "id": "F-E-09",
+      "phase": "2",
+      "title": "Doubly robust counterfactual check (offline)",
+      "acceptance": [
+        "script compares scenario estimates with a doubly robust estimate on historical decisions",
+        "results summarised in QUALITY_SCORE.md; never shown to users as fact",
+        "unit test on synthetic data"
+      ],
+      "verify": "npm test -- dr",
+      "depends_on": [
+        "F-E-05"
+      ],
+      "passes": true,
+      "evidence": "scripts/dr-check.ts (npm run model:dr, sha256 89f38c14ef83) compares F-E-05 scenario estimates with doubly robust estimates (src/engine/doublyRobust.ts) on 225 logged death overs of IPL chases with recorded bowler style (32 pace, 193 spin): DR − model = +8.9 pts pace (95% −0.1 to +19.5), +12.0 pts spin (+7.8 to +16.5), the exact model's under-prediction of chasers. Labelled exploratory (status in the artifact): the death-bowling decision is never graded (insufficient pace data). Summarised in docs/QUALITY_SCORE.md; offline only, never shown to users as fact. npm test -- dr 4/4 (synthetic recovery and degenerate-input tests, plus reproducible artifact); verify --quick PASS."
+    },
+    {
+      "id": "F-E-10",
+      "phase": "2",
+      "title": "Tennis point importance and Pressure Index",
+      "acceptance": [
+        "iid point model; p = 0.65 gives hold ≈ 0.83; point importance",
+        "tests"
+      ],
+      "verify": "npm test -- tennis",
+      "depends_on": [
+        "F-H-06"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/engine/tennis.ts (pure): holdProbability with closed-form deuce (p=0.65 -> 0.830), tiebreak with correct serve rotation and closed-form ties, full best-of-3/5 match win probability with memoised game-level recursion, pointImportance = P(win|win point) − P(win|lose point), pressureIndex = importance in percentage points. tests/unit/engine/tennis.test.ts (7 tests incl. 'p = 0.65 gives hold ≈ 0.83', 'point importance is higher on big points than early points') -> pass; src/engine coverage 100% lines/branches/functions."
+    },
+    {
+      "id": "F-L-01",
+      "phase": "3",
+      "title": "Ticket Call screen",
+      "acceptance": [
+        "moment context with legal-ball overs, required rate and leverage meter",
+        "options, confidence slider 50–99, Lock",
+        "keyboard and screen-reader accessible; 390 and 1280 evidence"
+      ],
+      "verify": "npm run test:e2e -- lab-call",
+      "depends_on": [
+        "F-E-08",
+        "F-U-01"
+      ],
+      "passes": true,
+      "evidence": "/lab (50 golden moments) and /lab/[momentId] (prerendered): Ticket Call with the moment context — target, needs R off B, overs in legal balls (O.B), required rate, wickets in hand, striker/bowler, last 12 deliveries — a Leverage meter, the decision question, 2–3 options, confidence slider 50–99 (default 60) and Lock (POST /api/lab/calls; F-L-02). Pre-lock DTOs (src/domain/lab) never carry the reveal or the model's option estimates (unit test). npm run test:e2e -- lab-call passes (keyboard pick and confidence, LOCKED stamp, axe clean); evidence docs/evidence/F-L-01/{lab,call}-{390,1280}-{light,dark}.png; verify --ci PASS."
+    },
+    {
+      "id": "F-L-02",
+      "phase": "3",
+      "title": "Lock API",
+      "acceptance": [
+        "server-validated: authenticated, one pick per call, before cutoff, server timestamp",
+        "integration tests"
+      ],
+      "verify": "npm test -- lock",
+      "depends_on": [
+        "F-L-01",
+        "F-F-04"
+      ],
+      "passes": true,
+      "evidence": "POST /api/lab/calls (src/app/api/lab/calls/route.ts → src/domain/lab/service.ts lockCall): signed in (401 otherwise), zod body (momentId, one option, confidence 0.50–0.99; arrays, strings, out-of-range values and bad JSON are 400), the option must be one of the moment's (400), unknown moment 404, server timestamp (client lockedAt ignored), one call per user and moment enforced by a unique key (second or simultaneous lock 409, first kept), 20 locks a minute per user (429), no reveal or model estimate in the response. LabCall table (migration 20261023060000_lab_call), exported with the account and deleted with it. D-040. npm test -- lock 6/6 integration tests on Postgres; verify --ci PASS (unit, build, e2e 57/57)."
+    },
+    {
+      "id": "F-L-03",
+      "phase": "3",
+      "title": "Reveal and grading pipeline",
+      "acceptance": [
+        "deterministic grading writes DecisionReview; reproducible from fixtures",
+        "coin-flip calls marked “no grade”"
+      ],
+      "verify": "npm test -- review-pipeline",
+      "depends_on": [
+        "F-L-02",
+        "F-E-07"
+      ],
+      "passes": true,
+      "evidence": "GET /api/lab/calls/[momentId]/review → src/domain/lab/service.ts reviewCall: only the caller's own locked call (401 / 404 otherwise, so no reveal without a lock). Deterministic grading writes DecisionReview (migration 20261023070000_decision_review): read points from the exact model's option WPs stored in the golden-moment fixture (D-034), coin flips 'no grade' (graded false, no read points, no Brier, no rating change), calibration hit = pick was the best option and Brier (confidence − hit)², Read Rating in lock order (pending earlier calls graded first; D-041), receipts (moments, outcomes and options hashes), labelled provisional. regradeUser rebuilds identical reviews from the fixtures and calls. npm test -- review-pipeline 6/6 on Postgres; verify --ci PASS (e2e 57/57)."
+    },
+    {
+      "id": "F-L-04",
+      "phase": "3",
+      "title": "Three-column Review with counterfactual ghost",
+      "acceptance": [
+        "What happened / What was reasonable beforehand / Scenario model estimate, each with receipts",
+        "WP chart with counterfactual ghost line",
+        "Next read button",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
+      ],
+      "verify": "npm run test:e2e -- review",
+      "depends_on": [
+        "F-L-03"
+      ],
+      "passes": true,
+      "evidence": "src/app/lab/[momentId]/review/page.tsx: three columns — What happened (the decision window as played and the result, OBSERVED, Cricsheet receipt), What was reasonable beforehand (WP at the moment and each option's pre-lock exact-model estimate, model receipt with outcomes/options/moments hashes), What might have happened otherwise (scenario model estimate for the best option not picked, labelled an estimate, never fact, with receipt). Swing Seismograph WP chart from the moment to the end of the chase with the dashed counterfactual ghost (D-042); template learning sentence; Next read button to the next uncalled moment; grade or 'Coin flip — no grade' and every grade and WP labelled 'Provisional calibration'. tests/e2e/review.spec.ts: real sign-in → lock → review → next read, axe clean; also fixed the Ticket sending confidence in percent (lab-call spec now asserts 0.63). Screenshots docs/evidence/F-L-04/review-{desktop,mobile}.png. npm run test:e2e -- review PASS; verify --ci PASS."
+    },
+    {
+      "id": "F-L-05",
+      "phase": "3",
+      "title": "Notebook",
+      "acceptance": [
+        "call history with filters; reliability diagram; Brier over time; skill-domain radar",
+        "small-sample warnings"
+      ],
+      "verify": "npm run test:e2e -- notebook",
+      "depends_on": [
+        "F-L-04"
+      ],
+      "passes": true,
+      "evidence": "/lab/notebook (src/app/lab/notebook/page.tsx, charts.tsx; src/domain/lab/service.ts notebook; src/engine/reliability.ts): call history table (newest first, links to each review) with sport and decision-type filters; reliability diagram in 10-point confidence buckets (hollow dots = small samples), Brier running mean over time, skill-domain radar (intent, tempo, middle, death) — each chart an image with a text description and data table; small-sample warnings (< 10 graded calls in view; rating provisional < 20). Engine maths unit-tested (npm test -- reliability 3/3, 100% engine coverage). tests/e2e/notebook.spec.ts: real calls via the Lock API, filters, charts, warnings, axe clean, signed-out redirect. Screenshots docs/evidence/F-L-05/. npm run test:e2e -- notebook PASS; verify --ci PASS."
+    },
+    {
+      "id": "F-L-06",
+      "phase": "3",
+      "title": "Read Rating display and history",
+      "acceptance": [
+        "rating, provisional badge, history chart",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
+      ],
+      "verify": "npm run test:e2e -- rating",
+      "depends_on": [
+        "F-L-05"
+      ],
+      "passes": true,
+      "evidence": "Read Rating section of /lab/notebook: current rating, 'Provisional rating' tag until 20 graded calls, 'Provisional calibration' badge, history chart (rating after each graded call from 1200, scaled to the data) with description and data table; every grade on the page is labelled provisional calibration. tests/e2e/rating.spec.ts: 1200 at start, two best picks raise it, history shows 3 points. npm run test:e2e -- rating PASS; verify --ci PASS."
+    },
+    {
+      "id": "F-L-07",
+      "phase": "3",
+      "title": "Call → review → next read flow under 60 seconds",
+      "acceptance": [
+        "e2e journey completes on a 390 px viewport; analytics events recorded"
+      ],
+      "verify": "npm run test:e2e -- journey",
+      "depends_on": [
+        "F-L-04",
+        "F-A-01"
+      ],
+      "passes": true,
+      "evidence": "tests/e2e/journey.spec.ts on a 390×844 viewport: sign in, then /lab → moment → pick → Lock → See your review → Next read → next moment's ticket, measured at ~3.6 s locally (asserted < 60 s), no horizontal scroll. Analytics events recorded and checked in the database: moment_viewed ×2 (client, /api/events), call_locked (server, confidence 60), call_graded (server, once per review), review_viewed (server), next_read_started (client, keepalive). npm run test:e2e -- journey PASS; verify --ci PASS."
+    },
+    {
+      "id": "F-L-08",
+      "phase": "3",
+      "title": "Swing Seismograph and Leverage Meter components",
+      "acceptance": [
+        "SVG components with tokens; unit and visual checks"
+      ],
+      "verify": "npm test -- charts",
+      "depends_on": [
+        "F-U-04"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/ui/charts/geometry.ts (scale, linePath, swings ≥ threshold, windowSwing) + SwingSeismograph.tsx (SVG, tokens only, role=img summary, call-yellow swing markers, dashed ghost labelled 'scenario model estimate (not what happened)', data-table fallback, honest empty state); Leverage Meter in src/ui/components/Meter.tsx. tests/unit/ui/charts.test.tsx (6 tests: geometry, path, swings, rendered markup incl. no raw hex, empty state, meter clamping) -> pass via npm test -- charts; both shown in /design (e2e design.spec 5 passed incl. axe light/dark). Visual check: docs/evidence/F-L-08/{seismograph,meter}-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-C-01",
+      "phase": "3",
+      "title": "Crews: create, invite, join, leave",
+      "acceptance": [
+        "private by default; invite link and code; owner controls",
+        "legacy leagues migrated without fee or prize fields"
+      ],
+      "verify": "npm run test:e2e -- crews",
+      "depends_on": [
+        "F-F-04"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: League/LeagueMember renamed in place to Crew/CrewMember (migration *_leagues_to_crews keeps all rows; no fee/prize columns); routes /crews, /crews/[crewId], /crews/join/[code] (invite link; sign-in then join, idempotent), APIs /api/crews, /api/crews/join, /api/crews/[id]/leave|rotate-code|members/[userId]; /leagues/* and /dashboard redirect to /crews. Private by default (non-members 404), owner can rotate code and remove members, owner must hand over before leaving. tests/unit/crews.test.ts (6) + authz/dto updated; tests/e2e/crews.spec.ts 'crews: create, invite by link, join, rotate code, leave; outsiders get 404' -> passed; node harness/verify.mjs -> PASS. Screenshots docs/evidence/F-C-01/{crews,crew}-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-C-02",
+      "phase": "3",
+      "title": "Timing-tower leaderboard",
+      "acceptance": [
+        "rank, Read Rating, calibration, calls this week, form, position-change markers",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
+      ],
+      "verify": "npm run test:e2e -- tower",
+      "depends_on": [
+        "F-C-01",
+        "F-L-06"
+      ],
+      "passes": true,
+      "evidence": "/crews/[crewId]/tower (members only): TimingTowerRow per member — rank by Read Rating (ties by name), Read Rating, calibration as mean Brier over graded calls, calls locked this ISO week (Monday 00:00 UTC), form over the last five calls (+ best pick, − not, · coin flip), position change since Monday (▲/▼); 'Provisional calibration' badge. Pure towerEntries/weekStart unit-tested (npm test -- tower 3/3); tests/e2e/tower.spec.ts: two members with real locked calls via the Lock API, ranks, Brier, calls this week, form, change markers, axe clean. npm run test:e2e -- tower PASS; verify --ci PASS."
+    },
+    {
+      "id": "F-C-03",
+      "phase": "3",
+      "title": "“Called it” share cards",
+      "acceptance": [
+        "image route renders a graded call; no personal data beyond display name; no prize language",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
+      ],
+      "verify": "npm test -- og",
+      "depends_on": [
+        "F-L-04"
+      ],
+      "passes": true,
+      "evidence": "GET /api/og/call/[callId] (src/app/api/og/call/[callId]/route.tsx, next/og): a graded call as a 1200×630 PNG — question, pick and confidence, moment, read points (or 'Coin flip — no grade'), display name only, 'Provisional calibration'; colours read from src/ui/tokens.css (src/ui/tokenValues.ts). 404 for an ungraded or unknown call. Linked from the Review ('Share card (image)'). npm test -- og: card data has no email or user id and no money/prize terms (tests/audit/money-terms), PNG signature and 1200×630 dimensions. Evidence docs/evidence/F-C-03/called-it.png. verify --ci PASS."
+    },
+    {
+      "id": "F-C-04",
+      "phase": "3",
+      "title": "Moderation basics",
+      "acceptance": [
+        "report, remove, block, owner transfer; tests"
+      ],
+      "verify": "npm test -- moderation",
+      "depends_on": [
+        "F-C-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: CrewReport and UserBlock models (migration *_moderation); src/domain/moderation: reportMember (members only, reasons abuse/spam/impersonation/other), owner-only listReports/resolveReport, blockUser (hides the blocked name as 'Blocked member', removes them from crews the blocker owns, blocks rejoining by code), unblock, owner transfer (handOver); remove member from F-C-01. APIs /api/crews/[id]/reports(+resolve), /api/crews/[id]/transfer, /api/blocks; member Options menu and owner Reports panel on the crew page. tests/unit/moderation.test.ts (5 tests) -> pass via npm test -- moderation; node harness/verify.mjs -> PASS."
+    },
+    {
+      "id": "F-G-01",
+      "phase": "4",
+      "title": "LLM provider interface with Gemini and templates",
+      "acceptance": [
+        "GeminiProvider via @google/genai with model ids from env; TemplateProvider default without a key",
+        "tests use a mock and never touch the network; token, latency and cost logged"
+      ],
+      "verify": "npm test -- provider",
+      "depends_on": [
+        "F-F-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/llm/provider.ts interface generate({task, system, input, schema, model tier, maxTokens, template}); GeminiProvider (@google/genai, structured JSON output with the Zod schema as responseJsonSchema, model ids from GEMINI_MODEL_FAST/DEEP, tokens from usageMetadata, cost from configured prices or null); TemplateProvider default without a key; generateWithFallback falls back to templates and logs task/provider/model/tokens/latency/cost (never content); src/providers/llm.ts never builds Gemini under NODE_ENV=test. tests/unit/llm/provider.test.ts (6 tests with an injected fake client; fetch spy proves no network) -> pass."
+    },
+    {
+      "id": "F-G-02",
+      "phase": "4",
+      "title": "Generation contract and claim verifier",
+      "acceptance": [
+        "claims typed OBSERVED/DERIVED/MODEL_ESTIMATE/EDITORIAL with source_ids",
+        "verifier rejects unsourced facts, unknown numbers and post-cutoff claims; template fallback"
+      ],
+      "verify": "npm test -- verifier",
+      "depends_on": [
+        "F-G-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/llm/contract.ts (claims typed OBSERVED/DERIVED/MODEL_ESTIMATE/EDITORIAL with source_ids, strict Zod), src/llm/verifier.ts verifyClaims rejects OBSERVED/DERIVED without source_ids, unknown ids, any number (incl. ordinals) not in the cited facts (rounding tolerance at written precision; 0–1 values as %), facts observed after SNAPSHOT_CUTOFF and dates/years after it; src/llm/verified.ts generateVerified falls back to the deterministic template when model claims fail, and throws if the template itself fails. tests/unit/llm/verifier.test.ts (8 tests incl. 'rejects fabricated numbers…', 'rejects claims about events after SNAPSHOT_CUTOFF', 'falls back to the template when the model fabricates a number') -> pass."
+    },
+    {
+      "id": "F-G-03",
+      "phase": "4",
+      "title": "Production prompt and injection tests",
+      "acceptance": [
+        "ten rules stored in src/llm/prompts/production.md",
+        "injection strings inside retrieved text don’t change outputs (tests)"
+      ],
+      "verify": "npm test -- injection",
+      "depends_on": [
+        "F-G-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: the ten production rules in src/llm/prompts/production.md (runtime copy production.ts asserted identical); src/llm/prompt.ts sends retrieved text as cleaned (control/zero-width/bidi chars stripped), capped JSON data in untrusted_context; verifier gained a deny-list (money/odds/betting/prizes, secrets/credentials, instruction echoes) in src/llm/bannedTerms.ts (the only no-money-audit exemption, itself tested). tests/unit/llm/injection.test.ts (5 tests): 'injection strings inside retrieved text don't change the output (template path)', 'even a model that obeys injections can't get them shown' (fake obedient Gemini client: output falls back to the template for all injections) -> pass."
+    },
+    {
+      "id": "F-G-04",
+      "phase": "4",
+      "title": "Temporal filter on retrieval",
+      "acceptance": [
+        "retrieval respects observedCutoff; tests"
+      ],
+      "verify": "npm test -- retrieval",
+      "depends_on": [
+        "F-D-05",
+        "F-G-02"
+      ],
+      "passes": true,
+      "evidence": "src/llm/retrieval.ts retrieve(query, docs, {observedCutoff, canUse, k}): drops documents observed after the cutoff and sources without rights before scoring (IDF-weighted lexical, deterministic ties); buildModelInput also drops facts and retrieved text observed after SNAPSHOT_CUTOFF. npm test -- retrieval 4/4 (post-cutoff result of the 2017 eliminator never retrieved before the cutoff, found after it; unlicensed source dropped; model input filtered)."
+    },
+    {
+      "id": "F-K-01",
+      "phase": "4",
+      "title": "Desk brief ranked by swing",
+      "acceptance": [
+        "cross-sport items from historical replays, each with swing, story and receipts",
+        "honest source-pending items for sports without data"
+      ],
+      "verify": "npm run test:e2e -- desk",
+      "depends_on": [
+        "F-D-06",
+        "F-E-03",
+        "F-G-02"
+      ],
+      "passes": true,
+      "evidence": "/desk (src/app/desk/page.tsx ← src/domain/desk/service.ts): cross-sport brief from the committed recorded replays (7 IPL matches, StatsBomb 7525, OpenF1 Bahrain 2023) through the adapter registry and story detector; ranked by modelled swing (largest six-ball |ΔWP|, exact chase WP on outcomes-v1 sha256 26d4e16fbc44), each item with top stories and receipts (source, class, observed time) plus attribution; football/F1 say 'Swing: not modelled' (D-023); basketball and tennis listed as source-pending with reasons. npm run test:e2e -- desk passes (≥5 items across cricket/football/F1, swings sorted desc, receipts open, axe clean); full verify PASS (51 e2e). Evidence: docs/evidence/F-K-01/desk-{390,1280}-{light,dark}.png."
+    },
+    {
+      "id": "F-K-02",
+      "phase": "4",
+      "title": "Receipt Drawer",
+      "acceptance": [
+        "source, observedAt, source class, attribution; keyboard accessible"
+      ],
+      "verify": "npm run test:e2e -- receipts",
+      "depends_on": [
+        "F-K-01"
+      ],
+      "passes": true,
+      "evidence": "src/ui/components/Receipt.tsx is a receipt drawer: a button (aria-expanded/aria-controls) opens a labelled region with source, source class, observed time (<time datetime>), attribution and details (model hash, incident refs); Escape and Close shut it and return focus to the button. Used on every Desk number and story. npm run test:e2e -- receipts passes (Enter/Space open, Escape closes with focus restored, attribution 'Data from Cricsheet (cricsheet.org)', axe clean); full verify PASS."
+    },
+    {
+      "id": "F-K-03",
+      "phase": "4",
+      "title": "Depth switch Quick / Tactical / Analyst",
+      "acceptance": [
+        "deterministic templates for all three; optional verified LLM phrasing"
+      ],
+      "verify": "npm test -- depth",
+      "depends_on": [
+        "F-K-01"
+      ],
+      "passes": true,
+      "evidence": "src/domain/desk/service.ts: itemFacts (typed, sourced facts per Desk item), depthTemplate(quick|tactical|analyst) deterministic claims, phraseItem → generateClaims (model phrasing only when it passes verifyClaims, template otherwise); /desk renders all three verified depths with a remembered Quick/Tactical/Analyst switch (src/app/desk/DepthSwitch.tsx). npm test -- depth 4/4 (every item × depth passes the verifier and is deterministic; football says swing isn’t modelled; no key → template; fake model: valid claim used, invented '99-point' claim falls back to template); e2e depth.spec passes; full verify PASS."
+    },
+    {
+      "id": "F-K-04",
+      "phase": "4",
+      "title": "English and Hindi",
+      "acceptance": [
+        "UI and templates localised; split-flap language toggle; persisted preference"
+      ],
+      "verify": "npm run test:e2e -- i18n",
+      "depends_on": [
+        "F-K-03"
+      ],
+      "passes": true,
+      "evidence": "src/i18n (en/hi messages, t()), Hindi story titles (src/domain/stories/config.ts TITLES), Hindi depth templates (src/domain/desk/service.ts) verified with the same numbers and source ids as English; split-flap EN ⇄ हि toggle in the nav (src/components/LangToggle.tsx, reduced-motion aware) persists to the ae_lang cookie and the account (POST /api/me/language); /desk prerendered per language (/desk/en, /desk/hi) and src/proxy.ts serves the reader's language. Scope: Desk + navigation (D-024, TD-009). npm run test:e2e -- i18n passes (toggle → Hindi heading, nav, swing, depth text, receipt labels; persists across reload; axe clean; back to English); unit i18n + Hindi depth tests pass; full verify PASS."
+    },
+    {
+      "id": "F-K-05",
+      "phase": "4",
+      "title": "Event Rooms for five sports",
+      "acceptance": [
+        "WP chart, leverage meter, stories, data-state badge, stream-delay honesty badge"
+      ],
+      "verify": "npm run test:e2e -- rooms",
+      "depends_on": [
+        "F-K-01",
+        "F-L-08"
+      ],
+      "passes": true,
+      "evidence": "/rooms (five sports) → /rooms/[sport] → /rooms/[sport]/[event], prerendered from the recorded replays (src/domain/rooms/service.ts). Cricket rooms: Swing Seismograph of the chaser's WP ball by ball (exact chase model, outcomes-v1), Leverage Meter of the chase's peak leverage (std dev of next-ball WP, full scale 0.5) with the ball it preceded, stories with receipts, Historical-replay data-state badge and a new Stream-Delay Honesty Badge ('Not live · recorded 29 Apr 2017'). Rain-affected cricket, football and F1 say WP isn't modelled; basketball and tennis are source-pending. npm test -- rooms 3/3; npm run test:e2e -- rooms 2/2 (axe clean); full verify PASS. Evidence: docs/evidence/F-K-05/*.png."
+    },
+    {
+      "id": "F-K-06",
+      "phase": "4",
+      "title": "Rules-first story detector",
+      "acceptance": [
+        "explicit per-sport thresholds produce prioritised stories; tests"
+      ],
+      "verify": "npm test -- stories",
+      "depends_on": [
+        "F-E-03"
+      ],
+      "passes": true,
+      "evidence": "src/domain/stories/{config,service,types}.ts: explicit per-sport thresholds (cricket swing ≥0.15 over 6 balls, collapse ≥3 wkts in 12 balls, big over ≥18, tense finish ≤12 balls at WP 0.3–0.7; football late goal ≥80', big chance xG ≥0.3; F1 pit-out laps, fastest lap ≥1.5 s under median) → template-titled stories with priority and incident receipts, sorted. npm test -- stories 6/6 on real fixtures (GL v MI 2017 tie: 'Mumbai Indians need 2 off 2 balls with 1 wicket left' tops; KKR v RCB 2008: RCB collapse, 'KKR take 24 off over 15', no swing; Russia 5–0 Saudi Arabia: 5 goals, 2 late; Bahrain 2023: pit stories = pit-out laps); tennis/basketball yield none."
+    },
+    {
+      "id": "F-K-07",
+      "phase": "4",
+      "title": "Query planner",
+      "acceptance": [
+        "structured questions answered from the database; LLM only phrases; tests"
+      ],
+      "verify": "npm test -- planner",
+      "depends_on": [
+        "F-G-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/domain/planner: deterministic rule-based plan() (crew_members, crew_leader, my_crews → structured; other questions → retrieval; empty/over-long → unsupported); structured answers built from crews/contests services scoped to the asking user; phrasing via generateClaims (verified contract, template fallback); open questions return an honest 'not indexed yet' instead of model improvisation; POST /api/ask (auth, rate-limited). tests/unit/planner/planner.test.ts (5 tests) -> pass via npm test -- planner."
+    },
+    {
+      "id": "F-U-03",
+      "phase": "5",
+      "title": "Pictograms and Pictogram Onboarding",
+      "acceptance": [
+        "original SVG pictograms for five sports and key UI on one grid",
+        "three-screen onboarding"
+      ],
+      "verify": "npm run test:e2e -- onboarding",
+      "depends_on": [
+        "F-U-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/ui/UiPictogram.tsx (decide, lock, grade, receipt, crew, language) on the same 48-unit grid and 4.2 stroke as the five sport pictograms; /onboarding three screens (how a call works, grading on the decision not the outcome, pick sports and language) with progress, keyboard and focus management; choices saved via POST /api/me/preferences (User.favouriteSports/language migration; cookies for guests); new accounts are sent through onboarding. tests/unit/ui/pictograms.test.tsx + tests/e2e/onboarding.spec.ts (axe on every screen, keyboard-only flow, cookie and account persistence) -> 2 passed. Screenshots docs/evidence/F-U-03/onboarding-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-U-05",
+      "phase": "5",
+      "title": "Navigation, layout and accessibility",
+      "acceptance": [
+        "mobile-first nav; axe passes on every route; reduced motion respected"
+      ],
+      "verify": "npm run test:e2e -- a11y",
+      "depends_on": [
+        "F-U-04"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: token-based AppShell and Navbar (mobile-first Menu disclosure, skip link, aria-current, sign in/out, Auto/Light/Dark theme toggle persisted and applied before paint), global prefers-reduced-motion rule, honest Scores page copy; legacy contest screens on an AA-lifted .legacy-dark surface; unverifiable legacy routes removed (D-017). tests/e2e/a11y.spec.ts: axe wcag2a/aa/21a/21aa on every page route — public (/, /login, /register, /onboarding, /commentary, /design, /crews/join/[code]) and signed-in (/crews, /crews/[id], /crews/[id]/leaderboard, /crews/[id]/match/[matchId]) in light and dark; keyboard mobile menu + skip link; theme toggle; reduced motion leaves no running animation -> 7 passed; node harness/verify.mjs -> PASS. Screenshots docs/evidence/F-U-05/{login,scores,onboarding}-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-U-06",
+      "phase": "5",
+      "title": "Landing refresh",
+      "acceptance": [
+        "copy matches what ships; no unverifiable statistics; persona lineage reviewed (no likeness)"
+      ],
+      "verify": "npm run test:e2e -- landing",
+      "depends_on": [
+        "F-U-04",
+        "F-F-10"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: landing rewritten as a server component: describes only what ships (Crews, How it works, labelled-delayed scores), lists Decision Lab/Desk/Alter Ego under 'In development — not available yet', no statistics or illustrative/toy-model numbers, roster as original AI characters with no athlete names or nicknames (D-019), footer no-affiliation note; illustrative brief/scenario/dossier widgets removed. tests/e2e/landing.spec.ts ('copy matches what ships: no statistics, no illustrative data, no athlete names', 'every call to action leads to a working page') -> 2 passed; full gate PASS. Screenshots docs/evidence/F-U-06/landing-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-U-07",
+      "phase": "5",
+      "title": "Performance budgets",
+      "acceptance": [
+        "LCP ≤ 2.5 s on a mid-range mobile profile for /, /lab and /desk (Lighthouse or Playwright trace); route JS within budget"
+      ],
+      "verify": "documented measurement in evidence",
+      "depends_on": [
+        "F-U-05"
+      ],
+      "passes": true,
+      "evidence": "npm run perf (scripts/perf.mjs: Playwright + CDP, 412×915 mobile, 4× CPU slowdown, 1.6 Mbps/750 kbps, 150 ms RTT, cache disabled, median of 3) on the production build: LCP / 684 ms, /desk 684 ms, /lab 624 ms (budget 2,500 ms); route JS transferred / 161 KB, /desk 157 KB, /lab 190 KB (budget 200 KB). Exit 0. Evidence docs/evidence/F-U-07/perf-2026-10-23.json (and the 2026-10-22 run before /lab existed); QUALITY_SCORE updated."
+    },
+    {
+      "id": "F-R-01",
+      "phase": "5",
+      "title": "Five personas and Persona Switchboard",
+      "acceptance": [
+        "persona cards and PLAYBOOK.md files; AI label everywhere; switchboard re-voices the same verified facts"
+      ],
+      "verify": "npm run test:e2e -- roster",
+      "depends_on": [
+        "F-G-02",
+        "F-U-04"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/personas/<slug>/card.json (Zod-validated: public name, sport, skill domain, colour token, pictogram, signature tool, skill words) and PLAYBOOK.md (voice rules, vocabulary, never-list incl. no real athletes, no money, AI label) for all five; /roster and /roster/[persona] pages; Persona Switchboard re-voices the same facts (tennis engine point importance on a labelled illustrative example state, MODEL_ESTIMATE with receipt) with deterministic per-persona templates, each voicing checked by verifyClaims; AI analyst label on every persona voice. tests/unit/roster.test.ts (2) + tests/e2e/roster.spec.ts ('…switchboard keeps the facts', 'persona pages show the card and an AI label; unknown personas 404') -> pass; roster pages added to axe a11y list; full gate PASS. Screenshots docs/evidence/F-R-01/{roster,persona}-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-R-02",
+      "phase": "5",
+      "title": "Persona tools",
+      "acceptance": [
+        "Opener Over Call live in the Lab; Architect, Professor, Iceman and Closer demos on open or labelled illustrative data"
+      ],
+      "verify": "npm run test:e2e -- persona-tools",
+      "depends_on": [
+        "F-R-01",
+        "F-E-10"
+      ],
+      "passes": true,
+      "evidence": "Signature tool on each Roster page (src/domain/roster/service.ts personaTool; src/app/roster/[persona]/page.tsx): The Opener's Over Call is live in the Lab (links to next-over intent golden moments; those moments are tagged 'Over Call · The Opener's signature tool'); The Architect's possession value on StatsBomb open data (xG created per team per 30-minute phase, receipt + attribution); The Professor's pit window on OpenF1 open data (first-stint tyre degradation by least squares, window vs an illustrative 22 s pit loss, actual stop lap; 'Source pending' when PROTOTYPE_DATA=false since OpenF1 is prototype-only); The Iceman's Pressure Index and The Closer's clutch-time leverage on labelled illustrative data. New pure engine src/engine/f1.ts and src/engine/basketball.ts (npm test -- persona-tools 3/3, 100% coverage). tests/e2e/persona-tools.spec.ts PASS with PROTOTYPE_DATA unset (Professor pending) and true (open data); evidence docs/evidence/F-R-02/. verify --ci PASS."
+    },
+    {
+      "id": "F-R-03",
+      "phase": "5",
+      "title": "Alter Ego identity model",
+      "acceptance": [
+        "deterministic axes (risk, timing, calibration, contrarianism, domain mix) with explanations; tests"
+      ],
+      "verify": "npm test -- alter-ego",
+      "depends_on": [
+        "F-L-05"
+      ],
+      "passes": true,
+      "evidence": "src/engine/alterEgo.ts (pure, 100% branch coverage): five deterministic axes from graded calls, each in [0,1] with n and a plain-language explanation — risk appetite (share of faster-scoring picks), timing (death vs middle-over hit rate), calibration (mean confidence vs hit rate), contrarianism (picks against ≥ 5 other fans' majority; unknown, not guessed, without a crowd), domain mix (decision types and sports). Mapped to one public persona (Opener: timing; Closer: clutch on higher-leverage calls; Architect: chase tempo; Professor: risk; Iceman: calibration; ties in fixed order) plus a modifier (Contrarian, Bold, Steady, Sharp, Balanced) with evidence sentences; hidden until 10 graded calls. src/domain/lab/service.ts alterEgoFor builds inputs from real calls and the crowd. npm test -- alter-ego 7/7 (engine and Postgres-backed service); verify --quick PASS."
+    },
+    {
+      "id": "F-R-04",
+      "phase": "5",
+      "title": "Dossier Reveal and share card",
+      "acceptance": [
+        "revealed after 10 graded calls; case-file motion; share card",
+        "every grade and win probability shown is labelled \"provisional calibration\" (D-031)"
+      ],
+      "verify": "npm run test:e2e -- reveal",
+      "depends_on": [
+        "F-R-03",
+        "F-C-03"
+      ],
+      "passes": true,
+      "evidence": "/lab/alter-ego (src/app/lab/alter-ego/page.tsx, Dossier.tsx): CLASSIFIED stamp and calls-to-go before 10 graded calls; then the case file opens with a REVEALED stamp (motion off under prefers-reduced-motion), persona + modifier label, evidence sentences, five explained axes and 'Provisional calibration'; alter_ego_revealed and share_clicked events. Share card /api/og/alter-ego/[userId]: 1200×630 PNG with display name, label, lead evidence, graded-call count, rate-limited, 404 until revealed (D-044). tests/e2e/reveal.spec.ts: 9 calls → classified, 10th → revealed, axes, share image 200 image/png, axe clean. Evidence docs/evidence/F-R-04/ (desktop, mobile, card). verify --ci PASS."
+    },
+    {
+      "id": "F-R-05",
+      "phase": "5",
+      "title": "Season File",
+      "acceptance": [
+        "printable season summary: best and worst reads, calibration, rating history"
+      ],
+      "verify": "npm run test:e2e -- season-file",
+      "depends_on": [
+        "F-R-03"
+      ],
+      "passes": true,
+      "evidence": "/lab/season-file (src/app/lab/season-file/page.tsx; service seasonFile): printable season summary — calls, graded, coin flips, best-pick rate, mean read, mean Brier, Read Rating (provisional flag), Alter Ego label once revealed, best and worst reads (top/bottom three by read points), reliability diagram, rating history, small-sample warnings, 'Provisional calibration'; Print button; print CSS hides nav, footer and buttons. tests/e2e/season-file.spec.ts: real calls, best/worst lists, charts, no money words, print media hides the button, axe clean. Evidence docs/evidence/F-R-05/season-file.pdf (A4 print). verify --ci PASS."
+    },
+    {
+      "id": "F-T-01",
+      "phase": "6",
+      "title": "Legal and trust pages",
+      "acceptance": [
+        "/terms, /privacy, /attributions (from rights policies), /ai"
+      ],
+      "verify": "npm run test:e2e -- legal",
+      "depends_on": [
+        "F-D-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: /terms (free to play: no deposits, entry fees, cash, prizes or rewards of value; 18+ beta; acceptable use), /privacy (what is stored, why, retention, export and deletion), /attributions (generated from src/rights/policies via listPolicies: attribution text, permitted uses, prototype flag, commercial status, notes, plus font licences), /ai (deterministic maths, AI-labelled analysts, claim verifier, error reporting); legal footer on every app page and the landing. tests/e2e/legal.spec.ts (3 tests incl. 'attributions are generated from every rights policy') -> pass; pages in axe a11y and no-money route scans; full gate PASS. Screenshots docs/evidence/F-T-01/{terms,privacy,attributions,ai}-{390,1280}-{light,dark}.png. Counsel review tracked in docs/HUMAN_TODO.md."
+    },
+    {
+      "id": "F-T-02",
+      "phase": "6",
+      "title": "Export and delete my data",
+      "acceptance": [
+        "JSON export; hard delete with confirmation; tests"
+      ],
+      "verify": "npm run test:e2e -- account",
+      "depends_on": [
+        "F-F-03"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: /settings with Download my data (GET /api/me/export: JSON of account, preferences, memberships, owned crews, reports, blocks, teams, scoring events, analytics events; no password hash) and Delete my account (type DELETE; POST /api/me/delete hard-deletes in one transaction: owned crews pass to the longest-standing member or are deleted, memberships/reports/blocks/teams/scoring events/analytics removed). The scoring ledger stays append-only except inside that erasure transaction (migration *_erasure_exception, SET LOCAL app.allow_erasure). tests/unit/account.test.ts (3) + tests/e2e/account.spec.ts (download JSON, confirmation gate, sign-in fails after delete; API refuses without confirmation) -> pass; /settings in axe list; full gate PASS. Screenshots docs/evidence/F-T-02/settings-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-T-03",
+      "phase": "6",
+      "title": "18+ beta gate",
+      "acceptance": [
+        "required confirmation at sign-up with explanation"
+      ],
+      "verify": "npm run test:e2e -- age",
+      "depends_on": [
+        "F-F-12"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: sign-up requires an 'I am 18 or over' checkbox with an explanation (adults-only beta while safety/legal reviews finish; free, no money); submit disabled until checked; registerInput requires ageConfirmed === true (server message 'ALTER EGO’s beta is for people aged 18 and over…'); User.ageConfirmedAt recorded (migration *_age_confirmation). tests/unit/auth/auth.test.ts 'age: 18+ beta gate' (2 tests) + tests/e2e/age.spec.ts (form requires confirmation; API refuses without it) -> pass; full gate PASS. Screenshots docs/evidence/F-T-03/register-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-T-04",
+      "phase": "6",
+      "title": "AI labels everywhere personas speak",
+      "acceptance": [
+        "test scans persona surfaces for the AI label"
+      ],
+      "verify": "npm run test:e2e -- ai-label",
+      "depends_on": [
+        "F-R-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: persona speech blocks carry data-persona-voice and always render the 'AI analyst' label (switchboard, persona pages); PersonaChip always labels. tests/e2e/ai-labels.spec.ts scans /, /roster, all five /roster/[persona] pages and /design: every [data-persona-voice] block, persona chip and speaker line has the AI label, and every switchboard voice is labelled -> passed (npm run test:e2e -- ai-label); tests/unit/ui/ai-label.test.tsx (chips; every voice-marking component renders the label) -> pass."
+    },
+    {
+      "id": "F-T-05",
+      "phase": "6",
+      "title": "Anti-cheat basics",
+      "acceptance": [
+        "feed-time locks, one pick per call, rate limits, anomaly flag stub; tests"
+      ],
+      "verify": "npm test -- anticheat",
+      "depends_on": [
+        "F-L-02"
+      ],
+      "passes": true,
+      "evidence": "src/engine/anticheat.ts (pure, 100% coverage): feed-time lock rule — a live call locks only up to the feed's cutoff by the server clock (enforced once live calls exist; LIVE_CALLS=false today), historical golden moments rely on D-040 (nothing revealed before a lock); anomaly flag stub (10 locks inside 60 s, 15 best picks in a row, ≥ 90% of 20+ calls at 99%) computed on the last hour of calls, logged for review, never acted on and never able to fail a saved lock (D-045). Plus one final call per moment (unique key, 409), rate limits (20 locks/min per user; events and share images per IP) and server-only KPI events. npm test -- anticheat 6/6 (engine + Postgres-backed service); verify --ci PASS."
+    },
+    {
+      "id": "F-A-02",
+      "phase": "6",
+      "title": "North star and KPI queries",
+      "acceptance": [
+        "Review-to-Next-Read and KPIs computed weekly; fixture tests with known answers"
+      ],
+      "verify": "npm test -- kpi",
+      "depends_on": [
+        "F-A-01"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: src/domain/analytics/kpi.ts computes, per ISO week (UTC Monday): Review-to-Next-Read (users who reviewed a graded call and then locked another ÷ users with a graded call), graded calls per weekly active fan, call participation, new-fan first-call rate, D7/D30 retention (only matured cohorts), share rate per Alter Ego reveal, receipt tap-through; zero denominators give null. Definitions documented in docs/product-specs/admin-and-scoreboards.md; added server-side call_graded event (north-star denominator). kpisForWeek reads the event log. tests/unit/kpi.test.ts (5 tests on a hand-worked fixture: RNR 1/3, 0.75, 0.75, 0.5, 0.5, 0.5, 0.5, 0.25; null cases; DB-backed service matches) -> pass."
+    },
+    {
+      "id": "F-A-03",
+      "phase": "6",
+      "title": "Admin scoreboards",
+      "acceptance": [
+        "/admin/scoreboards with Trust, Product, Learning and Business; admin-gated"
+      ],
+      "verify": "npm run test:e2e -- scoreboards",
+      "depends_on": [
+        "F-A-02"
+      ],
+      "passes": true,
+      "evidence": "2026-10-21: /admin/scoreboards (404 unless the session email is in ADMIN_EMAILS) with Trust (per-source freshness and incident counts, corrections, leakage-test pointer, 7-day verifier pass rate from persisted LlmCall rows), Product (week's north star and KPIs from F-A-02), Learning (honest 'no graded calls yet'/'not collected yet'), Business (ARPU not applicable — no revenue; data cost not tracked; model cost per read from logged costs). LLM calls now persisted (LlmCall model, no prompt/output text). tests/unit/scoreboards.test.ts (2) + tests/e2e/scoreboards.spec.ts (404 for anonymous; four boards for admin) -> pass; full gate PASS. Screenshots docs/evidence/F-A-03/scoreboards-{390,1280}-{light,dark}.png"
+    },
+    {
+      "id": "F-Z-01",
+      "phase": "7",
+      "title": "Demo works from a clean install with no keys",
+      "acceptance": [
+        "fresh worktree: init, seed, and every main journey works without GEMINI_API_KEY or paid data"
+      ],
+      "verify": "node harness/verify.mjs --clean",
+      "depends_on": [
+        "F-A-03",
+        "F-R-05",
+        "F-K-05",
+        "F-C-04",
+        "F-T-05",
+        "F-U-07",
+        "F-R-04",
+        "F-K-07",
+        "F-K-06",
+        "F-G-03",
+        "F-G-04",
+        "F-T-01",
+        "F-T-02",
+        "F-T-03",
+        "F-T-04",
+        "F-E-09",
+        "F-K-04",
+        "F-K-02",
+        "F-L-07",
+        "F-C-02",
+        "F-U-03",
+        "F-U-06",
+        "F-D-07",
+        "F-F-05",
+        "F-F-06",
+        "F-F-07",
+        "F-F-08",
+        "F-F-09",
+        "F-F-11",
+        "F-R-02"
+      ],
+      "passes": true,
+      "evidence": "node harness/verify.mjs --clean exit 0 at 4f90a6e: fresh git worktree; harness/init.mjs (install, .env.local from .env.example with no GEMINI_API_KEY or paid-data keys, LIVE_CALLS=false, database, migrate, seed) PASS; then feature list, lint, typecheck, unit tests (Postgres), build and e2e (every main journey: landing, sign-up, onboarding, Desk, Event Rooms, Lab call → review → next read, Notebook, Read Rating, crews and tower, roster and persona tools, Dossier Reveal, Season File, settings export/delete, legal pages) all PASS. Summary in docs/evidence/F-Z-01/verify-clean-2026-10-23.txt."
+    },
+    {
+      "id": "F-Z-02",
+      "phase": "7",
+      "title": "Docs gardened and walkthrough complete",
+      "acceptance": [
+        "QUALITY_SCORE grades current; WALKTHROUGH links screenshot evidence for every screen; HUMAN_TODO final"
+      ],
+      "verify": "manual review recorded in evidence",
+      "depends_on": [
+        "F-Z-01"
+      ],
+      "passes": true,
+      "evidence": "Docs gardened (docs/evidence/F-Z-02/review-2026-10-23.md): drift audit of every indexed doc plus README, AGENTS and ARCHITECTURE against the code, all drift fixed; db-schema regenerated; QUALITY_SCORE grades current (84/85); WALKTHROUGH links 1280/390 light/dark evidence for every screen and the e2e journeys; HUMAN_TODO final (owner-only items with safe fallbacks); tech-debt tracker updated (TD-003, TD-005 closed)."
+    },
+    {
+      "id": "F-Z-03",
+      "phase": "7",
+      "title": "Release v0.1.0-beta",
+      "acceptance": [
+        "CI green on the default branch; every commit on the default branch (no squash); tag v0.1.0-beta pushed; exec plan moved to docs/exec-plans/completed/"
+      ],
+      "verify": "gh run list --branch <default> --limit 1; git tag -l v0.1.0-beta",
+      "depends_on": [
+        "F-Z-02"
+      ],
+      "passes": true,
+      "evidence": "Release v0.1.0-beta: exec plan moved to docs/exec-plans/completed/ with all gates checked and Outcomes written; CI green on overhaul at the release head; PR Raunaq-nous/Hitman#1 merged into main with a merge commit through the API (no squash, every overhaul commit on main); tags gate-7 and v0.1.0-beta created by the tagger workflow at that merge commit; CI on main checked after the merge. Verify: gh run list --branch main --limit 1; git ls-remote --tags origin v0.1.0-beta."
+    }
+  ]
+}

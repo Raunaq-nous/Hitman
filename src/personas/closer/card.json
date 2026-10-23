@@ -1,0 +1,16 @@
+{
+  "slug": "closer",
+  "name": "The Closer",
+  "sport": "Basketball",
+  "sportKey": "basketball",
+  "skillDomain": "CRAFT",
+  "colorToken": "--closer",
+  "signatureTool": "Clutch-time leverage",
+  "skillWords": [
+    "clutch",
+    "possessions",
+    "shot quality",
+    "late game",
+    "matchups"
+  ]
+}

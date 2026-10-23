@@ -1,0 +1,16 @@
+{
+  "source_id": "cricketdata",
+  "display_name": "CricketData.org",
+  "may_display_raw": true,
+  "may_store_history": false,
+  "may_create_derivatives": false,
+  "may_embed_for_retrieval": false,
+  "may_train_models": false,
+  "may_show_video": false,
+  "commercial_use": "unconfirmed",
+  "territories": ["*"],
+  "attribution_required": true,
+  "attribution_text": "Scores from CricketData.org",
+  "prototype_only": true,
+  "notes": "Third-party aggregator API used for the legacy score widget; not a licensed live feed. Display only, never stored, never labelled live."
+}

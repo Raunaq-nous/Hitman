@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ALTER EGO: every legend has an alter ego</title>
+<meta name="description" content="A sports desk and a game in one: one brief across cricket, football, basketball, tennis and F1, and live calls at the moments that decide matches.">
+<meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0C1626" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --paper:#F5F7FA; --surface:#FFFFFF; --wash:#EAF0F6;
+  --ink:#13233A; --ink-2:#4A5A70; --line:#D6DFEA;
+  --opener:#1E9A55; --closer:#E06A10; --architect:#2C58D4; --professor:#7540CC; --iceman:#1F8FC4;
+  --call:#FFD23F; --call-ink:#13233A; --on-band:#FFFFFF; --minus:#B4462F; --focus:#13233A;
+  --font-text:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-display:"Archivo","Arial Narrow","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#0C1626; --surface:#122136; --wash:#182A42;
+    --ink:#EDF2F9; --ink-2:#A6B4C8; --line:#27394F;
+    --opener:#2FB96B; --closer:#FF8A3A; --architect:#6D8FFF; --professor:#A67CFF; --iceman:#4FC0EC;
+    --call:#FFD95A; --on-band:#0C1626; --minus:#FF8C75; --focus:#EDF2F9;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0C1626; --surface:#122136; --wash:#182A42;
+  --ink:#EDF2F9; --ink-2:#A6B4C8; --line:#27394F;
+  --opener:#2FB96B; --closer:#FF8A3A; --architect:#6D8FFF; --professor:#A67CFF; --iceman:#4FC0EC;
+  --call:#FFD95A; --on-band:#0C1626; --minus:#FF8C75; --focus:#EDF2F9;
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none !important}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 84px);-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-text);font-size:1.0625rem;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-display)}
+a{color:inherit}
+::selection{background:var(--call);color:var(--call-ink)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
+.sr{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+.skip{position:absolute;left:12px;top:-64px;z-index:50;background:var(--ink);color:var(--paper);padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+.skip:focus{top:calc(env(safe-area-inset-top,0px) + 10px)}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+
+/* Header */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+@supports (backdrop-filter:blur(1px)){
+  .top,body::before{background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2)}
+}
+.top-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:64px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.mark{display:inline-grid;grid-template-columns:repeat(5,5px);gap:2px;height:20px}
+.mark i{display:block}
+.mark i:nth-child(1){background:var(--opener)}.mark i:nth-child(2){background:var(--closer)}.mark i:nth-child(3){background:var(--architect)}.mark i:nth-child(4){background:var(--professor)}.mark i:nth-child(5){background:var(--iceman)}
+.wordmark{font-family:var(--font-display);font-weight:900;font-stretch:62%;font-size:1.55rem;line-height:1;letter-spacing:.015em}
+.nav{display:flex;gap:clamp(14px,2.2vw,30px);font-weight:600;font-size:.9375rem}
+.nav a{color:var(--ink-2);text-decoration:none;padding:6px 0}
+.nav a:hover{color:var(--ink)}
+@media (max-width:880px){.nav{display:none}}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;font:inherit;font-weight:700;font-stretch:88%;font-size:1rem;line-height:1.2;padding:.85em 1.3em;border-radius:999px;border:2px solid var(--ink);cursor:pointer;text-decoration:none;transition:background-color .15s,color .15s}
+.btn-primary{background:var(--ink);color:var(--paper)}
+.btn-primary:hover{background:color-mix(in srgb,var(--ink) 84%,var(--paper))}
+.btn-ghost{background:transparent;color:var(--ink)}
+.btn-ghost:hover{background:var(--wash)}
+.btn-call{background:var(--call);color:var(--call-ink);border-color:var(--call-ink)}
+.btn-call:hover{background:color-mix(in srgb,var(--call) 85%,#ffffff)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn-sm{padding:.55em 1em;font-size:.9375rem}
+
+/* Hero */
+.hero{padding-top:clamp(36px,6vw,84px)}
+.hero h1{margin:0;font-weight:850;font-stretch:63%;font-size:clamp(3rem,8.2vw,7.6rem);line-height:.88;letter-spacing:-.01em;max-width:16ch;text-wrap:balance}
+.hero-row{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:28px clamp(28px,5vw,72px);align-items:end;margin-top:clamp(22px,3vw,40px)}
+.hero-lead{margin:0 0 1.4rem;font-size:clamp(1.0625rem,1.5vw,1.25rem);line-height:1.5;max-width:46ch}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+.tease-box{border-left:6px solid var(--ink);padding:6px 0 6px 18px}
+.tease{margin:0;font-weight:700;font-stretch:88%;font-size:1.0625rem}
+.tease-note{margin:.5rem 0 0;font-size:.9375rem;color:var(--ink-2)}
+.redact{position:relative;display:inline-block;min-width:7.2em;min-height:1.05em;vertical-align:middle}
+.redact .bar{position:absolute;inset:.06em 0;background:var(--ink);transform-origin:left center;transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+.redact .name{position:relative;display:inline-block;color:var(--c,var(--ink));font-family:var(--font-display);font-weight:900;font-stretch:62%;line-height:1;opacity:0;transition:opacity .3s .3s}
+.redact.open .bar{transform:scaleX(0)}
+.redact.open .name{opacity:1}
+.tease .redact{display:block;margin-top:.45rem;min-width:0;width:min(100%,15rem);min-height:2.6rem}
+.tease .name{font-size:2.6rem}
+@media (max-width:860px){.hero-row{grid-template-columns:1fr}}
+
+/* Poster wall */
+.wall{list-style:none;margin:clamp(34px,5vw,64px) 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(6px,1vw,12px)}
+.wall a{display:block;text-decoration:none;color:var(--ink);border-radius:2px}
+.band{display:grid;place-items:center;aspect-ratio:4/5;background:var(--c);color:var(--on-band);transition:filter .2s}
+.band svg{width:58%;height:auto;overflow:visible}
+.cap{display:block;margin-top:.7rem;font-family:var(--font-display);font-weight:850;font-stretch:66%;font-size:clamp(1.2rem,2vw,1.65rem);line-height:1}
+.cap-sport{display:block;margin-top:.25rem;font-size:.875rem;color:var(--ink-2)}
+.wall a:hover .band{filter:saturate(1.15) brightness(1.05)}
+.wall li{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(120ms + var(--i) * 85ms)}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@media (max-width:640px){
+  .wall{grid-template-columns:repeat(5,minmax(136px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:clamp(16px,4vw,40px);padding-bottom:10px;margin-inline:calc(-1 * clamp(16px,4vw,40px));padding-inline:clamp(16px,4vw,40px)}
+  .wall li{scroll-snap-align:start}
+}
+
+/* Sections */
+.sec{padding-block:clamp(48px,7vw,96px)}
+.sec-head{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:14px clamp(24px,5vw,64px);align-items:end;margin-bottom:clamp(22px,3.4vw,40px)}
+.h2,.sec-head h2{margin:0;font-weight:850;font-stretch:63%;font-size:clamp(2.6rem,6.4vw,5rem);line-height:.9;letter-spacing:-.005em;text-wrap:balance}
+.lead{margin:0;font-size:clamp(1.0625rem,1.5vw,1.1875rem);line-height:1.55;color:var(--ink-2);max-width:58ch}
+@media (max-width:760px){.sec-head{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px}
+
+/* The Desk */
+.desk{padding:clamp(14px,2.6vw,30px)}
+.desk-bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.desk-title{margin:0;font-family:var(--font-display);font-weight:850;font-stretch:72%;font-size:1.6rem;line-height:1;display:flex;align-items:center;gap:10px}
+.tag{font-family:var(--font-text);font-weight:600;font-stretch:100%;font-size:.8125rem;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:.15em .65em}
+.seg-wrap{display:flex;align-items:center;gap:10px}
+.seg-label{font-size:.875rem;font-weight:600;color:var(--ink-2)}
+.seg{display:inline-flex;background:var(--wash);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{font:inherit;font-size:.875rem;font-weight:600;border:0;background:transparent;color:var(--ink-2);padding:.45em .95em;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(19,35,58,.16)}
+.desk-note{margin:12px 0 0;font-size:.9375rem;color:var(--ink-2)}
+.brief{list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:2.4rem 2.75rem minmax(0,1fr) 170px;gap:6px 18px;padding:22px 0;border-top:1px solid var(--line)}
+.brief .item:first-child{border-top:0}
+.rank{font-family:var(--font-display);font-weight:850;font-stretch:62%;font-size:2.2rem;line-height:1;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.item .pg{width:2.75rem;height:2.75rem;color:var(--c);display:block}
+.item-sport{margin:0;font-size:.875rem;font-weight:600;color:var(--ink-2)}
+.item-head{margin:.1rem 0 .4rem;font-weight:700;font-stretch:94%;font-size:1.125rem;line-height:1.32;max-width:62ch}
+.item-depth{margin:0 0 .7rem;color:var(--ink-2);max-width:64ch}
+.receipt{font:inherit;font-size:.875rem;font-weight:600;color:var(--ink);background:var(--wash);border:1px solid var(--line);border-radius:999px;padding:.3em .85em;cursor:pointer}
+.receipt[aria-expanded="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.receipt-body{margin-top:.7rem;padding:.75rem .95rem;border-left:4px solid var(--c);background:var(--wash);border-radius:0 10px 10px 0;font-size:.9375rem;max-width:64ch}
+.receipt-body p{margin:0}
+.item-swing{text-align:right}
+.spark{display:block;width:100%;height:56px}
+.spark .mid{stroke:var(--line);stroke-width:1;stroke-dasharray:3 3}
+.spark polyline{fill:none;stroke:var(--c);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.spark circle{fill:var(--c)}
+.swing{margin:.35rem 0 0;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.num{font-family:var(--font-display);font-weight:850;font-stretch:62%;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.unit{font-size:.8125rem;color:var(--ink-2)}
+@media (max-width:760px){
+  .item{grid-template-columns:2rem minmax(0,1fr)}
+  .item .pg{display:none}
+  .rank{font-size:1.8rem}
+  .item-swing{grid-column:2/-1;text-align:left;display:flex;align-items:center;gap:16px}
+  .spark{width:150px}
+  .swing{align-items:flex-start;margin:0}
+}
+
+/* Make the call */
+.call{overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{flex:1 0 auto;min-width:9.5rem;display:flex;align-items:center;justify-content:center;gap:.55em;font:inherit;font-weight:700;font-stretch:88%;font-size:1rem;padding:14px 18px 12px;background:transparent;color:var(--ink-2);border:0;border-bottom:4px solid transparent;cursor:pointer}
+.tab svg{width:1.7rem;height:1.7rem;color:var(--c)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--c)}
+.tab .done{font-weight:600;font-stretch:100%;font-size:.8125rem;color:var(--ink-2)}
+.call-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px}
+.scenario{padding:clamp(18px,3.2vw,36px)}
+.scenario h3{margin:0 0 .6rem;font-weight:850;font-stretch:64%;font-size:clamp(2rem,4.2vw,3.1rem);line-height:.95}
+.sc-text{margin:0;max-width:60ch}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,8.5rem));gap:10px;margin:1.1rem 0 1.4rem;padding:0}
+.fact{background:var(--wash);border-radius:12px;padding:.6rem .85rem;min-width:0}
+.fact dt{font-size:.8125rem;color:var(--ink-2)}
+.fact dd{margin:.15rem 0 0;font-family:var(--font-display);font-weight:850;font-stretch:68%;font-size:1.65rem;line-height:1.05;font-variant-numeric:tabular-nums}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.opt{text-align:left;font:inherit;background:var(--paper);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;transition:border-color .15s,background-color .15s}
+.opt strong{display:block;font-stretch:88%;font-size:1.125rem;line-height:1.25}
+.opt span{display:block;color:var(--ink-2);font-size:.9375rem;margin-top:.25rem}
+.opt:hover{border-color:var(--ink-2)}
+.opt[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 9%,var(--paper))}
+.opt:disabled{cursor:default}
+.opt:disabled:hover{border-color:var(--line)}
+.opt[aria-pressed="true"]:disabled{border-color:var(--c)}
+.lock-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-top:16px}
+.hint{margin:0;font-size:.9375rem;color:var(--ink-2)}
+.reveal{margin-top:24px;padding-top:22px;border-top:1px solid var(--line)}
+.rev-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px 34px}
+.rev-h{margin:0 0 .55rem;font-weight:800;font-stretch:84%;font-size:1.05rem;line-height:1.2}
+.rev-h:focus{outline:none}
+.bars{display:grid;gap:14px;margin-bottom:.8rem}
+.bar-top{display:flex;justify-content:space-between;gap:12px;font-size:.9375rem;align-items:baseline}
+.bar-top b{font-variant-numeric:tabular-nums;font-size:1.05rem}
+.fav,.yours{display:inline-block;font-size:.75rem;font-weight:700;border-radius:999px;padding:.08em .55em;margin-left:.35em;vertical-align:.1em}
+.fav{background:var(--call);color:var(--call-ink)}
+.yours{border:1px solid var(--ink-2);color:var(--ink)}
+.track{height:12px;background:var(--wash);border-radius:999px;overflow:hidden;margin-top:6px}
+.fill{height:100%;width:0;background:var(--c);border-radius:999px;transition:width .7s cubic-bezier(.2,.7,.2,1)}
+.fill.dim{background:color-mix(in srgb,var(--c) 32%,var(--line))}
+.metric{margin:0 0 .6rem;font-size:.875rem;color:var(--ink-2)}
+.why{margin:0;max-width:56ch}
+.grade{margin:0;font-family:var(--font-display);font-weight:900;font-stretch:62%;font-size:3.4rem;line-height:1;font-variant-numeric:tabular-nums}
+.plus{color:var(--opener)}
+.minus{color:var(--minus)}
+.grade-note{margin:.3rem 0 1rem;font-size:.9375rem;color:var(--ink-2)}
+.outcome{margin:0 0 .4rem;font-weight:600}
+.crowd{margin:0;font-size:.875rem;color:var(--ink-2)}
+.rev-actions{margin-top:20px}
+.scorecard{padding:clamp(18px,3vw,30px);background:var(--wash);border-left:1px solid var(--line)}
+.k{margin:0;font-size:.875rem;font-weight:600;color:var(--ink-2)}
+.rating{margin:.1rem 0 1.1rem;font-family:var(--font-display);font-weight:900;font-stretch:62%;font-size:3.7rem;line-height:1;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:.25em}
+.delta{font-size:1.2rem;font-weight:800;font-stretch:80%}
+.calls{margin:.1rem 0 1.1rem;font-family:var(--font-display);font-weight:850;font-stretch:68%;font-size:1.7rem;line-height:1}
+.ledger{list-style:none;margin:0 0 1rem;padding:0;display:grid;gap:8px}
+.ledger li{display:flex;justify-content:space-between;gap:10px;font-size:.9375rem;padding:8px 12px;background:var(--surface);border-radius:10px;border:1px solid var(--line)}
+.ledger b{font-variant-numeric:tabular-nums}
+.note{margin:0 0 1rem;font-size:.8125rem;color:var(--ink-2)}
+@media (max-width:900px){.call-grid{grid-template-columns:1fr}.scorecard{border-left:0;border-top:1px solid var(--line)}.rev-grid{grid-template-columns:1fr}}
+@media (max-width:560px){.opts{grid-template-columns:1fr}.facts{grid-template-columns:repeat(3,minmax(0,1fr))}.fact dd{font-size:clamp(1.15rem,5.2vw,1.65rem)}.tab{min-width:0;flex:1 1 0;padding:12px 6px 10px;font-size:.9375rem;gap:.35em}.tab .done{display:none}.tab svg{width:1.4rem;height:1.4rem}}
+
+/* Roster */
+.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:3px 3px 16px 16px;overflow:hidden;display:flex;flex-direction:column;scroll-margin-top:96px}
+.card-band{background:var(--c);color:var(--on-band);display:grid;place-items:center;aspect-ratio:16/10}
+.card-band svg{width:42%;height:auto}
+.card-body{padding:16px 16px 20px}
+.card h3{margin:0;font-weight:850;font-stretch:64%;font-size:1.95rem;line-height:.95}
+.card-sport{margin:.25rem 0 1rem;font-size:.875rem;color:var(--ink-2);font-weight:600}
+.card dl{margin:0;display:grid;gap:.85rem}
+.card dt{font-size:.8125rem;font-weight:700;color:var(--ink-2)}
+.card dd{margin:.15rem 0 0;font-size:.9375rem;line-height:1.45}
+.card .lineage{border-top:1px solid var(--line);padding-top:.85rem}
+.bench{margin:1.4rem 0 0;color:var(--ink-2)}
+@media (max-width:1100px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:720px){.cards{grid-template-columns:1fr}.card{flex-direction:row}.card-band{aspect-ratio:auto;width:92px;flex:0 0 92px}.card-band svg{width:62%}}
+
+/* Alter ego file */
+.file-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px clamp(28px,6vw,84px);align-items:center}
+.file-grid .lead{margin-top:1rem}
+.dossier{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:4px 4px 18px 18px;padding:34px clamp(18px,3vw,34px) 26px;overflow:hidden}
+.dossier::before{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:var(--c,var(--ink))}
+.dossier-k{margin:0;font-size:.875rem;font-weight:600;color:var(--ink-2)}
+.dossier-name{margin:.5rem 0 1.4rem;font-weight:900;font-stretch:62%;font-size:clamp(2.8rem,7.4vw,5.4rem);line-height:.9;min-height:.95em}
+.dossier-name .redact{min-width:5.2em;height:.86em}
+.dossier.revealed .dossier-name{color:var(--c);transform:skewX(-7deg);transform-origin:left bottom}
+.dossier dl{margin:0 0 1.2rem;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 20px}
+.dossier dt{font-size:.8125rem;font-weight:700;color:var(--ink-2)}
+.dossier dd{margin:.15rem 0 0;font-weight:800;font-stretch:84%;font-size:1.2rem;line-height:1.25}
+.dossier-why{margin:0 0 1.2rem;max-width:52ch}
+.dossier-actions{display:flex;gap:10px;flex-wrap:wrap}
+.copy-msg{margin:.7rem 0 0;font-size:.875rem;color:var(--ink-2);overflow-wrap:anywhere}
+@media (max-width:860px){.file-grid{grid-template-columns:1fr}}
+
+/* Principles and rollout */
+.pr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,4vw,52px) clamp(24px,5vw,80px);margin-top:clamp(22px,3vw,40px)}
+.pr h3{margin:0 0 .5rem;padding-top:.9rem;border-top:6px solid var(--c);font-weight:850;font-stretch:66%;font-size:clamp(1.7rem,3vw,2.4rem);line-height:1}
+.pr p{margin:0;color:var(--ink-2);max-width:46ch}
+@media (max-width:700px){.pr-grid{grid-template-columns:1fr}}
+.steps{list-style:none;margin:clamp(22px,3vw,40px) 0 clamp(28px,4vw,48px);padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.steps li{border-top:6px solid var(--c);padding-top:14px}
+.step-n{display:block;font-family:var(--font-display);font-weight:900;font-stretch:62%;font-size:2.8rem;line-height:1}
+.steps h3{margin:.4rem 0 .35rem;font-weight:850;font-stretch:70%;font-size:1.6rem;line-height:1.05}
+.steps p{margin:0;color:var(--ink-2);max-width:40ch}
+@media (max-width:760px){.steps{grid-template-columns:1fr}}
+
+/* Footer */
+.foot{border-top:1px solid var(--line);padding-block:36px 48px;color:var(--ink-2);font-size:.9375rem}
+.foot p{margin:.4rem 0;max-width:80ch}
+.foot .brand{margin-bottom:.6rem}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    <symbol id="pg-cricket" viewBox="0 0 48 48">
+      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2">
+        <path d="M21 14.5 23 28"/><path d="M23 28 17 37 18.5 45"/><path d="M23 28 29.5 37 32 45"/>
+        <path d="M22 18 30 22.5"/><path d="M30 22.5 41.5 9.5" stroke-width="5.4"/>
+      </g>
+      <circle cx="20.5" cy="8.6" r="4.2" fill="currentColor"/><circle cx="41" cy="31" r="2.7" fill="currentColor"/>
+    </symbol>
+    <symbol id="pg-basketball" viewBox="0 0 48 48">
+      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2">
+        <path d="M21 15 23 28"/><path d="M21.5 17.5 28 14 30 7"/><path d="M21.5 17.5 14 21"/>
+        <path d="M23 28 19 36 21 44"/><path d="M23 28 29 35 27.5 43"/>
+      </g>
+      <circle cx="20" cy="9" r="4" fill="currentColor"/><circle cx="33" cy="3.9" r="3.3" fill="currentColor"/>
+    </symbol>
+    <symbol id="pg-football" viewBox="0 0 48 48">
+      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2">
+        <path d="M19.5 15 23 28.5"/><path d="M23 28.5 20.5 37.5 21.5 45"/><path d="M23 28.5 32 33.5 39 31"/>
+        <path d="M20.5 18 12 22.5"/><path d="M20.5 18 29 19.5"/>
+      </g>
+      <circle cx="19" cy="8.8" r="4.2" fill="currentColor"/><circle cx="43.2" cy="36.5" r="3.3" fill="currentColor"/>
+    </symbol>
+    <symbol id="pg-f1" viewBox="0 0 48 48">
+      <g fill="currentColor">
+        <path d="M5 31.5V28l4.5-1.8h9.8l2.6-3.7h7l2.6 3.7 9.8 1.4 5.2 2.4v1.5z"/>
+        <rect x="2.5" y="19" width="9" height="3.2" rx="1.2"/><rect x="5.4" y="21" width="3" height="7.5"/>
+        <circle cx="25.2" cy="20.2" r="3.4"/><circle cx="13.5" cy="33.6" r="5.4"/><circle cx="37.5" cy="33.6" r="5.4"/>
+      </g>
+    </symbol>
+    <symbol id="pg-tennis" viewBox="0 0 48 48">
+      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2">
+        <path d="M22.8 20 24.5 32.5"/><path d="M24.5 32.5 19.5 40 20.5 46"/><path d="M24.5 32.5 30.5 39.5 32.5 46"/>
+        <path d="M23 22.5 15.5 15 13.5 10.5"/><path d="M23.5 22.5 30.5 16 33 11.5"/>
+        <ellipse cx="35.4" cy="7.3" rx="3.2" ry="4.5" stroke-width="3" transform="rotate(32 35.4 7.3)"/>
+      </g>
+      <circle cx="23.5" cy="13.6" r="3.9" fill="currentColor"/><circle cx="12.2" cy="5.4" r="2.5" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="#main" aria-label="ALTER EGO home"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="wordmark">ALTER EGO</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#desk">The Desk</a><a href="#call">Make the call</a><a href="#roster">Roster</a><a href="#file">Your alter ego</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="#call">Make a call</a>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" aria-labelledby="hero-h">
+  <div class="wrap">
+    <h1 id="hero-h">Every legend has an alter ego. Earn yours.</h1>
+    <div class="hero-row">
+      <div>
+        <p class="hero-lead">A sports desk and a game in one. Get one brief across cricket, football, basketball, tennis and F1, then make the calls that decide matches. Read the game well and you earn an alter ego of your own.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#call">Make your first call</a>
+          <a class="btn btn-ghost" href="#roster">Meet the roster</a>
+        </div>
+      </div>
+      <div class="tease-box">
+        <p class="tease">Your alter ego <span class="redact" id="teaseRedact"><span class="bar" aria-hidden="true"></span><span class="name"></span><span class="sr">is hidden until your first three calls</span></span></p>
+        <p class="tease-note" id="teaseNote">Revealed after your first three calls.</p>
+      </div>
+    </div>
+    <ul class="wall" aria-label="The roster">
+      <li style="--i:0;--c:var(--opener)"><a href="#r-opener"><span class="band"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-cricket"/></svg></span><span class="cap">The Opener</span><span class="cap-sport">Cricket</span></a></li>
+      <li style="--i:1;--c:var(--closer)"><a href="#r-closer"><span class="band"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-basketball"/></svg></span><span class="cap">The Closer</span><span class="cap-sport">Basketball</span></a></li>
+      <li style="--i:2;--c:var(--architect)"><a href="#r-architect"><span class="band"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-football"/></svg></span><span class="cap">The Architect</span><span class="cap-sport">Football</span></a></li>
+      <li style="--i:3;--c:var(--professor)"><a href="#r-professor"><span class="band"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-f1"/></svg></span><span class="cap">The Professor</span><span class="cap-sport">F1</span></a></li>
+      <li style="--i:4;--c:var(--iceman)"><a href="#r-iceman"><span class="band"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-tennis"/></svg></span><span class="cap">The Iceman</span><span class="cap-sport">Tennis</span></a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" id="desk" aria-labelledby="desk-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="desk-h">The Desk</h2>
+      <p class="lead">One brief for every sport you follow, ranked by how much each moment moved the game. Pick your depth, and tap a receipt to see where a number came from.</p>
+    </div>
+    <div class="panel desk">
+      <div class="desk-bar">
+        <p class="desk-title">Today’s brief <span class="tag">Illustrative</span></p>
+        <div class="seg-wrap"><span class="seg-label" id="depth-l">Depth</span>
+          <div class="seg" role="group" aria-labelledby="depth-l">
+            <button type="button" data-depth="new" aria-pressed="false">New to it</button>
+            <button type="button" data-depth="fan" aria-pressed="true">Fan</button>
+            <button type="button" data-depth="coach" aria-pressed="false">Coach</button>
+          </div>
+        </div>
+      </div>
+      <p class="desk-note">Ranked by swing: the points of win chance each moment moved.</p>
+      <ol class="brief">
+        <li class="item" style="--c:var(--opener)">
+          <span class="rank" aria-hidden="true">1</span>
+          <svg class="pg" viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-cricket"/></svg>
+          <div class="item-main">
+            <p class="item-sport">Cricket</p>
+            <p class="item-head">Three wickets in overs 16 to 18 flipped the chase: the defending side went from a 28% to a 71% chance of winning.</p>
+            <p class="item-depth" data-new="The chasing side was on track until it lost three wickets in three overs. After that it needed too many runs from too few balls." data-fan="The required rate climbed past 14 an over and the set batter was gone, so the last two overs were a scramble." data-coach="Bringing the strike bowler back for the 16th and 18th, instead of saving him for the 19th, broke the partnership before the death. The spinner’s 17th went for five.">The required rate climbed past 14 an over and the set batter was gone, so the last two overs were a scramble.</p>
+            <button type="button" class="receipt" aria-expanded="false" aria-controls="rc1">Receipt: ball-by-ball, overs 16 to 18</button>
+            <div class="receipt-body" id="rc1" hidden><p>Source: ball-by-ball records for overs 16 to 18, with the win model’s reading after each delivery. In the live product this opens the exact deliveries behind every number.</p></div>
+          </div>
+          <div class="item-swing"><svg class="spark" data-points="52,49,45,40,34,28,41,55,66,71" aria-hidden="true"></svg><p class="swing"><span class="num">+43</span><span class="unit">win-chance points</span></p></div>
+        </li>
+        <li class="item" style="--c:var(--professor)">
+          <span class="rank" aria-hidden="true">2</span>
+          <svg class="pg" viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-f1"/></svg>
+          <div class="item-main">
+            <p class="item-sport">F1</p>
+            <p class="item-head">An early stop on lap 22 gained 3.1 seconds on the leader, and the lead never changed hands again.</p>
+            <p class="item-depth" data-new="Changing tyres a lap before the leader meant racing on fresh tyres while the leader was still on worn ones. That was enough to come out ahead once both had stopped." data-fan="The out-lap on new tyres was 2.4 seconds quicker than the leader’s in-lap on old ones, and the stop itself was 0.7 seconds faster." data-coach="The hard tyre was losing about 0.09 seconds a lap by lap 20. Once the undercut gain exceeded the gap, stopping first was the dominant move.">The out-lap on new tyres was 2.4 seconds quicker than the leader’s in-lap on old ones, and the stop itself was 0.7 seconds faster.</p>
+            <button type="button" class="receipt" aria-expanded="false" aria-controls="rc2">Receipt: lap timing, laps 20 to 26</button>
+            <div class="receipt-body" id="rc2" hidden><p>Source: lap and sector timing for laps 20 to 26, plus pit-lane times for both cars.</p></div>
+          </div>
+          <div class="item-swing"><svg class="spark" data-points="38,39,41,43,46,58,66,70,72,74" aria-hidden="true"></svg><p class="swing"><span class="num">+36</span><span class="unit">win-chance points</span></p></div>
+        </li>
+        <li class="item" style="--c:var(--architect)">
+          <span class="rank" aria-hidden="true">3</span>
+          <svg class="pg" viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-football"/></svg>
+          <div class="item-main">
+            <p class="item-sport">Football</p>
+            <p class="item-head">A pressing trap in the 61st minute won the ball 30 metres from goal. The winner came 14 seconds later.</p>
+            <p class="item-depth" data-new="The team that scored had a plan to win the ball high up the pitch. They forced a mistake near the other goal and scored straight away." data-fan="The press was triggered by a backward pass to the left centre-back. Three players closed the passing lanes and the ball was won in the left half-space." data-coach="The trigger was a centre-back receiving on his weaker foot while facing his own goal. The far-side winger tucked in to cut the switch, leaving the full-back as the only way out.">The press was triggered by a backward pass to the left centre-back. Three players closed the passing lanes and the ball was won in the left half-space.</p>
+            <button type="button" class="receipt" aria-expanded="false" aria-controls="rc3">Receipt: event data, 60th to 62nd minute</button>
+            <div class="receipt-body" id="rc3" hidden><p>Source: on-ball events from the 60th to the 62nd minute, with the positions of the pressing players at the moment of the turnover.</p></div>
+          </div>
+          <div class="item-swing"><svg class="spark" data-points="50,51,49,48,52,50,64,72,75,78" aria-hidden="true"></svg><p class="swing"><span class="num">+30</span><span class="unit">win-chance points</span></p></div>
+        </li>
+        <li class="item" style="--c:var(--iceman)">
+          <span class="rank" aria-hidden="true">4</span>
+          <svg class="pg" viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-tennis"/></svg>
+          <div class="item-main">
+            <p class="item-sport">Tennis</p>
+            <p class="item-head">Two break points saved at 3–3 in the deciding set, and the break came in the very next game.</p>
+            <p class="item-depth" data-new="The player serving was in trouble twice and held on. Then they won their opponent’s next service game." data-fan="Both break points were saved with first serves, and the returner didn’t win a first-serve return in that game." data-coach="After going wide all set, the serve went to the body on both break points. The returner never adjusted their position to cover it.">Both break points were saved with first serves, and the returner didn’t win a first-serve return in that game.</p>
+            <button type="button" class="receipt" aria-expanded="false" aria-controls="rc4">Receipt: point-by-point, final set</button>
+            <div class="receipt-body" id="rc4" hidden><p>Source: point-by-point records for the final set, including serve direction on every point.</p></div>
+          </div>
+          <div class="item-swing"><svg class="spark" data-points="52,49,45,40,44,50,58,62,64,66" aria-hidden="true"></svg><p class="swing"><span class="num">+26</span><span class="unit">win-chance points</span></p></div>
+        </li>
+        <li class="item" style="--c:var(--closer)">
+          <span class="rank" aria-hidden="true">5</span>
+          <svg class="pg" viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-basketball"/></svg>
+          <div class="item-main">
+            <p class="item-sport">Basketball</p>
+            <p class="item-head">Shot quality, not luck, cut a 12-point lead to three: nine good looks from twelve trips in the last five minutes.</p>
+            <p class="item-depth" data-new="In the last minutes the trailing team kept creating easy shots, close to the basket or wide open, and almost caught up." data-fan="Nine of twelve possessions ended at the rim or in open threes. Expected points per possession rose to 1.31, from 0.94 earlier in the game." data-coach="The guard and centre pick-and-roll pulled the weak-side defender into the paint on almost every trip. That’s where the open corner threes came from.">Nine of twelve possessions ended at the rim or in open threes. Expected points per possession rose to 1.31, from 0.94 earlier in the game.</p>
+            <button type="button" class="receipt" aria-expanded="false" aria-controls="rc5">Receipt: play-by-play, last five minutes</button>
+            <div class="receipt-body" id="rc5" hidden><p>Source: play-by-play and shot locations for the last five minutes, with each shot’s expected value.</p></div>
+          </div>
+          <div class="item-swing"><svg class="spark" data-points="30,27,24,22,25,29,33,36,39,41" aria-hidden="true"></svg><p class="swing"><span class="num">+19</span><span class="unit">win-chance points</span></p></div>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="call" aria-labelledby="call-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="call-h">Make the call</h2>
+      <p class="lead">Pivotal moments, frozen before they play out. Make your call, lock it, then see how the numbers read it. You’re graded on the decision, not the result.</p>
+    </div>
+    <div class="panel call" id="call-panel">
+      <div class="tabs" role="tablist" aria-label="Choose a moment">
+        <button type="button" class="tab" role="tab" id="tab-0" aria-controls="sc" aria-selected="true" style="--c:var(--opener)"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-cricket"/></svg><span>Cricket</span><span class="done"></span></button>
+        <button type="button" class="tab" role="tab" id="tab-1" aria-controls="sc" aria-selected="false" tabindex="-1" style="--c:var(--professor)"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-f1"/></svg><span>F1</span><span class="done"></span></button>
+        <button type="button" class="tab" role="tab" id="tab-2" aria-controls="sc" aria-selected="false" tabindex="-1" style="--c:var(--architect)"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-football"/></svg><span>Football</span><span class="done"></span></button>
+      </div>
+      <div class="call-grid">
+        <div class="scenario" id="sc" role="tabpanel" aria-labelledby="sc-title">
+          <h3 id="sc-title">Who bowls the 19th?</h3>
+          <p class="sc-text" id="sc-text"></p>
+          <dl class="facts" id="sc-facts"></dl>
+          <div class="opts" id="sc-opts" role="group" aria-label="Your options"></div>
+          <div class="lock-row">
+            <button type="button" class="btn btn-call" id="lockBtn" disabled>Lock it in</button>
+            <p class="hint" id="lockHint">Pick one, then lock it in.</p>
+          </div>
+          <div class="reveal" id="reveal" hidden aria-live="polite"></div>
+        </div>
+        <aside class="scorecard" aria-label="Your read so far">
+          <p class="k">Read rating</p>
+          <p class="rating"><span id="rating">1500</span><span class="delta" id="delta"></span></p>
+          <p class="k">Calls made</p>
+          <p class="calls"><span id="calls">0</span> of 3</p>
+          <ul class="ledger" id="ledger" aria-label="Your calls"></ul>
+          <p class="note">Toy model and illustrative crowd numbers for this concept.</p>
+          <button type="button" class="btn btn-ghost btn-sm" id="resetBtn">Start over</button>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="roster" aria-labelledby="roster-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="roster-h">The roster</h2>
+      <p class="lead">Five specialist analysts, each built around one legend’s way of reading the game. They don’t pretend to be the legend. They think like the mentality that made the name.</p>
+    </div>
+    <div class="cards">
+      <article class="card" id="r-opener" style="--c:var(--opener)">
+        <div class="card-band"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-cricket"/></svg></div>
+        <div class="card-body">
+          <h3>The Opener</h3><p class="card-sport">Cricket</p>
+          <dl>
+            <div><dt>Mentality</dt><dd>Timing over force. Turn a start into something enormous.</dd></div>
+            <div><dt>Signature tool</dt><dd>Over Call: call the next over before it’s bowled, then see how the numbers read it.</dd></div>
+            <div class="lineage"><dt>Lineage</dt><dd>Rohit Sharma, “Hitman”. Bengaluru, 2 November 2013: 209 off 158 balls with 16 sixes. A broadcast crew member called him the Hitman that day, and the commentary box made it stick.</dd></div>
+          </dl>
+        </div>
+      </article>
+      <article class="card" id="r-closer" style="--c:var(--closer)">
+        <div class="card-band"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-basketball"/></svg></div>
+        <div class="card-body">
+          <h3>The Closer</h3><p class="card-sport">Basketball</p>
+          <dl>
+            <div><dt>Mentality</dt><dd>Study the film until nothing surprises you, then want the last shot.</dd></div>
+            <div><dt>Signature tool</dt><dd>Film Room: every possession broken down, and a daily drill that keeps your streak alive.</dd></div>
+            <div class="lineage"><dt>Lineage</dt><dd>Kobe Bryant, “Black Mamba”. Los Angeles, 22 January 2006: 81 points against Toronto in a single game.</dd></div>
+          </dl>
+        </div>
+      </article>
+      <article class="card" id="r-architect" style="--c:var(--architect)">
+        <div class="card-band"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-football"/></svg></div>
+        <div class="card-body">
+          <h3>The Architect</h3><p class="card-sport">Football</p>
+          <dl>
+            <div><dt>Mentality</dt><dd>See the pass before it exists.</dd></div>
+            <div><dt>Signature tool</dt><dd>Blueprint: the shape of the game drawn as it happens, with what-if set pieces.</dd></div>
+            <div class="lineage"><dt>Lineage</dt><dd>Andrea Pirlo, “L’Architetto”. Dortmund, 4 July 2006: the no-look pass in the 119th minute that sent Italy to the World Cup final.</dd></div>
+          </dl>
+        </div>
+      </article>
+      <article class="card" id="r-professor" style="--c:var(--professor)">
+        <div class="card-band"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-f1"/></svg></div>
+        <div class="card-body">
+          <h3>The Professor</h3><p class="card-sport">F1</p>
+          <dl>
+            <div><dt>Mentality</dt><dd>Take only the risk the race demands.</dd></div>
+            <div><dt>Signature tool</dt><dd>Pit Wall: make the strategy call, then watch the simulation race it out.</dd></div>
+            <div class="lineage"><dt>Lineage</dt><dd>Alain Prost, “The Professor”. Adelaide, 1986: won the race and the championship by two points after his main rival’s tyre exploded.</dd></div>
+          </dl>
+        </div>
+      </article>
+      <article class="card" id="r-iceman" style="--c:var(--iceman)">
+        <div class="card-band"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#pg-tennis"/></svg></div>
+        <div class="card-body">
+          <h3>The Iceman</h3><p class="card-sport">Tennis</p>
+          <dl>
+            <div><dt>Mentality</dt><dd>Nothing changes on the big points.</dd></div>
+            <div><dt>Signature tool</dt><dd>Pressure Index: who holds when the point matters most.</dd></div>
+            <div class="lineage"><dt>Lineage</dt><dd>Björn Borg, “Ice-Borg”. Wimbledon, 5 July 1980: lost a fourth-set tiebreak 16–18, then won the fifth 8–6 for a fifth straight title.</dd></div>
+          </dl>
+        </div>
+      </article>
+    </div>
+    <p class="bench">Next on the bench: golf, American football, cycling and baseball.</p>
+  </div>
+</section>
+
+<section class="sec" id="file" aria-labelledby="file-h">
+  <div class="wrap file-grid">
+    <div>
+      <h2 class="h2" id="file-h">Your alter ego</h2>
+      <p class="lead">Every call adds to your file: how you read the game, where you’re sharpest and which legend you play like. Earn the name, then share it with your league.</p>
+    </div>
+    <article class="dossier" id="dossier" aria-labelledby="dName">
+      <p class="dossier-k">Alter ego file</p>
+      <h3 class="dossier-name" id="dName"><span class="redact"><span class="bar" aria-hidden="true"></span><span class="sr">Not revealed yet</span></span></h3>
+      <dl>
+        <div><dt>Read rating</dt><dd id="dRating">1500</dd></div>
+        <div><dt>Calls made</dt><dd id="dCalls">0 of 3</dd></div>
+        <div><dt>Sharpest in</dt><dd id="dSharp">Not enough calls yet</dd></div>
+        <div><dt>Style</dt><dd id="dStyle">Not enough calls yet</dd></div>
+      </dl>
+      <p class="dossier-why" id="dWhy">Make three calls to reveal your name.</p>
+      <div class="dossier-actions">
+        <a class="btn btn-ghost btn-sm" href="#call">Make a call</a>
+        <button type="button" class="btn btn-primary btn-sm" id="copyBtn" hidden>Copy my line</button>
+      </div>
+      <p class="copy-msg" id="copyMsg" aria-live="polite"></p>
+    </article>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="pr-h">
+  <div class="wrap">
+    <h2 class="h2" id="pr-h">What we hold to</h2>
+    <div class="pr-grid">
+      <div class="pr" style="--c:var(--architect)"><h3>Receipts on every number</h3><p>Tap any stat to open the ball, lap, possession or point it came from.</p></div>
+      <div class="pr" style="--c:var(--call)"><h3>Decisions over dice</h3><p>Calls are graded on what the numbers favoured when you made them, so a lucky bounce never outranks a sharp read.</p></div>
+      <div class="pr" style="--c:var(--opener)"><h3>No money on the line</h3><p>Points, ratings and bragging rights between friends. No entry fees and no payouts.</p></div>
+      <div class="pr" style="--c:var(--professor)"><h3>In the language you watch in</h3><p>Briefs and calls in your language, starting with English and Hindi.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="start-h">
+  <div class="wrap">
+    <h2 class="h2" id="start-h">Where we start</h2>
+    <ol class="steps">
+      <li style="--c:var(--opener)"><span class="step-n">1</span><h3>Cricket and F1</h3><p>The deepest open data in sport: ball-by-ball records and lap-by-lap timing.</p></li>
+      <li style="--c:var(--architect)"><span class="step-n">2</span><h3>Football</h3><p>Event data and tactical shape, with what-if set pieces.</p></li>
+      <li style="--c:var(--closer)"><span class="step-n">3</span><h3>Basketball and tennis</h3><p>Play-by-play and point-by-point, plus the Pressure Index.</p></li>
+    </ol>
+    <a class="btn btn-primary" href="#call">Make your first call</a>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span class="brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="wordmark">ALTER EGO</span></span>
+    <p>Working title. This is a concept page with illustrative data and a toy model.</p>
+    <p>Athlete names and nicknames appear as editorial references to sporting history. No affiliation with or endorsement by any athlete, estate, team or league is implied.</p>
+  </div>
+</footer>
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Sparklines */
+  $$('svg.spark').forEach(svg => {
+    const pts = svg.dataset.points.split(',').map(Number);
+    const w = 120, h = 56, p = 5;
+    const step = (w - p * 2) / (pts.length - 1);
+    const y = v => (h - p - (v / 100) * (h - p * 2)).toFixed(1);
+    const line = pts.map((v, i) => (p + i * step).toFixed(1) + ',' + y(v)).join(' ');
+    const lx = (p + (pts.length - 1) * step).toFixed(1);
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.innerHTML = '<line class="mid" x1="' + p + '" x2="' + (w - p) + '" y1="' + y(50) + '" y2="' + y(50) + '"></line>' +
+      '<polyline points="' + line + '" vector-effect="non-scaling-stroke"></polyline>' +
+      '<circle cx="' + lx + '" cy="' + y(pts[pts.length - 1]) + '" r="3.2"></circle>';
+  });
+
+  /* Depth switch */
+  const depthBtns = $$('[data-depth]');
+  depthBtns.forEach(btn => btn.addEventListener('click', () => {
+    const d = btn.dataset.depth;
+    depthBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    $$('.item-depth').forEach(el => { el.textContent = el.dataset[d]; });
+  }));
+
+  /* Receipts */
+  $$('.receipt').forEach(btn => btn.addEventListener('click', () => {
+    const body = document.getElementById(btn.getAttribute('aria-controls'));
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!open));
+    body.hidden = open;
+  }));
+
+  /* Make the call */
+  const SC = [
+    { sport: 'Cricket', color: '--opener', title: 'Who bowls the 19th?',
+      text: 'T20, and you’re defending. They need 22 from 12 balls with three wickets left. Your strike bowler and your spinner each have one over left.',
+      facts: [['Needed', '22'], ['Balls left', '12'], ['Wickets left', '3']],
+      metric: 'Chance to defend the total with each option, from a toy model.',
+      opts: [
+        { name: 'Strike bowler now', sub: 'Use your best over while there are still balls to defend.', p: 63, bold: true },
+        { name: 'Save him for the 20th', sub: 'Keep your best for the final over.', p: 58, bold: false }
+      ],
+      crowd: 46,
+      why: 'The 19th usually decides more than the 20th: a wicket now leaves the new batter less time, and a tight over forces risk early.',
+      win: 'Defended: they finished seven short.', lose: 'They got there with a ball to spare.' },
+    { sport: 'F1', color: '--professor', title: 'Box under the safety car?',
+      text: 'Lap 34 of 57 and the safety car is out. You’re second on hard tyres that are 19 laps old, and the leader stays out. Overtaking on this track is hard.',
+      facts: [['Lap', '34 of 57'], ['Position', 'P2'], ['Tyre age', '19 laps']],
+      metric: 'Chance to win the race with each option, from a toy model.',
+      opts: [
+        { name: 'Box for fresh mediums', sub: 'A cheap stop now, then attack on grip.', p: 33, bold: true },
+        { name: 'Stay out', sub: 'Keep track position and make them pass you.', p: 38, bold: false }
+      ],
+      crowd: 64,
+      why: 'A cheap stop still costs a place. Where passing is rare, fresher tyres don’t help if you can’t get by.',
+      win: 'Won it: you held track position and the leader’s tyres faded late.', lose: 'Finished second: the leader controlled the restart.' },
+    { sport: 'Football', color: '--architect', title: 'Shut it down or keep a threat?',
+      text: '84th minute and you lead 1–0, but they’re pinning you back. Bring on a centre-back for your striker, or keep the striker on?',
+      facts: [['Minute', '84'], ['Score', '1–0'], ['Their shots, last 10 min', '5']],
+      metric: 'Chance to win the match with each option, from a toy model.',
+      opts: [
+        { name: 'Keep the striker on', sub: 'A counter threat stops their full-backs pushing up.', p: 81, bold: true },
+        { name: 'Bring on a centre-back', sub: 'More height for the crosses to come.', p: 77, bold: false }
+      ],
+      crowd: 42,
+      why: 'Without an outlet, the pressure has nowhere to go. A striker who can hold the ball pins two of theirs back.',
+      win: 'Held on: your striker won two free kicks deep in stoppage time.', lose: 'Conceded from a late corner to draw 1–1.' }
+  ];
+  const PERSONA = {
+    opener: { name: 'The Opener', color: '--opener' },
+    closer: { name: 'The Closer', color: '--closer' },
+    architect: { name: 'The Architect', color: '--architect' },
+    professor: { name: 'The Professor', color: '--professor' },
+    iceman: { name: 'The Iceman', color: '--iceman' }
+  };
+  const START = 1500;
+  const st = { i: 0, picks: [null, null, null], res: [null, null, null], rating: START };
+  const panel = $('#call-panel'), tabs = $$('.tab'), optsEl = $('#sc-opts');
+  const lockBtn = $('#lockBtn'), hint = $('#lockHint'), reveal = $('#reveal');
+  const signed = n => (n < 0 ? '\u2212' + Math.abs(n) : '+' + n);
+
+  function syncLock() {
+    const has = st.picks[st.i] !== null;
+    lockBtn.disabled = !has;
+    hint.textContent = has ? 'Locked calls can’t be changed.' : 'Pick one, then lock it in.';
+  }
+
+  function pick(k) {
+    if (st.res[st.i]) return;
+    st.picks[st.i] = k;
+    $$('.opt', optsEl).forEach((b, j) => b.setAttribute('aria-pressed', String(j === k)));
+    syncLock();
+  }
+
+  function buildScenario() {
+    const s = SC[st.i], r = st.res[st.i];
+    panel.style.setProperty('--c', 'var(' + s.color + ')');
+    tabs.forEach((t, k) => {
+      const on = k === st.i;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      t.querySelector('.done').textContent = st.res[k] ? 'Called' : '';
+    });
+    $('#sc-title').textContent = s.title;
+    $('#sc-text').textContent = s.text;
+    $('#sc-facts').innerHTML = s.facts.map(f => '<div class="fact"><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>').join('');
+    optsEl.innerHTML = '';
+    s.opts.forEach((o, k) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      b.innerHTML = '<strong>' + o.name + '</strong><span>' + o.sub + '</span>';
+      b.setAttribute('aria-pressed', String(st.picks[st.i] === k));
+      b.disabled = !!r;
+      b.addEventListener('click', () => pick(k));
+      optsEl.appendChild(b);
+    });
+    lockBtn.hidden = !!r;
+    hint.hidden = !!r;
+    syncLock();
+    if (r) showReveal(s, r); else { reveal.hidden = true; reveal.innerHTML = ''; }
+  }
+
+  function showReveal(s, r) {
+    const best = s.opts[0].p >= s.opts[1].p ? 0 : 1;
+    const g = r.grade;
+    const same = r.pick === 0 ? s.crowd : 100 - s.crowd;
+    const left = st.res.some(x => !x);
+    const bars = s.opts.map((o, k) =>
+      '<div class="bar"><div class="bar-top"><span>' + o.name +
+      (k === best ? '<span class="fav">Favoured</span>' : '') +
+      (k === r.pick ? '<span class="yours">Your call</span>' : '') +
+      '</span><b>' + o.p + '%</b></div><div class="track"><div class="fill' + (k === best ? '' : ' dim') + '" data-w="' + o.p + '"></div></div></div>').join('');
+    reveal.innerHTML =
+      '<div class="rev-grid"><div>' +
+        '<h4 class="rev-h" id="rev-h" tabindex="-1">How the numbers read it</h4>' +
+        '<div class="bars">' + bars + '</div>' +
+        '<p class="metric">' + s.metric + '</p><p class="why">' + s.why + '</p>' +
+      '</div><div>' +
+        '<h4 class="rev-h">Your grade</h4>' +
+        '<p class="grade ' + (g > 0 ? 'plus' : 'minus') + '">' + signed(g) + '</p>' +
+        '<p class="grade-note">' + (g > 0
+          ? 'Your call was worth ' + g + ' points of win chance more than the alternative when you made it.'
+          : 'The alternative was worth ' + Math.abs(g) + ' points of win chance more when you made it.') + '</p>' +
+        '<h4 class="rev-h">What happened, simulated</h4>' +
+        '<p class="outcome">' + (r.win ? s.win : s.lose) + '</p>' +
+        '<p class="crowd">' + same + '% of callers made the same call.</p>' +
+      '</div></div>' +
+      '<div class="rev-actions"><button type="button" class="btn btn-primary" id="nextBtn">' + (left ? 'Next moment' : 'See your alter ego') + '</button></div>';
+    reveal.hidden = false;
+    const fills = $$('.fill', reveal);
+    if (reduce) fills.forEach(f => { f.style.width = f.dataset.w + '%'; });
+    else requestAnimationFrame(() => requestAnimationFrame(() => fills.forEach(f => { f.style.width = f.dataset.w + '%'; })));
+    $('#nextBtn').addEventListener('click', () => {
+      const n = st.res.findIndex(x => !x);
+      if (n === -1) { document.getElementById('file').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); return; }
+      st.i = n; buildScenario(); tabs[n].focus();
+    });
+  }
+
+  function updateScore(from, to) {
+    const d = to - from, el = $('#rating'), dl = $('#delta');
+    dl.textContent = d === 0 ? '' : signed(d);
+    dl.className = 'delta' + (d > 0 ? ' plus' : d < 0 ? ' minus' : '');
+    if (reduce || from === to) el.textContent = to;
+    else {
+      const t0 = performance.now(), dur = 600;
+      const tick = t => {
+        const k = Math.min(1, (t - t0) / dur);
+        el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+    const n = st.res.filter(Boolean).length;
+    $('#calls').textContent = n;
+    $('#ledger').innerHTML = st.res.map((r, i) => r
+      ? '<li><span>' + SC[i].sport + '</span><b class="' + (r.grade > 0 ? 'plus' : 'minus') + '">' + signed(r.grade) + '</b></li>' : '').join('');
+    $('#dRating').textContent = to;
+    $('#dCalls').textContent = n + ' of 3';
+  }
+
+  function finish() {
+    const res = st.res;
+    const right = res.filter(r => r.grade > 0).length;
+    const bold = res.filter((r, i) => SC[i].opts[r.pick].bold).length;
+    let key, why;
+    if (right === 3) { key = 'iceman'; why = 'Three calls, three sharp reads. Nothing changed for you on the big points.'; }
+    else if (bold === 3) { key = 'opener'; why = 'You took the game on every single time.'; }
+    else if (bold === 2) { key = 'closer'; why = 'You want the ball when the game is late.'; }
+    else if (bold === 1) { key = 'architect'; why = 'You picked one moment to push and kept the shape everywhere else.'; }
+    else { key = 'professor'; why = 'You protected what you had and played the long game.'; }
+    const p = PERSONA[key];
+    let bi = 0;
+    res.forEach((r, i) => { if (r.grade > res[bi].grade) bi = i; });
+    const sharp = res[bi].grade > 0 ? SC[bi].sport : 'Still reading the game';
+    const style = bold >= 2 ? 'Takes the game on' : 'Protects the position';
+
+    const t = $('#teaseRedact');
+    t.style.setProperty('--c', 'var(' + p.color + ')');
+    $('.name', t).textContent = p.name;
+    $('.sr', t).textContent = '';
+    t.classList.add('open');
+    $('#teaseNote').textContent = 'Earned from three calls. Keep calling to sharpen it.';
+
+    const d = $('#dossier');
+    d.style.setProperty('--c', 'var(' + p.color + ')');
+    $('#dName').textContent = p.name;
+    d.classList.add('revealed');
+    $('#dSharp').textContent = sharp;
+    $('#dStyle').textContent = style;
+    $('#dWhy').textContent = why;
+    const c = $('#copyBtn');
+    c.hidden = false;
+    c.dataset.line = 'My alter ego is ' + p.name + '. Read rating ' + st.rating + '.';
+  }
+
+  lockBtn.addEventListener('click', () => {
+    const i = st.i, k = st.picks[i];
+    if (k === null || st.res[i]) return;
+    const s = SC[i];
+    const g = s.opts[k].p - s.opts[1 - k].p;
+    st.res[i] = { pick: k, grade: g, win: Math.random() * 100 < s.opts[k].p };
+    const from = st.rating;
+    st.rating += g * 2;
+    updateScore(from, st.rating);
+    buildScenario();
+    const h = $('#rev-h');
+    if (h) h.focus({ preventScroll: true });
+    reveal.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+    if (st.res.every(Boolean)) finish();
+  });
+
+  tabs.forEach((t, k) => {
+    t.addEventListener('click', () => { st.i = k; buildScenario(); });
+    t.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      const n = (k + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      st.i = n; buildScenario(); tabs[n].focus();
+    });
+  });
+
+  const teaseHTML = $('#teaseRedact').innerHTML, dNameHTML = $('#dName').innerHTML;
+  $('#resetBtn').addEventListener('click', () => {
+    st.i = 0; st.picks = [null, null, null]; st.res = [null, null, null]; st.rating = START;
+    $('#rating').textContent = START; $('#delta').textContent = ''; $('#delta').className = 'delta';
+    $('#calls').textContent = '0'; $('#ledger').innerHTML = '';
+    const t = $('#teaseRedact');
+    t.classList.remove('open'); t.style.removeProperty('--c'); t.innerHTML = teaseHTML;
+    $('#teaseNote').textContent = 'Revealed after your first three calls.';
+    const d = $('#dossier');
+    d.classList.remove('revealed'); d.style.removeProperty('--c'); $('#dName').innerHTML = dNameHTML;
+    $('#dRating').textContent = START; $('#dCalls').textContent = '0 of 3';
+    $('#dSharp').textContent = 'Not enough calls yet'; $('#dStyle').textContent = 'Not enough calls yet';
+    $('#dWhy').textContent = 'Make three calls to reveal your name.';
+    $('#copyBtn').hidden = true; $('#copyMsg').textContent = '';
+    buildScenario(); tabs[0].focus();
+  });
+
+  $('#copyBtn').addEventListener('click', async () => {
+    const line = $('#copyBtn').dataset.line || '';
+    try { await navigator.clipboard.writeText(line); $('#copyMsg').textContent = 'Copied: ' + line; }
+    catch (e) { $('#copyMsg').textContent = line; }
+  });
+
+  buildScenario();
+})();
+</script>
+</body>
+</html>

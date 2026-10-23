@@ -8,38 +8,47 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String
-  email         String         @unique
-  password      String
-  avatar        String?
-  xp            Int            @default(0)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  fantasyTeams  FantasyTeam[]
-  ownedLeagues  League[]       @relation("LeagueOwner")
-  leagueMembers LeagueMember[]
+  id              String        @id @default(cuid())
+  name            String
+  email           String        @unique
+  password        String
+  avatar          String?
+  xp              Int           @default(0)
+  /// onboarding preferences
+  favouriteSports String[]      @default([])
+  language        String        @default("en")
+  /// when the user confirmed they are 18 or over (required for the beta)
+  ageConfirmedAt  DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  fantasyTeams    FantasyTeam[]
+  ownedCrews      Crew[]        @relation("CrewOwner")
+  crewMembers     CrewMember[]
+  labCalls        LabCall[]
+  reviews         DecisionReview[]
+  alterEgoShare   AlterEgoShare?
 }
 
-model League {
-  id         String         @id @default(cuid())
+/// A private group of fans. Replaces the legacy fantasy "leagues" (renamed in place; no fee or prize fields).
+model Crew {
+  id         String       @id @default(cuid())
   name       String
-  inviteCode String         @unique
+  inviteCode String       @unique
   ownerId    String
-  createdAt  DateTime       @default(now())
-  owner      User           @relation("LeagueOwner", fields: [ownerId], references: [id])
-  members    LeagueMember[]
+  createdAt  DateTime     @default(now())
+  owner      User         @relation("CrewOwner", fields: [ownerId], references: [id])
+  members    CrewMember[]
 }
 
-model LeagueMember {
+model CrewMember {
   id       String   @id @default(cuid())
   userId   String
-  leagueId String
+  crewId   String
   joinedAt DateTime @default(now())
-  league   League   @relation(fields: [leagueId], references: [id])
+  crew     Crew     @relation(fields: [crewId], references: [id], onDelete: Cascade)
   user     User     @relation(fields: [userId], references: [id])
 
-  @@unique([userId, leagueId])
+  @@unique([userId, crewId])
 }
 
 model Match {
@@ -76,6 +85,29 @@ model FantasyTeam {
   match         Match               @relation(fields: [matchId], references: [id])
   user          User                @relation(fields: [userId], references: [id])
   players       FantasyTeamPlayer[]
+  scoringEvents ScoringEvent[]
+
+  @@unique([userId, matchId])
+}
+
+/// Append-only scoring ledger: one row per (team, player, scoring version). Never updated or deleted
+/// (a database trigger rejects UPDATE and DELETE). Team totals are the sum of the latest version's rows.
+model ScoringEvent {
+  id             String      @id @default(cuid())
+  idempotencyKey String      @unique
+  matchId        String
+  fantasyTeamId  String
+  userId         String
+  playerId       String
+  armband        String
+  statLine       Json
+  points         Float
+  configVersion  Int
+  createdAt      DateTime    @default(now())
+  fantasyTeam    FantasyTeam @relation(fields: [fantasyTeamId], references: [id])
+
+  @@index([fantasyTeamId, configVersion])
+  @@index([matchId])
 }
 
 model FantasyTeamPlayer {
@@ -110,4 +142,212 @@ model PlayerStats {
   player        Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
   @@unique([playerId, season])
+}
+
+/// Server-side product analytics (docs/product-specs/admin-and-scoreboards.md). No personal data in props.
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  name      String
+  props     Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([name, createdAt])
+  @@index([userId, createdAt])
+}
+
+// ---------- Multi-sport facts (docs/design-docs/bitemporal-store.md) ----------
+
+/// The five sports. Seeded by migration; slugs are stable identifiers.
+model Sport {
+  id           String        @id
+  name         String
+  competitions Competition[]
+  participants Participant[]
+}
+
+model Competition {
+  id      String   @id @default(cuid())
+  sportId String
+  slug    String
+  name    String
+  sport   Sport    @relation(fields: [sportId], references: [id])
+  seasons Season[]
+
+  @@unique([sportId, slug])
+}
+
+model Season {
+  id            String      @id @default(cuid())
+  competitionId String
+  label         String
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  events        Event[]
+
+  @@unique([competitionId, label])
+}
+
+/// One match, race or game. sourceRef identifies it in its source (e.g. a Cricsheet match id).
+model Event {
+  id             String             @id @default(cuid())
+  seasonId       String
+  sourceId       String
+  sourceRef      String
+  name           String
+  startsAt       DateTime
+  venue          String?
+  rightsPolicyId String
+  season         Season             @relation(fields: [seasonId], references: [id])
+  incidents      Incident[]
+  participants   EventParticipant[]
+
+  @@unique([sourceId, sourceRef])
+}
+
+/// A team or player as named by the source. Never a likeness, voice or nickname feature.
+model Participant {
+  id        String             @id @default(cuid())
+  sportId   String
+  kind      String
+  name      String
+  sourceId  String
+  sourceRef String
+  sport     Sport              @relation(fields: [sportId], references: [id])
+  events    EventParticipant[]
+
+  @@unique([sourceId, sourceRef])
+}
+
+model EventParticipant {
+  eventId       String
+  participantId String
+  role          String
+  event         Event       @relation(fields: [eventId], references: [id])
+  participant   Participant @relation(fields: [participantId], references: [id])
+
+  @@id([eventId, participantId, role])
+}
+
+/// Append-only, bitemporal facts. t is the sport clock (legal ball, lap, minute, point) as an ordered integer.
+/// Corrections are new rows with supersedesId; a database trigger rejects UPDATE and DELETE.
+model Incident {
+  id             String    @id @default(cuid())
+  eventId        String
+  t              Int
+  seq            Int       @default(0)
+  actor          String?
+  type           String
+  payload        Json
+  sourceId       String
+  sourceRef      String
+  sourceClass    String
+  rightsPolicyId String
+  effectiveAt    DateTime
+  observedAt     DateTime
+  supersedesId   String?   @unique
+  createdAt      DateTime  @default(now())
+  event          Event     @relation(fields: [eventId], references: [id])
+  supersedes     Incident? @relation("Supersedes", fields: [supersedesId], references: [id])
+  supersededBy   Incident? @relation("Supersedes")
+
+  @@unique([sourceId, sourceRef])
+  @@index([eventId, observedAt])
+  @@index([eventId, t, seq])
+}
+
+/// A member's report about another member of the same crew; the crew owner reviews it.
+model CrewReport {
+  id         String   @id @default(cuid())
+  crewId     String
+  reporterId String
+  reportedId String
+  reason     String
+  note       String?
+  status     String   @default("OPEN")
+  createdAt  DateTime @default(now())
+
+  @@index([crewId, status])
+}
+
+/// blocker never sees blocked's name or activity, and blocked can't join crews the blocker owns.
+model UserBlock {
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+
+  @@id([blockerId, blockedId])
+  @@index([blockedId])
+}
+
+/// One LLM generation (or template fallback). No prompt or output text is stored.
+model LlmCall {
+  id           String   @id @default(cuid())
+  task         String
+  provider     String
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  latencyMs    Int
+  costUsd      Float?
+  fallback     String?
+  verified     Boolean?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+/// A locked Decision Lab call (F-L-02): one per user and moment, immutable, server-timestamped.
+model LabCall {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// golden-moment id (data/fixtures/moments/golden-moments.json)
+  momentId   String
+  /// the option id picked, one of the moment's options
+  option     String
+  /// confidence in the pick, 0.50–0.99
+  confidence Float
+  lockedAt   DateTime @default(now())
+  review     DecisionReview?
+
+  @@unique([userId, momentId])
+  @@index([userId, lockedAt])
+}
+
+/// The deterministic grade of a locked call (F-L-03). Reproducible from the moment fixture and the user's calls in
+/// lock order; coin flips are "no grade" (graded = false, no read points, no rating change).
+model DecisionReview {
+  id            String   @id @default(cuid())
+  callId        String   @unique
+  call          LabCall  @relation(fields: [callId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  momentId      String
+  graded        Boolean
+  coinFlip      Boolean
+  /// model's best option and the read: WP(pick) − max WP(others), percentage points (null when not graded)
+  best          String
+  readPoints    Float?
+  /// calibration: hit = the pick was the best option; brier = (confidence − hit)² (null when not graded)
+  hit           Boolean?
+  brier         Float?
+  ratingBefore  Float
+  ratingAfter   Float
+  difficulty    Float
+  /// receipts: the fixture and model versions the grade came from
+  momentsHash   String
+  outcomesHash  String
+  optionsHash   String
+  calibration   String   @default("provisional")
+  gradedAt      DateTime @default(now())
+
+  @@index([userId, gradedAt])
+}
+
+/// A fan's opt-in link to their Alter Ego share card (F-R-04): created when they choose to share, revocable.
+model AlterEgoShare {
+  token     String   @id
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
