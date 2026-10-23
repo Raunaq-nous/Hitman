@@ -20,7 +20,8 @@ function Reads({ title, calls, testId }: { title: string; calls: NotebookCall[];
       <h2 id={`${testId}-h`}>{title}</h2>
       {calls.length === 0 ? <p>None yet.</p> : (
         <ol className="lab-options">
-          {calls.map((c) => <li key={c.momentId}>{c.teams} ({c.season}), {DECISION_TYPE_LABEL[c.decisionType]}: called {c.pick} at {Math.round(c.confidence * 100)}%, best was {c.best} — <strong>{pts(c.readPoints)}</strong></li>)}
+          {/* the best option isn't named: a shared Season File must not give away golden-moment answers (D-045) */}
+          {calls.map((c) => <li key={c.momentId}>{c.teams} ({c.season}), {DECISION_TYPE_LABEL[c.decisionType]}, {Math.round(c.confidence * 100)}% sure: {c.hit ? "the best call" : "not the best call"} — <strong>{pts(c.readPoints)}</strong></li>)}
         </ol>
       )}
     </section>

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { alterEgo, REVEAL_AFTER, type IdentityCall } from "@/engine/alterEgo";
 
 // Synthetic call histories for testing the identity rules (not user data).
-const base: IdentityCall = { relation: "current", phase: "death", decisionType: "next-over-intent", sport: "cricket", confidence: 0.6, hit: true, leverage: 0.06, crowdShare: null };
+const base: IdentityCall = { relation: "current", phase: "death", decisionType: "next-over-intent", sport: "cricket", confidence: 0.6, hit: true, leverage: 0.06, withCrowd: null };
 const calls = (n: number, f: (i: number) => Partial<IdentityCall>): IdentityCall[] => Array.from({ length: n }, (_, i) => ({ ...base, ...f(i) }));
 
 describe("Alter Ego identity model (alter-ego)", () => {
@@ -45,7 +45,7 @@ describe("Alter Ego identity model (alter-ego)", () => {
   });
 
   it("calls you Contrarian when you often go against the crowd", () => {
-    const c = alterEgo(calls(10, (i) => ({ crowdShare: i < 8 ? 0.2 : 0.7, relation: i % 2 ? "higher" : "current" })));
+    const c = alterEgo(calls(10, (i) => ({ withCrowd: i >= 8, relation: i % 2 ? "higher" : "current" })));
     expect(c.revealed && c.axes[3]).toMatchObject({ value: 0.8, n: 10 });
     expect(c.revealed && c.modifier).toBe("Contrarian");
   });
@@ -54,10 +54,28 @@ describe("Alter Ego identity model (alter-ego)", () => {
     const steady = alterEgo(calls(10, (i) => ({ relation: i < 2 ? "higher" : "current", decisionType: i < 5 ? "future-type" : "next-over-intent", sport: i < 5 ? "cricket" : "tennis" })));
     expect(steady.revealed && steady.modifier).toBe("Steady");
     expect(steady.revealed && steady.axes[4].explanation).toBe("5 of 10 calls were future-type decisions, across 2 sports.");
-    const sharp = alterEgo(calls(10, (i) => ({ relation: i % 2 ? "higher" : "current", hit: i < 6 })));
+    const sharp = alterEgo(calls(10, (i) => ({ relation: i % 2 ? "higher" : "current", hit: i < 7, confidence: 0.7 })));
     expect(sharp.revealed && sharp.modifier).toBe("Sharp");
     const balanced = alterEgo(calls(10, (i) => ({ relation: i % 2 ? "higher" : "current", hit: i < 2, confidence: 0.9 })));
     expect(balanced.revealed && balanced.modifier).toBe("Balanced");
     expect(balanced.revealed && balanced.evidence[1]).toBe("Balanced: no single habit dominates your calls.");
+  });
+
+  it("never names a persona on no evidence: timing needs 3 calls per phase, and with no standout trait the file opens with the sport's analyst", () => {
+    // one lucky middle-over call against a mixed death-over record: timing isn't judged on a sample of one
+    const one = alterEgo(calls(10, (i) => ({ phase: i === 0 ? "middle" : "death", hit: i === 0 || i % 2 === 0, confidence: 0.9 })));
+    expect(one.revealed && one.axes[1]).toMatchObject({ value: null, explanation: "Needs at least 3 calls in both the middle and the death overs." });
+    // cautious, poorly calibrated, all death-over intent calls: no trait scores
+    const flat = alterEgo(calls(10, (i) => ({ hit: i < 3, confidence: 0.9 })));
+    expect(flat.revealed && flat.persona.slug).toBe("opener");
+    expect(flat.revealed && flat.evidence[0]).toBe("No single trait stands out yet, so your file opens with The Opener, the analyst of the sport you call most.");
+    const other = alterEgo(calls(10, (i) => ({ hit: i < 3, confidence: 0.9, sport: i < 6 ? "chess" : "tennis" })));
+    expect(other.revealed && other.persona.slug).toBe("opener");
+    const tennis = alterEgo(calls(10, (i) => ({ hit: i < 3, confidence: 0.9, sport: "tennis" })));
+    expect(tennis.revealed && tennis.persona.slug).toBe("iceman");
+    // a 50%-always caller is calibrated but not sharp: not The Iceman
+    const coin = alterEgo(calls(10, (i) => ({ hit: i < 5, confidence: 0.5, relation: i % 2 ? "higher" : "current" })));
+    expect(coin.revealed && coin.persona.slug).not.toBe("iceman");
+    expect(coin.revealed && coin.modifier).toBe("Balanced");
   });
 });

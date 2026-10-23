@@ -18,7 +18,8 @@ export function degradation(laps: Lap[]): { slopePerLap: number; used: number } 
 export function pitWindow(a: { slopePerLap: number; stintStartLap: number; pitLossSeconds: number }): { opensOnLap: number; lapsIntoStint: number; lossAtOpen: number } | null {
   if (!(a.pitLossSeconds > 0)) throw new RangeError("pit-lane loss must be positive");
   if (!(a.slopePerLap > 0)) return null;
-  let k = 0, loss = 0;
-  while (loss < a.pitLossSeconds) { k++; loss += a.slopePerLap * k; }
+  // smallest k with slope·k(k+1)/2 ≥ pit loss, in closed form (no loop, however small the slope)
+  const k = Math.max(1, Math.ceil((-1 + Math.sqrt(1 + (8 * a.pitLossSeconds) / a.slopePerLap)) / 2));
+  const loss = (a.slopePerLap * k * (k + 1)) / 2;
   return { opensOnLap: a.stintStartLap + k, lapsIntoStint: k, lossAtOpen: Math.round(loss * 1000) / 1000 };
 }

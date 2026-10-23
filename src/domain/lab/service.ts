@@ -1,6 +1,7 @@
 // The Decision Lab's moments. Before lock a fan sees only the pre-lock state: the reveal and the model's option
 // estimates stay on the server until the call is locked (F-L-02/F-L-03).
 import { namedCache } from "@/providers/cache";
+import { randomBytes } from "node:crypto";
 import { DomainError } from "@/domain/shared/types";
 import { track } from "@/domain/analytics/service";
 import * as repo from "./repo";
@@ -65,9 +66,13 @@ export async function lockCall(userId: string, input: LockInput): Promise<Locked
   const row = await repo.insertCall(userId, { momentId: m.id, option: input.option, confidence: input.confidence });
   if (!row) throw new DomainError("CONFLICT", "You've already locked a call on this moment.");
   await track("call_locked", { momentId: m.id, callId: row.id, confidence: Math.round(row.confidence * 100) }, userId);
-  // anomaly flags are a stub: logged for review, never acted on (F-T-05)
-  const flags = await integrityFlags(userId);
-  if (flags.length) log.warn("lab anomaly flags", { userId, flags: flags.map((f) => f.kind) });
+  // anomaly flags are a stub: logged for review, never acted on, and never able to fail a lock that is already saved
+  try {
+    const flags = await integrityFlags(userId, new Date(Date.now() - FLAG_WINDOW_MS));
+    if (flags.length) log.warn("lab anomaly flags", { userId, flags: flags.map((f) => f.kind) });
+  } catch (e) {
+    log.error("lab anomaly flags failed", { error: e instanceof Error ? e.message : String(e) });
+  }
   return { ...row, lockedAt: row.lockedAt.toISOString() };
 }
 
@@ -270,8 +275,9 @@ export async function shareCard(callId: string): Promise<ShareCardData | null> {
 }
 
 /** The fan's Alter Ego (F-R-03) from their graded calls; hidden until 10 graded calls. */
-export async function alterEgoFor(userId: string): Promise<Identity> {
-  await gradePending(userId);
+export async function alterEgoFor(userId: string, opts: { grade?: boolean } = {}): Promise<Identity> {
+  // public paths read existing grades only; a fan's own page grades pending calls first
+  if (opts.grade !== false) await gradePending(userId);
   const calls = (await repo.callsInLockOrder(userId)).filter((c) => c.review?.graded);
   const crowd = await repo.crowdCounts(calls.map((c) => c.momentId), userId);
   const input: IdentityCall[] = [];
@@ -280,21 +286,40 @@ export async function alterEgoFor(userId: string): Promise<Identity> {
     if (!m) continue;
     const others = crowd.filter((x) => x.momentId === c.momentId);
     const total = others.reduce((a, x) => a + x._count._all, 0);
+    const most = Math.max(0, ...others.map((x) => x._count._all));
     const same = others.find((x) => x.option === c.option)?._count._all ?? 0;
     const band = c.option.startsWith("rate:") ? Number(c.option.slice(5)) - rateBand({ b: m.prelock.ballsLeft, w: m.prelock.wicketsInHand, r: m.prelock.runsRequired }) : 0;
     input.push({
       relation: band > 0 ? "higher" : band < 0 ? "lower" : "current", phase: m.prelock.phase, decisionType: m.decision.type, sport: "cricket",
-      confidence: c.confidence, hit: c.review?.hit === true, leverage: m.leverage, crowdShare: total >= MIN_CROWD ? same / total : null,
+      confidence: c.confidence, hit: c.review?.hit === true, leverage: m.leverage, withCrowd: total >= MIN_CROWD ? same === most : null,
     });
   }
   return identityOf(input);
 }
 
+/** Opt in to sharing: a random, revocable token for the fan's card (only once their Alter Ego is revealed). */
+export async function shareAlterEgo(userId: string): Promise<{ token: string }> {
+  if (!(await alterEgoFor(userId)).revealed) throw new DomainError("CONFLICT", "Your Alter Ego is revealed after 10 graded calls.");
+  return repo.createShareToken(userId, randomBytes(18).toString("base64url"));
+}
+
+export async function stopSharingAlterEgo(userId: string): Promise<void> {
+  await repo.deleteShareToken(userId);
+}
+
+export const alterEgoShareToken = (userId: string): Promise<string | null> => repo.shareTokenFor(userId);
+
+/** The card behind a share token (public; reads existing grades only), or null for an unknown or revoked token. */
+export async function alterEgoCardByToken(token: string) {
+  const userId = await repo.userForShareToken(token);
+  return userId ? alterEgoCard(userId) : null;
+}
+
 /** The Alter Ego share card (F-R-04): display name, persona and the lead evidence; null until revealed. */
-export async function alterEgoCard(userId: string): Promise<{ displayName: string; label: string; evidence: string; graded: number; calibration: "Provisional calibration" } | null> {
+async function alterEgoCard(userId: string): Promise<{ displayName: string; label: string; evidence: string; graded: number; calibration: "Provisional calibration" } | null> {
   const name = await repo.displayName(userId);
   if (!name) return null;
-  const id = await alterEgoFor(userId);
+  const id = await alterEgoFor(userId, { grade: false });
   if (!id.revealed) return null;
   return { displayName: name, label: id.label, evidence: id.evidence[0], graded: id.graded, calibration: "Provisional calibration" };
 }
@@ -315,8 +340,11 @@ export async function seasonFile(userId: string, now = new Date()): Promise<Seas
   };
 }
 
-/** Anomaly flags on a fan's calls (burst locking, implausible streaks, always-maximum confidence), for review only. */
-export async function integrityFlags(userId: string): Promise<Flag[]> {
-  const calls = await repo.callsInLockOrder(userId);
+/** Flags are logged from the last hour of calls only, so an old burst isn't re-logged on every later lock. */
+const FLAG_WINDOW_MS = 60 * 60 * 1000;
+
+/** Anomaly flags on a fan's calls since `since` (all calls by default), for review only. */
+export async function integrityFlags(userId: string, since?: Date): Promise<Flag[]> {
+  const calls = (await repo.callsInLockOrder(userId)).filter((c) => !since || c.lockedAt >= since);
   return anomalyFlags(calls.map((c) => ({ lockedAt: c.lockedAt.toISOString(), confidence: c.confidence, hit: c.review?.graded ? c.review.hit : null })));
 }

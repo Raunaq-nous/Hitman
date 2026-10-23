@@ -26,6 +26,7 @@ model User {
   crewMembers     CrewMember[]
   labCalls        LabCall[]
   reviews         DecisionReview[]
+  alterEgoShare   AlterEgoShare?
 }
 
 /// A private group of fans. Replaces the legacy fantasy "leagues" (renamed in place; no fee or prize fields).
@@ -341,4 +342,12 @@ model DecisionReview {
   gradedAt      DateTime @default(now())
 
   @@index([userId, gradedAt])
+}
+
+/// A fan's opt-in link to their Alter Ego share card (F-R-04): created when they choose to share, revocable.
+model AlterEgoShare {
+  token     String   @id
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }

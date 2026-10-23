@@ -67,3 +67,8 @@ export const crowdCounts = (momentIds: string[], excludeUserId: string) =>
   prisma.labCall.groupBy({ by: ["momentId", "option"], where: { momentId: { in: momentIds }, userId: { not: excludeUserId } }, _count: { _all: true } });
 
 export const displayName = async (userId: string): Promise<string | null> => (await prisma.user.findUnique({ where: { id: userId }, select: { name: true } }))?.name ?? null;
+
+export const shareTokenFor = async (userId: string): Promise<string | null> => (await prisma.alterEgoShare.findUnique({ where: { userId }, select: { token: true } }))?.token ?? null;
+export const userForShareToken = async (token: string): Promise<string | null> => (await prisma.alterEgoShare.findUnique({ where: { token }, select: { userId: true } }))?.userId ?? null;
+export const createShareToken = (userId: string, token: string) => prisma.alterEgoShare.upsert({ where: { userId }, create: { userId, token }, update: {}, select: { token: true } });
+export const deleteShareToken = (userId: string) => prisma.alterEgoShare.deleteMany({ where: { userId } });

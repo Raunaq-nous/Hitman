@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentUserId } from "@/providers/auth";
-import { alterEgoFor } from "@/domain/lab/service";
+import { alterEgoFor, alterEgoShareToken } from "@/domain/lab/service";
+import { trackOnce } from "@/domain/analytics/service";
 import { ProvisionalBadge, Stamp } from "@/ui";
 import { DossierReveal, ShareAlterEgo } from "./Dossier";
 import "../lab.css";
@@ -15,6 +16,8 @@ export default async function AlterEgoPage(): Promise<React.JSX.Element> {
   const userId = await currentUserId();
   if (!userId) redirect(`/login?callbackUrl=${encodeURIComponent("/lab/alter-ego")}`);
   const id = await alterEgoFor(userId);
+  const token = id.revealed ? await alterEgoShareToken(userId) : null;
+  if (id.revealed) await trackOnce("alter_ego_revealed", { persona: id.persona.slug }, userId);
   return (
     <main className="crew-page lab-review">
       <header>
@@ -29,7 +32,7 @@ export default async function AlterEgoPage(): Promise<React.JSX.Element> {
           <p><Link className="lab-btn" href="/lab">Make a call</Link></p>
         </section>
       ) : (
-        <DossierReveal persona={id.persona.slug} label={id.label}>
+        <DossierReveal label={id.label}>
           <ul className="dossier-evidence">{id.evidence.map((e) => <li key={e}>{e}</li>)}</ul>
           <dl className="dossier-axes" data-testid="axes">
             {id.axes.map((a) => (
@@ -40,7 +43,8 @@ export default async function AlterEgoPage(): Promise<React.JSX.Element> {
             ))}
           </dl>
           <p className="lab-note">From {id.graded} graded calls. Grades use the exact model: <ProvisionalBadge /></p>
-          <p><ShareAlterEgo href={`/api/og/alter-ego/${userId}`} /></p>
+          <p className="lab-note">Your file is private. Sharing creates a link to a card with your display name and Alter Ego only; you can stop sharing at any time.</p>
+          <ShareAlterEgo initialUrl={token ? `/api/og/alter-ego/${token}` : null} />
         </DossierReveal>
       )}
     </main>

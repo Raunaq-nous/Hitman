@@ -15,6 +15,9 @@ describe("persona tool maths", () => {
     // 0.5 s/lap: loss after k laps = 0.5·k(k+1)/2 ≥ 20 → k = 9 (22.5 s)
     expect(pitWindow({ slopePerLap: 0.5, stintStartLap: 10, pitLossSeconds: 20 })).toEqual({ opensOnLap: 19, lapsIntoStint: 9, lossAtOpen: 22.5 });
     expect(pitWindow({ slopePerLap: 0, stintStartLap: 1, pitLossSeconds: 20 })).toBeNull();
+    // a tiny slope is solved directly, not lap by lap
+    expect(pitWindow({ slopePerLap: 1e-9, stintStartLap: 1, pitLossSeconds: 20 })?.lapsIntoStint).toBe(200000);
+    expect(pitWindow({ slopePerLap: 2, stintStartLap: 1, pitLossSeconds: 6 })).toEqual({ opensOnLap: 3, lapsIntoStint: 2, lossAtOpen: 6 });
     expect(() => pitWindow({ slopePerLap: 0.1, stintStartLap: 1, pitLossSeconds: 0 })).toThrow(RangeError);
   });
 
