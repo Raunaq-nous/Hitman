@@ -26,7 +26,7 @@ Cross-cutting concerns (auth, rights, telemetry, feature flags, LLM, cache) ente
 ## Decision Lab data flow
 - Golden moments are a committed, hashed fixture (`data/fixtures/moments/golden-moments.json`); pre-lock DTOs (`toPrelock`) carry no reveal, no option WPs and no post-lock path.
 - `LabCall`: one final call per user and moment (unique key), server timestamp. `DecisionReview`: the deterministic grade with receipts (fixture and model hashes), built in lock order from the fixture and the user's calls, so `regradeUser` reproduces it; a late-committing call rebuilds the reviews after it.
-- The reveal and the review are served only for the caller's own locked call. The share image (`/api/og/call/[id]`) is public by call id, shows the display name and read only (never the pick), is rate-limited and cacheable.
+- The reveal and the review are served only for the caller's own locked call. The share image (`/api/og/call/[callId]`) is public by call id, shows the display name and read only (never the pick), is rate-limited and cacheable. The Alter Ego image (`/api/og/alter-ego/[token]`) is reachable only through the fan's opt-in, revocable share token.
 - KPI events `call_locked`, `call_graded`, `review_viewed` and `alter_ego_revealed` (once per fan) are recorded by the server only; browsers may send only the events in `CLIENT_EVENTS`.
 - Alter Ego (`src/engine/alterEgo.ts`) is computed from the fan's graded calls and the crowd's picks; the fan's page grades pending calls first, while the public share card reads existing grades only and is reached through an opt-in, revocable `AlterEgoShare` token. The Season File is a printable server page of the fan's own Notebook data.
 - Persona tools (`src/domain/roster/service.ts`) read the Lab's moments, the recorded replays (rights-checked for display; OpenF1 is prototype-only) or labelled illustrative inputs to pure engine models (`tennis`, `f1`, `basketball`).
@@ -41,7 +41,7 @@ Next.js 16 (App Router), React 19, TypeScript strict, Tailwind 4 with CSS-variab
 | Formula 1 | OpenF1 historical (unofficial; `PROTOTYPE_DATA`) | Licensed F1 data |
 | Football | StatsBomb open data (attribution) | Licensed event feed |
 | Basketball, Tennis | Honest "source pending" states | Licensed feeds |
-Policies live in `src/rights/policies/*.json` (schema in `docs/design-docs/data-and-rights.md`).
+Policies live in `src/rights/policies/*.json` (cricsheet, openf1, statsbomb, cricketdata, wikidata; schema in `docs/design-docs/data-and-rights.md`).
 
 ## Feature flags
-`LIVE_CALLS=false` (no live calls until a licensed feed exists) · `PROTOTYPE_DATA=true` locally, `false` in production builds · `LLM_ENABLED` auto-true only when `GEMINI_API_KEY` is set.
+`LIVE_CALLS=false` (no live calls until a licensed feed exists) · `PROTOTYPE_DATA` defaults to true locally and to false in production when unset (set it explicitly to override) · `LLM_ENABLED` auto-true only when `GEMINI_API_KEY` is set.

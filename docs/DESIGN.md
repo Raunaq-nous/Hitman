@@ -14,8 +14,8 @@ Calm, dense and legible, like a well-kept case file, with the clarity of Otl Aic
 | `--professor` | #7540CC | The Professor / timing purple |
 | `--iceman` | #1F8FC4 | The Iceman |
 | `--call` | #FFD23F | The one hero colour: only where a decision is made or graded |
-| `--receipt` | #A9B4C2 | Receipts and metadata |
-| `--brick` | muted brick (choose ≈ #B5523B, check contrast) | Errors and losses (never pure red) |
+| `--receipt` | #6B7A8F light, #A9B4C2 dark | Receipts and metadata |
+| `--brick` | #B5523B light, #FF8C75 dark (contrast checked) | Errors and losses (never pure red) |
 Rules: no pure black or pure red; one hero colour (call yellow); each persona owns its colour; all text meets WCAG AA contrast in both themes.
 
 ## Type (self-hosted via fontsource)
