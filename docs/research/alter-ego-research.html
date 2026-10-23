@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>From Hitman to ALTER EGO: research and product story</title>
+<meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0C1626" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --paper:#F5F7FA; --surface:#FFFFFF; --wash:#EAF0F6;
+  --ink:#13233A; --ink-2:#4A5A70; --line:#D6DFEA;
+  --opener:#1E9A55; --closer:#E06A10; --architect:#2C58D4; --professor:#7540CC; --iceman:#1F8FC4;
+  --call:#FFD23F; --call-ink:#13233A; --on-band:#FFFFFF; --minus:#B4462F; --focus:#13233A;
+  --font-text:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-display:"Archivo","Arial Narrow","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#0C1626; --surface:#122136; --wash:#182A42;
+    --ink:#EDF2F9; --ink-2:#A6B4C8; --line:#27394F;
+    --opener:#2FB96B; --closer:#FF8A3A; --architect:#6D8FFF; --professor:#A67CFF; --iceman:#4FC0EC;
+    --call:#FFD95A; --on-band:#0C1626; --minus:#FF8C75; --focus:#EDF2F9;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0C1626; --surface:#122136; --wash:#182A42;
+  --ink:#EDF2F9; --ink-2:#A6B4C8; --line:#27394F;
+  --opener:#2FB96B; --closer:#FF8A3A; --architect:#6D8FFF; --professor:#A67CFF; --iceman:#4FC0EC;
+  --call:#FFD95A; --on-band:#0C1626; --minus:#FF8C75; --focus:#EDF2F9;
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none !important}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 84px);-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-text);font-size:1.0625rem;line-height:1.62;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-display)}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:.18em}
+a:hover{text-decoration-thickness:2px}
+::selection{background:var(--call);color:var(--call-ink)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
+.skip{position:absolute;left:12px;top:-64px;z-index:50;background:var(--ink);color:var(--paper);padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+.skip:focus{top:calc(env(safe-area-inset-top,0px) + 10px)}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+@supports (backdrop-filter:blur(1px)){
+  .top,body::before{background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2)}
+}
+.top-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.mark{display:inline-grid;grid-template-columns:repeat(5,5px);gap:2px;height:20px}
+.mark i{display:block}
+.mark i:nth-child(1){background:var(--opener)}.mark i:nth-child(2){background:var(--closer)}.mark i:nth-child(3){background:var(--architect)}.mark i:nth-child(4){background:var(--professor)}.mark i:nth-child(5){background:var(--iceman)}
+.wordmark{font-family:var(--font-display);font-weight:900;font-stretch:62%;font-size:1.55rem;line-height:1;letter-spacing:.015em;white-space:nowrap}
+.top-title{font-weight:600;font-size:.9375rem;color:var(--ink-2)}
+@media (max-width:640px){.top-title{display:none}}
+.btn{display:inline-flex;align-items:center;justify-content:center;font:inherit;font-weight:700;font-stretch:88%;font-size:.9375rem;line-height:1.2;padding:.55em 1em;border-radius:999px;border:2px solid var(--ink);text-decoration:none;background:var(--ink);color:var(--paper)}
+.btn:hover{background:color-mix(in srgb,var(--ink) 84%,var(--paper))}
+
+/* Title block */
+.doc-head{padding-block:clamp(36px,6vw,80px) clamp(24px,3vw,36px);border-bottom:1px solid var(--line)}
+.doc-title{margin:0 0 1rem;font-weight:850;font-stretch:63%;font-size:clamp(3rem,7.4vw,6.4rem);line-height:.88;letter-spacing:-.01em;max-width:14ch;text-wrap:balance}
+.doc-sub{margin:0 0 1.2rem;font-size:clamp(1.0625rem,1.6vw,1.3rem);line-height:1.5;color:var(--ink-2);max-width:60ch}
+.doc-meta{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.doc-meta li{font-size:.875rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.2em .8em;color:var(--ink-2);background:var(--surface)}
+
+/* Layout */
+.doc{display:grid;grid-template-columns:250px minmax(0,1fr);gap:clamp(24px,4vw,64px);padding-block:clamp(24px,3vw,40px) 64px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px);align-self:start;max-height:calc(100vh - 100px);overflow:auto;padding-right:4px}
+.toc summary{cursor:pointer;font-weight:800;font-stretch:84%;font-size:1.05rem;padding:8px 2px;list-style:none}
+.toc summary::-webkit-details-marker{display:none}
+.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+.toc a{display:grid;grid-template-columns:1.9rem 1fr;gap:4px;padding:6px 8px;border-radius:8px;text-decoration:none;color:var(--ink-2);font-size:.9375rem;line-height:1.3}
+.toc a:hover,.toc a[aria-current="true"]{background:var(--wash);color:var(--ink)}
+.toc .n{font-variant-numeric:tabular-nums;font-weight:700}
+@media (min-width:981px){.toc summary{display:none}}
+@media (max-width:980px){
+  .doc{grid-template-columns:1fr}
+  .toc{position:static;max-height:none;border:1px solid var(--line);border-radius:14px;padding:6px 10px;background:var(--surface)}
+}
+.content{min-width:0;max-width:900px}
+.part{padding-top:clamp(28px,4vw,52px);scroll-margin-top:84px}
+.part > h2{display:flex;align-items:baseline;gap:.35em;margin:0 0 1rem;padding-top:.85rem;border-top:6px solid var(--c,var(--ink));font-weight:850;font-stretch:64%;font-size:clamp(2.1rem,4.6vw,3.3rem);line-height:.95}
+.part > h2 .n{color:var(--ink-2);font-variant-numeric:tabular-nums}
+.content h3{margin:1.7rem 0 .5rem;font-weight:850;font-stretch:76%;font-size:1.4rem;line-height:1.15}
+.content p{margin:0 0 1rem;max-width:72ch}
+.ref{font-family:var(--font-text);font-size:.72rem;font-weight:700;text-decoration:none;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:0 .42em;margin-left:.18em;vertical-align:.18em;white-space:nowrap;line-height:1.6}
+.ref:hover{color:var(--ink);border-color:var(--ink-2)}
+.tablewrap{overflow-x:auto;margin:1rem 0 1.5rem;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:.9375rem;line-height:1.5}
+th,td{text-align:left;vertical-align:top;padding:12px 14px;border-top:1px solid var(--line)}
+thead th{border-top:0;background:var(--wash);font-weight:700;font-stretch:88%;white-space:nowrap}
+td code,p code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86em;background:var(--wash);border-radius:6px;padding:.05em .35em;overflow-wrap:anywhere}
+.sev{display:inline-block;font-weight:700;font-size:.8125rem;padding:.12em .6em;border-radius:999px;white-space:nowrap}
+.sev.crit{background:var(--ink);color:var(--paper)}
+.sev.high{background:var(--call);color:var(--call-ink)}
+.sev.med{background:var(--wash);color:var(--ink);border:1px solid var(--line)}
+.sev.gap{border:1px dashed var(--ink-2);color:var(--ink)}
+.callout{position:relative;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--c,var(--ink));border-radius:0 14px 14px 0;padding:16px 20px;margin:1.3rem 0}
+.callout h4{margin:0 0 .4rem;font-weight:850;font-stretch:80%;font-size:1.15rem}
+.callout p{margin:0 0 .6rem}
+.callout p:last-child{margin-bottom:0}
+pre{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;font-size:.875rem;line-height:1.55;margin:1rem 0 1.4rem}
+pre code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.flow{list-style:none;margin:1rem 0 1.5rem;padding:0;display:grid;gap:10px}
+.flow li{display:grid;grid-template-columns:160px minmax(0,1fr);gap:14px;align-items:start;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--c,var(--ink));border-radius:0 12px 12px 0;padding:12px 16px;position:relative}
+.flow li + li::before{content:"";position:absolute;left:22px;top:-11px;width:2px;height:10px;background:var(--ink-2)}
+.flow b{font-family:var(--font-display);font-weight:850;font-stretch:76%;font-size:1.1rem;line-height:1.2}
+.flow span{font-size:.9375rem}
+@media (max-width:640px){.flow li{grid-template-columns:1fr;gap:4px}}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:1rem 0 1.4rem}
+.sw{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.sw i{display:block;height:56px;background:var(--c)}
+.sw p{margin:0;padding:8px 10px;font-size:.875rem;line-height:1.35}
+.sw b{display:block;font-weight:800}
+.sw span{color:var(--ink-2);font-variant-numeric:tabular-nums}
+.pg-row{display:flex;gap:10px;flex-wrap:wrap;margin:1rem 0 1.4rem}
+.pg-row span{display:grid;place-items:center;width:72px;height:90px;background:var(--c);color:var(--on-band)}
+.pg-row svg{width:70%;height:auto}
+.journey{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:1rem 0}
+.journey h3{margin-top:0}
+.journey p{margin-bottom:.6rem}
+.journey p:last-child{margin-bottom:0}
+.sources h3{margin-top:1.4rem}
+.sources ol{margin:.4rem 0 0;padding-left:2.2rem}
+.sources li{margin:.25rem 0;font-size:.9375rem;line-height:1.45;overflow-wrap:anywhere;scroll-margin-top:96px}
+.sources li:target{background:color-mix(in srgb,var(--call) 30%,transparent);border-radius:6px}
+.foot{border-top:1px solid var(--line);padding-block:32px 44px;color:var(--ink-2);font-size:.9375rem}
+.foot p{margin:.35rem 0;max-width:80ch}
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0"><defs>
+<symbol id="pg-cricket" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2"><path d="M21 14.5 23 28"/><path d="M23 28 17 37 18.5 45"/><path d="M23 28 29.5 37 32 45"/><path d="M22 18 30 22.5"/><path d="M30 22.5 41.5 9.5" stroke-width="5.4"/></g><circle cx="20.5" cy="8.6" r="4.2" fill="currentColor"/><circle cx="41" cy="31" r="2.7" fill="currentColor"/></symbol>
+<symbol id="pg-basketball" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2"><path d="M21 15 23 28"/><path d="M21.5 17.5 28 14 30 7"/><path d="M21.5 17.5 14 21"/><path d="M23 28 19 36 21 44"/><path d="M23 28 29 35 27.5 43"/></g><circle cx="20" cy="9" r="4" fill="currentColor"/><circle cx="33" cy="3.9" r="3.3" fill="currentColor"/></symbol>
+<symbol id="pg-football" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2"><path d="M19.5 15 23 28.5"/><path d="M23 28.5 20.5 37.5 21.5 45"/><path d="M23 28.5 32 33.5 39 31"/><path d="M20.5 18 12 22.5"/><path d="M20.5 18 29 19.5"/></g><circle cx="19" cy="8.8" r="4.2" fill="currentColor"/><circle cx="43.2" cy="36.5" r="3.3" fill="currentColor"/></symbol>
+<symbol id="pg-f1" viewBox="0 0 48 48"><g fill="currentColor"><path d="M5 31.5V28l4.5-1.8h9.8l2.6-3.7h7l2.6 3.7 9.8 1.4 5.2 2.4v1.5z"/><rect x="2.5" y="19" width="9" height="3.2" rx="1.2"/><rect x="5.4" y="21" width="3" height="7.5"/><circle cx="25.2" cy="20.2" r="3.4"/><circle cx="13.5" cy="33.6" r="5.4"/><circle cx="37.5" cy="33.6" r="5.4"/></g></symbol>
+<symbol id="pg-tennis" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2"><path d="M22.8 20 24.5 32.5"/><path d="M24.5 32.5 19.5 40 20.5 46"/><path d="M24.5 32.5 30.5 39.5 32.5 46"/><path d="M23 22.5 15.5 15 13.5 10.5"/><path d="M23.5 22.5 30.5 16 33 11.5"/><ellipse cx="35.4" cy="7.3" rx="3.2" ry="4.5" stroke-width="3" transform="rotate(32 35.4 7.3)"/></g><circle cx="23.5" cy="13.6" r="3.9" fill="currentColor"/><circle cx="12.2" cy="5.4" r="2.5" fill="currentColor"/></symbol>
+</defs></svg>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="#main" aria-label="Back to the top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="wordmark">ALTER EGO</span></a>
+    <span class="top-title">Research and product story</span>
+    <a class="btn" href="https://claude.ai/artifact/THq7LFnymt5Awi8osLQD8X">Landing concept</a>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <section class="doc-head">
+    <h1 class="doc-title">From Hitman to ALTER EGO</h1>
+    <p class="doc-sub">A review of the existing codebase, a scan of how AI is changing sport, and the product story for a multi-sport desk and game built around legendary mentalities.</p>
+    <ul class="doc-meta"><li>Version 1</li><li>17 October 2026</li><li>Working title: ALTER EGO</li></ul>
+  </section>
+
+  <div class="doc">
+    <nav class="toc" aria-label="Contents">
+      <details open id="tocd"><summary>Contents</summary>
+      <ol>
+        <li><a href="#p1"><span class="n">1</span><span>Summary</span></a></li>
+        <li><a href="#p2"><span class="n">2</span><span>The codebase today</span></a></li>
+        <li><a href="#p3"><span class="n">3</span><span>Fix first</span></a></li>
+        <li><a href="#p4"><span class="n">4</span><span>What changed in AI</span></a></li>
+        <li><a href="#p5"><span class="n">5</span><span>Target architecture</span></a></li>
+        <li><a href="#p6"><span class="n">6</span><span>The market</span></a></li>
+        <li><a href="#p7"><span class="n">7</span><span>What big tech and leagues shipped</span></a></li>
+        <li><a href="#p8"><span class="n">8</span><span>Funded startups</span></a></li>
+        <li><a href="#p9"><span class="n">9</span><span>Open data and research</span></a></li>
+        <li><a href="#p10"><span class="n">10</span><span>White space</span></a></li>
+        <li><a href="#p11"><span class="n">11</span><span>Product story</span></a></li>
+        <li><a href="#p12"><span class="n">12</span><span>Fan journeys</span></a></li>
+        <li><a href="#p13"><span class="n">13</span><span>The roster</span></a></li>
+        <li><a href="#p14"><span class="n">14</span><span>Look and feel</span></a></li>
+        <li><a href="#p15"><span class="n">15</span><span>Roadmap</span></a></li>
+        <li><a href="#p16"><span class="n">16</span><span>Risks and open questions</span></a></li>
+        <li><a href="#p17"><span class="n">17</span><span>Sources</span></a></li>
+      </ol>
+      </details>
+    </nav>
+
+    <article class="content">
+      <section class="part" id="p1" style="--c:var(--ink)">
+        <h2><span class="n">1</span>Summary</h2>
+        <p>Hitman is an IPL-only fantasy app built on Next.js. Its fantasy points are generated at random, its prize pool runs through a personal UPI ID, and its admin routes are open to anyone. India’s 2025 online gaming law prohibits money games whether they rely on skill or chance, and bans facilitating payments for them, so the payment flow has to come down before anything else.<a class="ref" href="#s26">26</a><a class="ref" href="#s27">27</a></p>
+        <p>The market has moved since the build. Leagues and big tech now ship AI companions, AI-voiced recaps and AI-derived stats: the Premier League’s Copilot companion, ESPN’s personalized SportsCenter, the NBA’s new tracking metrics and Wimbledon’s Match Chat.<a class="ref" href="#s12">12</a><a class="ref" href="#s14">14</a><a class="ref" href="#s16">16</a><a class="ref" href="#s18">18</a> A collated summary of what’s happening is now table stakes, not a product.</p>
+        <p>The open space is depth across sports plus a game that scores fans on how well they read the game. Every insight carries a receipt back to its source data, and every call is graded on the quality of the decision rather than the outcome. The legends’ nicknames give the product its story, but HITMAN and Mamba are protected marks, so the public product uses its own names.</p>
+        <div class="callout" style="--c:var(--call)">
+          <h4>Decisions locked in this version</h4>
+          <p>The working title is ALTER EGO, pending a trademark search. Five persona agents carry public names: The Opener for cricket, The Closer for basketball, The Architect for football, The Professor for F1 and The Iceman for tennis. The legends’ codenames stay internal and appear only as editorial lineage.</p>
+          <p>Make the Call is the signature mechanic, graded on decision quality. There is no real money anywhere in the product. Cricket and F1 come first because their open data is the deepest.</p>
+          <p><a href="https://claude.ai/artifact/THq7LFnymt5Awi8osLQD8X">Open the landing concept</a>, which includes a working three-call demo.</p>
+        </div>
+      </section>
+
+      <section class="part" id="p2" style="--c:var(--architect)">
+        <h2><span class="n">2</span>The codebase today</h2>
+        <p>The repository (package name <code>pitch11-app</code>) is a Next.js 16, React 19, Tailwind 4 and Prisma application deployed to Vercel as a progressive web app. It runs to about 5,300 lines across 40 source files. It offers credential login, private leagues joined by invite code, an 11-player team builder with credits and role limits, a hand-typed IPL 2026 schedule and points table, live scores from CricketData.org’s current-matches endpoint, a template-driven ball-by-ball simulator, leaderboards and a “Treasurer” prize pool. There is no language model, retrieval or agent anywhere in the code.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Severity</th><th>Finding</th><th>Where</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td><span class="sev crit">Critical</span></td><td>₹100 entry fees are collected through a UPI QR code that points at a personal UPI ID hardcoded in client code, with payout tiers from winner-takes-all to a top-four split. Payment status is only browser state.</td><td><code>components/TreasurerCard.tsx</code></td><td>Remove the component and all payout copy. Purge the UPI ID from git history. Bring rewards back only as non-monetary prizes after legal review.</td></tr>
+            <tr><td><span class="sev crit">Critical</span></td><td>Fantasy points are invented: <code>/api/score</code> assigns each player random runs (0 to 80), wickets and catches. The cron route uses a second, different scoring table labelled as Dream11’s.</td><td><code>api/score</code>, <code>api/cron/simulate-match</code></td><td>Delete random scoring. Score only from real ball-by-ball data through one versioned scoring config.</td></tr>
+            <tr><td><span class="sev crit">Critical</span></td><td>Admin routes have no authentication. <code>/api/seed</code> deletes every table and reseeds; <code>/api/score</code> completes a match and adds XP on every call; <code>/api/toss</code> flips match state; anyone can trigger the simulator.</td><td><code>app/api/*</code></td><td>Require an admin role or a signed cron secret, and make scoring idempotent per match.</td></tr>
+            <tr><td><span class="sev crit">Critical</span></td><td>The session secret falls back to a hardcoded string when <code>NEXTAUTH_SECRET</code> is missing, so sessions could be forged.</td><td><code>lib/auth.ts</code></td><td>Fail the build without the secret, then rotate it.</td></tr>
+            <tr><td><span class="sev crit">Critical</span></td><td><code>prisma/dev.db</code> is committed with five user records (emails and password hashes), and scripts contain test passwords.</td><td><code>prisma/</code>, <code>scripts/</code></td><td>Remove from the repo and its history, ignore <code>*.db</code>, and let those five users know.</td></tr>
+            <tr><td><span class="sev high">High</span></td><td>Any database match marked in progress shows a hardcoded 85/2 (10.4) as its live score and outranks real API data. When the API fails, the route still returns success with mock data, while the UI promises 100% accurate live scores.</td><td><code>api/live-score/route.ts</code></td><td>Never fabricate. Label simulations, show stale data as stale, and drop the accuracy claim.</td></tr>
+            <tr><td><span class="sev high">High</span></td><td>The batting side is found by matching the first word of a team name, so “Royal” matches both Royal Challengers Bengaluru and Rajasthan Royals. The bowling side is hardcoded, run rate divides by 10.4 instead of 10⅔ overs, and balls remaining uses floating-point arithmetic.</td><td><code>api/live-score/route.ts</code></td><td>Use the provider’s structured innings fields and convert overs to balls once.</td></tr>
+            <tr><td><span class="sev high">High</span></td><td>Team submissions are only validated in the browser. The server doesn’t check the 100-credit cap, role minimums, players per franchise, captain within the XI, players belonging to the match, or a deadline at the toss.</td><td><code>api/team</code></td><td>Validate on the server with a shared rule schema and lock teams at the toss.</td></tr>
+            <tr><td><span class="sev high">High</span></td><td>Simulator state and the live-score cache live in serverless memory, so they reset on cold starts and differ between instances. <code>node-cron</code> can’t run on Vercel, and <code>cheerio</code> is installed but unused.</td><td><code>lib/matchEngine.ts</code></td><td>Persist state in Postgres or Redis, and run jobs on a queue or scheduled worker.</td></tr>
+            <tr><td><span class="sev high">High</span></td><td>The last recorded production build failed while prerendering, because an environment variable resolved to an empty URL.</td><td><code>build_log.txt</code></td><td>Validate environment variables at startup.</td></tr>
+            <tr><td><span class="sev med">Medium</span></td><td>Two squad lists disagree. The simulator’s 2024–25 rosters put several players in two teams (Trent Boult in MI and RR, Tim David in MI and RCB), while the seed uses 2026 squads. The points table is static but labelled verified real-time, and team logos are hot-linked from iplt20.com.</td><td><code>lib/matchEngine.ts</code>, <code>constants/iplData.ts</code></td><td>Use one source of truth fed by a provider, and stop hot-linking marks.</td></tr>
+            <tr><td><span class="sev med">Medium</span></td><td>The data model is IPL-shaped: teams are strings, players carry cricket roles and credits, and stats are runs and wickets.</td><td><code>prisma/schema.prisma</code></td><td>Move to the sport-agnostic event model in section 5.</td></tr>
+            <tr><td><span class="sev med">Medium</span></td><td>Clients poll every 10 to 30 seconds against a free-tier quota (the code’s fallback assumes 100 calls a day), and the score widget sends a match ID that the API ignores.</td><td><code>LiveScoreWidget</code>, <code>LiveMatchCenter</code></td><td>Push updates over SSE or WebSockets from one ingestion worker.</td></tr>
+            <tr><td><span class="sev med">Medium</span></td><td>AGENTS.md holds only the Next.js boilerplate notice and CLAUDE.md just imports it, so coding agents get no map of the project.</td><td><code>AGENTS.md</code>, <code>CLAUDE.md</code></td><td>Write a real project map: architecture, data contracts, commands and never-do rules.</td></tr>
+            <tr><td><span class="sev med">Medium</span></td><td>The viewport disables zoom, every surface uses a monospace face, and the near-black, red-accent, tracked-caps look is the most common generated-app template.</td><td><code>app/layout.tsx</code>, <code>globals.css</code></td><td>Allow zoom and adopt the design system in section 14.</td></tr>
+            <tr><td><span class="sev gap">Gap</span></td><td>There is no AI anywhere: the commentary is template strings driven by a seeded random generator.</td><td><code>lib/matchEngine.ts</code></td><td>Keep the deterministic simulator idea, calibrate it on Cricsheet, and add the agent layer.</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Worth keeping</h3>
+        <p>The Next.js 16, React 19 and Tailwind 4 shell is current. The PWA setup works, the league-invite flow is a good social loop, and a seeded simulator is the right idea for deterministic replays once it’s calibrated on real ball-by-ball data.</p>
+      </section>
+
+      <section class="part" id="p3" style="--c:var(--closer)">
+        <h2><span class="n">3</span>Fix first</h2>
+        <p>Phase 0 makes the existing app safe and honest before any new feature lands. The order matters: money and data exposure first, then integrity, then reliability.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Order</th><th>Action</th><th>Done when</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Take down the Treasurer pool and payout copy, and purge the UPI ID from git history.</td><td>No payment path, QR code or prize copy exists anywhere in the repo or its history.</td></tr>
+            <tr><td>2</td><td>Remove random scoring and label every simulation as a simulation.</td><td>Every point traces to a real delivery or is clearly marked simulated.</td></tr>
+            <tr><td>3</td><td>Put admin routes behind an admin role or a signed cron secret.</td><td>Unauthenticated calls to seed, score, toss and simulate return 401.</td></tr>
+            <tr><td>4</td><td>Make the session secret mandatory and rotate it; delete the committed database and test credentials.</td><td>The build fails without the secret, and a secret scan of the repo comes back clean.</td></tr>
+            <tr><td>5</td><td>Stop fabricating live scores, and fix the batting-side, run-rate and balls-left bugs.</td><td>Live states show source, freshness and staleness honestly.</td></tr>
+            <tr><td>6</td><td>Validate team submissions on the server and lock them at the toss.</td><td>Invalid or late teams are rejected by the API, not just the UI.</td></tr>
+            <tr><td>7</td><td>Move state out of serverless memory and run jobs on a worker.</td><td>A cold start loses nothing.</td></tr>
+            <tr><td>8</td><td>Rename the public product and replace hot-linked logos.</td><td>No third-party marks are loaded or used as brand names.</td></tr>
+            <tr><td>9</td><td>Rewrite AGENTS.md as a real project map, reusing the Codebase Cartographer approach from Pulse and Atlas.</td><td>A fresh coding agent can explain the architecture from the repo alone.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="part" id="p4" style="--c:var(--professor)">
+        <h2><span class="n">4</span>What changed in AI</h2>
+        <p>An agent is now described as a model plus a harness: the loop, tools, context management, safety controls and orchestration that sit around the model. Harness engineering was named as a discipline in early 2026.<a class="ref" href="#s49">49</a> Practitioners frame it as the third phase of AI engineering, after prompt engineering and context engineering, with the focus moving to autonomy, accuracy and control.<a class="ref" href="#s50">50</a></p>
+        <p>A source-code study of eleven production coding harnesses found that SKILL.md skills had overtaken MCP in adoption, nine systems against eight, and that the harness turned from a tool into a platform during the first half of 2026.<a class="ref" href="#s49">49</a> The working discipline is to treat agent mistakes as permanent signals, so every rule in an AGENTS.md file traces back to something that actually went wrong.<a class="ref" href="#s51">51</a></p>
+        <p>Anthropic’s guidance for long-running work pairs an initializer agent, which sets up the environment, with coding agents that make incremental progress and leave artifacts such as a progress log for the next session.<a class="ref" href="#s52">52</a> Its Managed Agents service separates the session log, the harness loop and the sandbox, so long-horizon work doesn’t depend on any one context window.<a class="ref" href="#s53">53</a> Related engineering notes cover context engineering, Agent Skills and code execution with MCP.<a class="ref" href="#s54">54</a></p>
+        <p>For ALTER EGO, two harnesses matter. The build harness is how you and your coding agents build the product. The runtime harness is how the product itself reasons about sport. Section 5 specifies both.</p>
+      </section>
+
+      <section class="part" id="p5" style="--c:var(--professor)">
+        <h2><span class="n">5</span>Target architecture</h2>
+        <h3>Runtime harness</h3>
+        <p>Each layer hands a narrower, better-checked object to the next. Language models only ever reason over numbers that the layers below have computed and can trace.</p>
+        <ol class="flow">
+          <li style="--c:var(--opener)"><b>Sources</b><span>Licensed live feeds, plus open data: Cricsheet, FastF1, Jolpica and OpenF1, StatsBomb open data, nba_api and tennis point-by-point files.</span></li>
+          <li style="--c:var(--iceman)"><b>Adapters</b><span>One MCP server per data domain. Each normalizes into the canonical model, rate-limits, caches and stamps attribution.</span></li>
+          <li style="--c:var(--architect)"><b>Event store</b><span>Append-only incidents (deliveries, laps, possessions, points) in Postgres, with Redis for live fan-out and SSE or WebSockets to clients.</span></li>
+          <li style="--c:var(--professor)"><b>Models</b><span>Plain code: win probability per sport, ball-by-ball and race simulators, the swing index and the decision grader.</span></li>
+          <li style="--c:var(--closer)"><b>Agents</b><span>An orchestrator plus the five roster agents, each with a SKILL.md playbook. Models reason and narrate over computed outputs.</span></li>
+          <li style="--c:var(--minus)"><b>Guards</b><span>A provenance check that every number resolves to a record, a numeric fact-checker, golden-question evals per sport, and policy checks for real-money language and impersonation.</span></li>
+          <li style="--c:var(--call)"><b>Surfaces</b><span>The Desk, Make the Call, the Roster and Alter Ego, plus an MCP endpoint so assistants can call the analysis.</span></li>
+        </ol>
+        <h3>Canonical data model</h3>
+<pre><code>Sport → Competition → Season → Event
+Event → Participants (teams, players, drivers)
+Event → Periods (innings, halves, quarters, sets, stints)
+Period → Incidents (delivery, possession, lap, point)
+         { t, actor, type, payload, source_ref }
+Incident → Derived (win_prob, swing, xG, xFG, tyre_age, ...)
+Call → { moment_ref, options[], model_read, pick, grade, locked_at }</code></pre>
+        <p>The <code>source_ref</code> on every incident is what makes receipts possible: any sentence the product writes must be able to cite the incidents it relied on. Borrowing field names from an existing sports-data standard will make provider adapters easier to write.</p>
+        <h3>Model routing</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Work</th><th>Model tier</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Live micro-copy, tagging, translation drafts</td><td>Claude Haiku 5.5</td><td>Latency and cost at match volume</td></tr>
+            <tr><td>Brief writing, receipts, call explanations</td><td>Claude Sonnet 5.5</td><td>Quality at daily volume</td></tr>
+            <tr><td>Weekly long reads, agent design, eval generation</td><td>Claude Opus 5.5</td><td>Depth on low-volume, high-stakes work</td></tr>
+          </tbody>
+        </table></div>
+        <p>Cache shared context such as rules, rosters and style guides, and batch the overnight brief generation rather than running it live.</p>
+        <h3>Build harness</h3>
+        <p>Start with a real AGENTS.md and CLAUDE.md that map the architecture, the canonical model, the commands and the never-do rules, such as “never fabricate a score” and “never add a payment path”. Add hooks that block merges without a passing typecheck, lint, tests and a secret scan. Give each data adapter its own sub-agent and fixture set of golden match data, so tests act as the agent’s sensors. Keep a progress file per epic so long builds survive across sessions.</p>
+      </section>
+
+      <section class="part" id="p6" style="--c:var(--opener)">
+        <h2><span class="n">6</span>The market</h2>
+        <h3>How fans watch now</h3>
+        <p>Younger fans increasingly follow sport through highlights and clips. In a June 2026 survey, 47% of 18 to 24-year-olds and 51% of 25 to 34-year-olds said highlights were replacing live games for them, against 38% of all Americans. 58% of both groups use a second screen during live sport, and more than half want one app for every sport they watch.<a class="ref" href="#s5">5</a> A YouGov-based study of Gen Z found 92% of Gen Z sports fans do something else on their phones while a game is on.<a class="ref" href="#s6">6</a> On the industry side, 81% of 675 sports media executives said they had expanded their use of AI in the past year, and they expect owned apps and social video to overtake websites as the main fan channels by 2030.<a class="ref" href="#s82">82</a></p>
+        <h3>Where the money is going</h3>
+        <p>2025 was a record year, with about $200B in announced sports-tech deal value across more than 1,000 deals.<a class="ref" href="#s1">1</a> Q1 2026 added $130.6B across 239 deals, including $2.9B of private financing over 117 rounds, 80% of them early stage. The largest rounds went to prediction markets and wearables: Kalshi raised about $1B at a valuation near $22B, Polymarket took $600M from ICE, WHOOP raised $575M and Novig $75M.<a class="ref" href="#s2">2</a> Fan engagement and experience made up a third of sports-tech M&amp;A value in 2024,<a class="ref" href="#s83">83</a> and fan-platform startups now crowd the seed-to-Series A market.<a class="ref" href="#s4">4</a></p>
+        <h3>India specifics</h3>
+        <p>A Google and Deloitte report counts 655 million sports fans in India, 36% of them women and 59% in rural areas.<a class="ref" href="#s7">7</a> English accounted for under 10% of cricket watch time on JioStar in the latest season, while regional languages such as Haryanvi and Bhojpuri grew about 300% a year.<a class="ref" href="#s8">8</a> Women made up 47% of IPL viewers on Star Sports in 2025, and JioStar shipped AI highlights within minutes of the final ball and real-time AI translation of expert commentary.<a class="ref" href="#s9">9</a> For IPL 2026 it added ChatGPT for live multilingual questions,<a class="ref" href="#s8">8</a> after a February 2026 partnership with OpenAI that also surfaces JioHotstar content inside ChatGPT.<a class="ref" href="#s10">10</a> IPL franchise values hit records, with RCB at about $1.78B and RR at about $1.63B.<a class="ref" href="#s2">2</a></p>
+        <div class="callout" style="--c:var(--minus)">
+          <h4>The constraint that shapes the game</h4>
+          <p>India’s Promotion and Regulation of Online Gaming Act, passed on 21 August 2025, prohibits online money games whether they rely on skill or chance, and prohibits offering, advertising or facilitating payments for them. Offering one can mean up to three years in prison and a ₹1 crore fine.<a class="ref" href="#s26">26</a><a class="ref" href="#s27">27</a> Dream11 paused its paid contests, which had been more than 90% of its revenue.<a class="ref" href="#s27">27</a> ALTER EGO is therefore free to play by design. Any physical prizes need advice from Indian counsel first; this page is not legal advice.</p>
+        </div>
+      </section>
+
+      <section class="part" id="p7" style="--c:var(--opener)">
+        <h2><span class="n">7</span>What big tech and leagues shipped</h2>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Who</th><th>What shipped</th><th>What it means for us</th></tr></thead>
+          <tbody>
+            <tr><td>Premier League and Microsoft (July 2025)</td><td>A Copilot-powered companion drawing on 30 seasons of stats, 300,000 articles and 9,000 videos,<a class="ref" href="#s12">12</a> and an AI assistant manager for the game’s 11.5 million Fantasy Premier League players.<a class="ref" href="#s13">13</a></td><td>League-owned AI Q&amp;A is table stakes inside each league’s own app.</td></tr>
+            <tr><td>ESPN (August 2025)</td><td>SC For You, a personalized daily SportsCenter with AI commentary derived from anchors’ voices, alongside a vertical video feed and a synced second-screen view.<a class="ref" href="#s14">14</a> It was built with WSC Sports.<a class="ref" href="#s15">15</a></td><td>Rights holders own the personalized recap. Don’t compete on recaps.</td></tr>
+            <tr><td>NBA and AWS (October 2025)</td><td>Defensive Box Score, Shot Difficulty, Gravity and Play Finder, built on Hawk-Eye body tracking.<a class="ref" href="#s16">16</a><a class="ref" href="#s17">17</a></td><td>The best new metrics depend on proprietary tracking we won’t have.</td></tr>
+            <tr><td>Wimbledon and IBM (June 2025)</td><td>Match Chat, built from agents and Granite models on watsonx Orchestrate, plus an in-game Likelihood to Win.<a class="ref" href="#s18">18</a></td><td>Live Q&amp;A exists, but it’s siloed per event.</td></tr>
+            <tr><td>Apple and F1 (from 2026)</td><td>A five-year US exclusive at about $140M a year, with F1 TV Premium included; F1’s US fanbase is put at 52 million.<a class="ref" href="#s19">19</a><a class="ref" href="#s20">20</a></td><td>F1 is growing in the US, and its data is unusually open.</td></tr>
+            <tr><td>Google DeepMind and Liverpool (2024)</td><td>TacticAI, trained on 7,176 corners; club experts preferred its suggestions 90% of the time.<a class="ref" href="#s21">21</a><a class="ref" href="#s22">22</a></td><td>Generative what-if tactics work, but they need tracking data.</td></tr>
+            <tr><td>Tennis Australia (2025)</td><td>AO Animated: sensor-driven avatar replays on a two-minute delay, with viewership up about four times on the previous year.<a class="ref" href="#s23">23</a> A YouGov poll still found a strong preference for real footage.<a class="ref" href="#s24">24</a></td><td>Use recreations for analysis and what-ifs, not as a substitute broadcast.</td></tr>
+            <tr><td>NBC Sports (2025–26)</td><td>An AI-generated version of the late Jim Fagan’s voice for NBA programming.<a class="ref" href="#s25">25</a></td><td>Voice cloning of real people is rights-holder territory. We won’t do it.</td></tr>
+            <tr><td>JioStar (2025–26)</td><td>AI highlights, AI live translation and ChatGPT in-app for IPL questions.<a class="ref" href="#s8">8</a><a class="ref" href="#s9">9</a> Google Search AI Mode led its IPL 2026 presentation, with OpenAI as an associate sponsor.<a class="ref" href="#s11">11</a></td><td>In India, the incumbent is moving fast on language and Q&amp;A, so our edge has to be the game and cross-sport depth.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="part" id="p8" style="--c:var(--opener)">
+        <h2><span class="n">8</span>Funded startups</h2>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Company</th><th>Raise</th><th>What they do</th><th>Lesson</th></tr></thead>
+          <tbody>
+            <tr><td>Kalshi</td><td>About $1B at about $22B (March 2026)<a class="ref" href="#s2">2</a></td><td>Event contracts, with sport a major category</td><td>Capital-heavy and regulated. Not our lane, and illegal for money in India.</td></tr>
+            <tr><td>Polymarket</td><td>$600M from ICE (March 2026)<a class="ref" href="#s2">2</a></td><td>Prediction market with more than $21B traded in 2025</td><td>Same as above</td></tr>
+            <tr><td>Novig</td><td>$75M Series B at about $500M (February 2026)<a class="ref" href="#s2">2</a></td><td>Peer-to-peer sports prediction with no house edge</td><td>Same as above</td></tr>
+            <tr><td>Kings League</td><td>$63M (February 2026)<a class="ref" href="#s2">2</a></td><td>Creator-led seven-a-side football whose rules came from fan voting, including secret-weapon cards<a class="ref" href="#s31">31</a></td><td>Engineered decision moments drive engagement</td></tr>
+            <tr><td>Teamworks</td><td>$235M Series F (June 2025);<a class="ref" href="#s3">3</a> bought PFF’s enterprise business for about $100M (2026)<a class="ref" href="#s2">2</a></td><td>Operations and performance software for teams</td><td>Pro-side data is consolidating fast</td></tr>
+            <tr><td>Genius Sports</td><td>Acquiring Legend for up to $1.2B (2026);<a class="ref" href="#s2">2</a> NFL deal extended to 2029<a class="ref" href="#s3">3</a></td><td>Official data, media and betting technology</td><td>Official data is something we license, not build</td></tr>
+            <tr><td>WSC Sports</td><td>$100M Series D, about $149M in total<a class="ref" href="#s29">29</a></td><td>AI highlights for more than 650 sports organizations<a class="ref" href="#s84">84</a></td><td>Don’t compete on clipping</td></tr>
+            <tr><td>StatMuse</td><td>More than $11.4M raised<a class="ref" href="#s30">30</a></td><td>Natural-language stats search with celebrity voices and a paid tier</td><td>Ask-a-stat is commoditizing as general assistants improve</td></tr>
+            <tr><td>HUMAIN Sport (ai.io)</td><td>Controlling stake taken by PIF-backed HUMAIN (February 2026)<a class="ref" href="#s2">2</a></td><td>AI scouting and development app</td><td>Sovereign AI money is entering sport</td></tr>
+            <tr><td>SportAI</td><td>$1.8M seed,<a class="ref" href="#s32">32</a> then a $3M seed (November 2025)<a class="ref" href="#s33">33</a></td><td>Technique analysis from ordinary video, also used to enrich commentary</td><td>Computer vision from any video is getting cheap</td></tr>
+            <tr><td>ReSpo.Vision and SportsVisio</td><td>€4.2M and $3.2M (June 2025)<a class="ref" href="#s3">3</a></td><td>AI tracking and stats from broadcast or phone video</td><td>Tracking data is democratizing</td></tr>
+            <tr><td>PUNTR</td><td>$500K (2026)<a class="ref" href="#s34">34</a></td><td>A persistent fan profile across sports driving a daily game and a companion</td><td>Closest to our thesis, still very early. It confirms both the gap and the race.</td></tr>
+            <tr><td>SpeedLabs and K25.ai</td><td>$6.5M seed (June 2026); pre-Series A (May 2026)<a class="ref" href="#s35">35</a></td><td>A live in-game market engine; AI-native watch-to-predict streaming in Asia-Pacific</td><td>Prediction-as-engagement is the hot pattern</td></tr>
+            <tr><td>Agentiq Sports</td><td>$4M (October 2026)<a class="ref" href="#s36">36</a></td><td>Lets fans invest indirectly in athletes’ careers</td><td>Fan finance is a separate, regulated lane</td></tr>
+            <tr><td>Machina Sports</td><td>Not disclosed</td><td>Open-source agent skills over public sports data, with a licensed MCP route for production<a class="ref" href="#s37">37</a><a class="ref" href="#s38">38</a></td><td>A useful reference for agent infrastructure</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="part" id="p9" style="--c:var(--iceman)">
+        <h2><span class="n">9</span>Open data and research</h2>
+        <h3>Data to build on</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Sport</th><th>Source</th><th>What you get</th><th>Limits</th><th>Use for</th></tr></thead>
+          <tbody>
+            <tr><td>Cricket</td><td>Cricsheet<a class="ref" href="#s79">79</a><a class="ref" href="#s39">39</a></td><td>Ball-by-ball data for about 21,300 matches, December 2001 to March 2026</td><td>Completed matches only, about a day behind live, attribution licence<a class="ref" href="#s40">40</a></td><td>Win model, simulator calibration, archive receipts</td></tr>
+            <tr><td>Cricket</td><td>A licensed live feed</td><td>Live scorecards and ball-by-ball</td><td>Paid tiers with varying terms</td><td>The live Desk and calls</td></tr>
+            <tr><td>F1</td><td>FastF1<a class="ref" href="#s41">41</a></td><td>Timing data, telemetry and session results</td><td>Unofficial</td><td>Pit Wall simulations and replays</td></tr>
+            <tr><td>F1</td><td>Jolpica-F1 and OpenF1<a class="ref" href="#s42">42</a><a class="ref" href="#s80">80</a></td><td>Results since 1950; real-time timing since 2023</td><td>Rate limits; check live-access terms</td><td>Live calls and history</td></tr>
+            <tr><td>Football</td><td>StatsBomb open data, kloppy, mplsoccer<a class="ref" href="#s73">73</a><a class="ref" href="#s74">74</a><a class="ref" href="#s75">75</a></td><td>Event data for selected competitions, data loaders and pitch plots</td><td>Limited competitions</td><td>Blueprint and set-piece what-ifs</td></tr>
+            <tr><td>Football</td><td>roboflow/sports<a class="ref" href="#s43">43</a><a class="ref" href="#s44">44</a></td><td>Player and ball detection, jersey reading, pitch calibration and a top-down radar</td><td>Needs video rights</td><td>Longer-term tracking from video</td></tr>
+            <tr><td>Basketball</td><td>nba_api<a class="ref" href="#s76">76</a></td><td>Play-by-play and shot charts</td><td>Unofficial wrapper</td><td>Film Room</td></tr>
+            <tr><td>Tennis</td><td>ATP/WTA files and the Match Charting Project<a class="ref" href="#s77">77</a><a class="ref" href="#s78">78</a></td><td>Match results and charted point-by-point data</td><td>Charting coverage is partial</td><td>Pressure Index</td></tr>
+            <tr><td>Multi-sport</td><td>Machina sports-skills<a class="ref" href="#s37">37</a></td><td>Agent skills over public sports data and prediction markets</td><td>Personal, non-commercial use only</td><td>Prototyping agents</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Research to learn from</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Work</th><th>What it shows</th><th>How we use it</th></tr></thead>
+          <tbody>
+            <tr><td>TacticAI (Nature Communications, 2024)<a class="ref" href="#s81">81</a><a class="ref" href="#s21">21</a></td><td>Geometric deep learning predicts corner outcomes and generates alternative set-ups that experts preferred</td><td>What-if set pieces in Blueprint, once tracking data is available</td></tr>
+            <tr><td>SoccerAgent, SoccerBench and SoccerWiki (2025)<a class="ref" href="#s45">45</a></td><td>Multi-agent decomposition over a soccer knowledge base, benchmarked on about 10K QA pairs across 13 tasks</td><td>The orchestrator pattern and a ready-made eval set</td></tr>
+            <tr><td>MatchTime and MatchVoice<a class="ref" href="#s46">46</a></td><td>A time-aligned commentary dataset and a commentary generation model</td><td>The quality bar for live narration</td></tr>
+            <tr><td>Sports-QA and SPORTU<a class="ref" href="#s47">47</a></td><td>Question-answering benchmarks across several sports for multimodal models</td><td>Eval suites for the roster agents</td></tr>
+            <tr><td>TreeSoc (2026)<a class="ref" href="#s48">48</a></td><td>Tree-search reasoning with tool use on SoccerBench</td><td>Tool-use patterns for complex questions</td></tr>
+            <tr><td>Harness engineering study (2026)<a class="ref" href="#s49">49</a></td><td>Seven canonical harness subsystems across eleven production systems</td><td>The runtime harness design in section 5</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="part" id="p10" style="--c:var(--closer)">
+        <h2><span class="n">10</span>White space</h2>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Space</th><th>Status</th><th>Evidence</th><th>Our stance</th></tr></thead>
+          <tbody>
+            <tr><td>AI recaps and league companions</td><td>Crowded</td><td>Premier League Companion, ESPN SC For You<a class="ref" href="#s12">12</a><a class="ref" href="#s14">14</a></td><td>Don’t build. Link out to official sources.</td></tr>
+            <tr><td>Ask-a-stat</td><td>Commoditizing</td><td>StatMuse, assistants inside streaming apps<a class="ref" href="#s30">30</a><a class="ref" href="#s8">8</a></td><td>Only as a feature, with receipts</td></tr>
+            <tr><td>Highlight clipping</td><td>Crowded, B2B</td><td>WSC Sports at 650+ organizations<a class="ref" href="#s84">84</a></td><td>Don’t build</td></tr>
+            <tr><td>Real-money fantasy and prediction</td><td>Banned in India; capital-heavy elsewhere</td><td>The Online Gaming Act, Kalshi and Polymarket rounds<a class="ref" href="#s26">26</a><a class="ref" href="#s2">2</a></td><td>Never</td></tr>
+            <tr><td>Animated broadcasts</td><td>Rights-holder led</td><td>AO Animated and YouGov<a class="ref" href="#s23">23</a><a class="ref" href="#s24">24</a></td><td>Only as analysis replays</td></tr>
+            <tr><td>Depth across sports</td><td>Open</td><td>More than half of young fans want one app for every sport<a class="ref" href="#s5">5</a></td><td>Build: The Desk</td></tr>
+            <tr><td>Scoring fans on reading the game</td><td>Open</td><td>Assistants answer questions; none grade fans’ decisions</td><td>Build: Make the Call</td></tr>
+            <tr><td>Receipts on every number</td><td>Open</td><td>AI sports content has a trust problem; source links are rare</td><td>Build into every surface</td></tr>
+            <tr><td>Identity from how you play</td><td>Open</td><td>Fans already trade in nicknames and reputations</td><td>Build: Alter Ego</td></tr>
+            <tr><td>Regional languages</td><td>Partly served by JioStar</td><td>English under 10% of cricket watch time<a class="ref" href="#s8">8</a></td><td>English and Hindi first</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="part" id="p11" style="--c:var(--closer)">
+        <h2><span class="n">11</span>Product story</h2>
+        <h3>Positioning</h3>
+        <p>For fans who follow more than one sport, ALTER EGO is the sports desk and game that turns watching into reading the game. It gives you one brief ranked by what mattered, live calls graded on decision quality, and specialist analysts built around legendary mentalities. Unlike league apps and AI recaps, it works across sports, shows a receipt for every number, and lets you earn an identity for how you read the game.</p>
+        <h3>The story</h3>
+        <p>Nicknames in sport are earned, not chosen. A Star Sports crew member called Rohit Sharma “the Hitman” after his first ODI double hundred in Bengaluru in 2013, and Ravi Shastri carried it onto the air.<a class="ref" href="#s61">61</a><a class="ref" href="#s85">85</a> The innings was 209 off 158 balls with 16 sixes.<a class="ref" href="#s62">62</a> Kobe Bryant built the Black Mamba as a way of working, not just a name. ALTER EGO gives fans the same arc: read the game well, repeatedly, and the product names you for how you do it.</p>
+        <h3>Four pillars</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Pillar</th><th>What the fan does</th><th>Signature features</th></tr></thead>
+          <tbody>
+            <tr><td>The Desk</td><td>Knows what mattered</td><td>One brief across sports, ranked by swing in win chance, with a receipt on every number, a depth switch (new to it, fan, coach), schedules across time zones, and team news and selections</td></tr>
+            <tr><td>Make the Call</td><td>Proves they can read it</td><td>Live calls at pivotal moments, such as a bowling change, a review, a pit window or a late substitution, graded against the model’s read at the time. A Read Rating per sport and overall, and leagues with friends.</td></tr>
+            <tr><td>The Roster</td><td>Learns from a specialist</td><td>Persona agents with signature tools: Over Call, Film Room, Blueprint, Pit Wall and Pressure Index. Replays built from open position and event data, and what-if simulators.</td></tr>
+            <tr><td>Alter Ego</td><td>Becomes someone</td><td>Calling style mapped to a persona, a shareable reveal, and a season file that shows where you’re sharpest</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Features by phase</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Phase</th><th>Scope</th></tr></thead>
+          <tbody>
+            <tr><td>MVP</td><td>The Desk for cricket, F1 and football, with receipts and the depth switch. Make the Call for cricket and F1, the Read Rating and friends’ leagues with no money. English and Hindi.</td></tr>
+            <tr><td>V2</td><td>Roster agents for cricket, F1 and football; F1 race replays from position data and football replays from event data; what-if simulators; football calls; the Alter Ego reveal; alerts for high-swing moments.</td></tr>
+            <tr><td>V3</td><td>Basketball and tennis hubs with Film Room and Pressure Index, creator share-cards with receipts, an MCP endpoint for assistants, more languages, and licensing Make the Call to broadcasters and leagues.</td></tr>
+          </tbody>
+        </table></div>
+        <h3>The game loop</h3>
+        <p>A moment is frozen, the fan picks an option and locks it, and the reveal shows how the model read each option. The grade is the difference in model-estimated win chance between the option chosen and the alternative at the time of the call. The outcome is shown but never changes the grade, which keeps the game about skill and makes a lucky result worth nothing. Grades feed an Elo-style Read Rating, and patterns in a fan’s calls feed the Alter Ego.</p>
+        <p>Two design constraints matter. Calls must close on data-feed time, before any stream shows the result, because broadcast delays vary by platform. And the model’s read must be calibrated, so it’s published with its track record; if fans can beat it consistently, they should see that too.</p>
+        <h3>Revenue</h3>
+        <p>A freemium subscription unlocks deeper roster analysis, replays and full call history. Brands can sponsor moments rather than odds, and the decision-game engine can be licensed to rights holders who want interactive moments in their own apps. There are no entry fees, no payouts and no betting partnerships.</p>
+        <h3>What we won’t build</h3>
+        <p>No real-money contests, no highlight clipping, no cloned voices or likenesses of real people, and no stats scraped without a licence.</p>
+      </section>
+
+      <section class="part" id="p12" style="--c:var(--closer)">
+        <h2><span class="n">12</span>Fan journeys</h2>
+        <div class="journey">
+          <h3>The multi-sport follower</h3>
+          <p>Follows the IPL, F1 and the Premier League. Opens the Desk with morning coffee and sees one ranked brief instead of three apps. Makes a bowling-change call during an evening chase and a pit-window call on Sunday. Their file shows they’re sharper at F1 strategy than at cricket captaincy.</p>
+        </div>
+        <div class="journey">
+          <h3>The analyst</h3>
+          <p>Lives on the coach setting. Taps receipts to check every claim, runs what-ifs in Pit Wall and Blueprint, and shares receipt cards in group chats. The Read Rating is their reputation, and they want to beat the model.</p>
+        </div>
+        <div class="journey">
+          <h3>The second-screen fan</h3>
+          <p>Watches clips more than full games and keeps the phone in hand during big matches. Reads a three-minute brief in Hindi, makes two quick calls during a final, and shares the alter-ego reveal. For them, the product is the reason to watch the moment live.</p>
+        </div>
+      </section>
+
+      <section class="part" id="p13" style="--c:var(--iceman)">
+        <h2><span class="n">13</span>The roster</h2>
+        <div class="pg-row" aria-hidden="true">
+          <span style="--c:var(--opener)"><svg viewBox="0 0 48 48"><use href="#pg-cricket"/></svg></span>
+          <span style="--c:var(--closer)"><svg viewBox="0 0 48 48"><use href="#pg-basketball"/></svg></span>
+          <span style="--c:var(--architect)"><svg viewBox="0 0 48 48"><use href="#pg-football"/></svg></span>
+          <span style="--c:var(--professor)"><svg viewBox="0 0 48 48"><use href="#pg-f1"/></svg></span>
+          <span style="--c:var(--iceman)"><svg viewBox="0 0 48 48"><use href="#pg-tennis"/></svg></span>
+        </div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Public name</th><th>Internal codename</th><th>Legend and lineage</th><th>Mentality</th><th>Signature tool</th></tr></thead>
+          <tbody>
+            <tr><td>The Opener (cricket)</td><td>HITMAN</td><td>Rohit Sharma. Bengaluru, 2 November 2013: 209 off 158 balls<a class="ref" href="#s62">62</a></td><td>Timing over force; turn a start into something enormous</td><td>Over Call</td></tr>
+            <tr><td>The Closer (basketball)</td><td>MAMBA</td><td>Kobe Bryant. Los Angeles, 22 January 2006: 81 points against Toronto</td><td>Study the film until nothing surprises you, then want the last shot</td><td>Film Room</td></tr>
+            <tr><td>The Architect (football)</td><td>ARCHITETTO</td><td>Andrea Pirlo. Dortmund, 4 July 2006: the no-look pass in the 119th minute of the World Cup semi-final</td><td>See the pass before it exists</td><td>Blueprint</td></tr>
+            <tr><td>The Professor (F1)</td><td>PROFESSOR</td><td>Alain Prost. Adelaide, 1986: race and title won by two points after his main rival’s tyre exploded</td><td>Take only the risk the race demands</td><td>Pit Wall</td></tr>
+            <tr><td>The Iceman (tennis)</td><td>ICEBORG</td><td>Björn Borg. Wimbledon, 5 July 1980: lost a 16–18 tiebreak, won the fifth set 8–6</td><td>Nothing changes on the big points</td><td>Pressure Index</td></tr>
+          </tbody>
+        </table></div>
+        <p>Alternates kept on file: Zinedine Zidane for football, who is Rohit Sharma’s own favourite footballer;<a class="ref" href="#s61">61</a> Michael Schumacher’s “Regenmeister” or Kimi Räikkönen’s “Iceman” for F1; and Steffi Graf’s “Fräulein Forehand” for the women’s tour. On the bench for later sports: Ben Hogan for golf, Ted Williams for baseball, Eddy Merckx for cycling and Peyton Manning for American football.</p>
+        <div class="callout" style="--c:var(--minus)">
+          <h4>Why the public names differ</h4>
+          <p>HITMAN is a registered US trademark of IO Interactive for computer and video game software, renewed in 2015,<a class="ref" href="#s56">56</a> and related HITMAN marks cover online games.<a class="ref" href="#s57">57</a> Kobe Bryant’s estate has filed Mamba, Mamba League and the Mamba logo,<a class="ref" href="#s58">58</a> extended its marks to digital goods including avatars and trading cards,<a class="ref" href="#s59">59</a> and protects the brand closely.<a class="ref" href="#s60">60</a></p>
+          <p>The agents therefore embody a mentality and never impersonate the athlete: no cloned voices, no likeness and no implied endorsement. Lineage copy stays factual and editorial. Run a trademark search on ALTER EGO and the persona names, and have counsel review the lineage copy before public launch.</p>
+        </div>
+      </section>
+
+      <section class="part" id="p14" style="--c:var(--iceman)">
+        <h2><span class="n">14</span>Look and feel</h2>
+        <p>The direction is “dossier meets Munich ’72”. It’s a bright, rule-based system that scales across sports, with each legend presented as a file, rather than the dark-with-red-accent look the current app shares with countless generated templates.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Reference</th><th>What it does</th><th>What we borrow</th></tr></thead>
+          <tbody>
+            <tr><td>Lando Norris website by OFF+BRAND<a class="ref" href="#s63">63</a><a class="ref" href="#s64">64</a></td><td>Awwwards Site of the Year 2025. Neon accents come from the helmet, and the layout separates on-track results from off-track culture.</td><td>The athlete as an archive (our dossiers) and accents drawn from the legend’s own visual language</td></tr>
+            <tr><td>Munich 1972 by Otl Aicher<a class="ref" href="#s65">65</a><a class="ref" href="#s66">66</a><a class="ref" href="#s67">67</a><a class="ref" href="#s68">68</a></td><td>Grid-built sport pictograms, a fixed bright palette led by Alpine blue and white, one typeface family, and a manual that let the team improvise within rules</td><td>One pictogram per sport, one colour per persona, one type family</td></tr>
+            <tr><td>Persona 5 and Persona 5 Tactica by Atlus<a class="ref" href="#s69">69</a><a class="ref" href="#s70">70</a><a class="ref" href="#s71">71</a><a class="ref" href="#s72">72</a></td><td>Menus treated as part of the game, with typography drawn from ransom-note record covers. Tactica later used Constructivist structure to make menus more readable.</td><td>Expressive type only for alter-ego reveals; Constructivist clarity for data screens</td></tr>
+            <tr><td>The sport’s own instruments</td><td>F1 timing colours, cricket wagon wheels and worm graphs, pitch radars</td><td>Data visuals as the hero imagery instead of photos, which also avoids image rights</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Tokens</h3>
+        <div class="swatches">
+          <div class="sw" style="--c:#1E9A55"><i></i><p><b>Opener green</b><span>#1E9A55</span></p></div>
+          <div class="sw" style="--c:#E06A10"><i></i><p><b>Closer orange</b><span>#E06A10</span></p></div>
+          <div class="sw" style="--c:#2C58D4"><i></i><p><b>Blueprint blue</b><span>#2C58D4</span></p></div>
+          <div class="sw" style="--c:#7540CC"><i></i><p><b>Timing purple</b><span>#7540CC</span></p></div>
+          <div class="sw" style="--c:#1F8FC4"><i></i><p><b>Ice blue</b><span>#1F8FC4</span></p></div>
+          <div class="sw" style="--c:#FFD23F"><i></i><p><b>Call yellow</b><span>#FFD23F</span></p></div>
+          <div class="sw" style="--c:#13233A"><i></i><p><b>Night ink</b><span>#13233A</span></p></div>
+          <div class="sw" style="--c:#F5F7FA"><i></i><p><b>Snow paper</b><span>#F5F7FA</span></p></div>
+        </div>
+        <p>Every persona colour passes 3:1 contrast on white for large text, and night mode brightens them against a deep navy rather than black. The single type family is Archivo, a variable grotesque with a width axis: condensed heavy weights for display, normal width for reading, tabular figures for numbers. Motion is limited to one orchestrated moment, the poster wall rising on load, plus responses to the visitor’s own actions such as the reveal.</p>
+        <h3>The landing concept</h3>
+        <p>The page opens on the line “Every legend has an alter ego. Earn yours.” over a five-colour poster wall of pictograms. It moves through a sample Desk with depth switch and receipts, a working three-call Make the Call demo graded on decisions, the roster with lineage, an alter-ego file that fills in from the demo, the principles and the rollout order. <a href="https://claude.ai/artifact/THq7LFnymt5Awi8osLQD8X">Open the landing concept</a>.</p>
+      </section>
+
+      <section class="part" id="p15" style="--c:var(--architect)">
+        <h2><span class="n">15</span>Roadmap</h2>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Phase</th><th>Scope</th><th>Exit criteria</th></tr></thead>
+          <tbody>
+            <tr><td>0. Safe and honest</td><td>The nine fixes in section 3</td><td>No payment path, no random scoring, admin routes locked, secrets rotated and live states shown honestly</td></tr>
+            <tr><td>1. MVP</td><td>The Desk for cricket, F1 and football; Make the Call for cricket and F1; Read Rating; friends’ leagues; English and Hindi</td><td>Suggested targets: at least 95% of numbers in briefs resolve to a source record in automated checks; calls close on data-feed time with no delay leaks in testing; a test group of about 200 fans makes 10 or more calls each; a retention goal agreed up front, such as a third still calling in week four</td></tr>
+            <tr><td>2. Roster and identity</td><td>Roster agents for three sports, replays, what-if simulators, football calls and the Alter Ego reveal</td><td>Each agent passes its golden-question evals, replays render from open data, and reveal shares are measured</td></tr>
+            <tr><td>3. Breadth and licensing</td><td>Basketball and tennis, creator share-cards, the MCP endpoint and B2B licensing of Make the Call</td><td>A first licensing pilot with a rights holder and live use of the MCP endpoint by an assistant</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="part" id="p16" style="--c:var(--minus)">
+        <h2><span class="n">16</span>Risks and open questions</h2>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Risk</th><th>Why it matters</th><th>Mitigation</th></tr></thead>
+          <tbody>
+            <tr><td>Indian gaming law</td><td>Paid entry or cash-like prizes could make the game an online money game</td><td>Free to play by design; counsel review before any prize</td></tr>
+            <tr><td>Trademarks and personality rights</td><td>HITMAN and Mamba marks, and athletes’ names in marketing</td><td>Public-safe names, editorial lineage only, a trademark search and counsel review</td></tr>
+            <tr><td>Live data licensing</td><td>Open data is historical or unofficial; live data needs a licence</td><td>License a live cricket feed, follow each source’s terms, carry attribution in receipts</td></tr>
+            <tr><td>Model credibility</td><td>Grades are only as good as the model’s calibration</td><td>Publish calibration and uncertainty, and let fans contest a read</td></tr>
+            <tr><td>Stream-delay fairness</td><td>Fans watch on different delays</td><td>Close every call on data-feed time</td></tr>
+            <tr><td>Incumbent response</td><td>League apps could add prediction moments</td><td>A rating and identity across sports is hard for any single league to copy</td></tr>
+            <tr><td>Hallucinated numbers</td><td>One wrong stat damages trust in every receipt</td><td>The provenance guard blocks any number without a source record</td></tr>
+            <tr><td>AI cost at match volume</td><td>Live copy across many matches adds up</td><td>Route by model tier, cache shared context, batch overnight work</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Not yet verified</h3>
+        <p>AI deployments at the 2026 World Cup, the latest computer-vision models for tracking from broadcast video, OpenF1’s live-access terms, licensed cricket feed pricing across providers, and Spotify Wrapped or Strava’s year-in-review as share-mechanic references.</p>
+        <h3>Decisions for you</h3>
+        <p>Confirm the working title or shortlist alternatives for a trademark search, confirm cricket and F1 as the first two sports, and decide whether the codenames appear in editorial copy at launch.</p>
+      </section>
+
+      <section class="part sources" id="p17" style="--c:var(--ink-2)">
+        <h2><span class="n">17</span>Sources</h2>
+        <h3>Capital and market</h3>
+        <ol start="1">
+          <li id="s1">Drake Star, <a href="https://www.drakestar.com/hubfs/Research/SPORTS%20TECH/Drake%20Star%20Global%20Sports%20Tech%20Report%202025.pdf">Global Sports Tech Report 2025</a></li>
+          <li id="s2">Drake Star, <a href="https://www.drakestar.com/hubfs/Research/SPORTS%20TECH/Drake%20Star%20Global%20Sports%20Tech%20Report_Q126.pdf">Sports Tech Market Q1 2026</a></li>
+          <li id="s3">Regen Sports, <a href="https://regensports.substack.com/p/sportstech-monthly-june-2025">SportsTech Monthly: June 2025</a></li>
+          <li id="s4">Peony, <a href="https://www.peony.ink/blog/sports-investors">15 sports investors actively deploying in 2026</a></li>
+        </ol>
+        <h3>Fans and India</h3>
+        <ol start="5">
+          <li id="s5">Sports Video Group, <a href="https://www.sportsvideo.org/2026/06/17/bango-research-51-of-gen-z-say-highlights-are-replacing-live-games/">Bango research on highlights and second screens</a></li>
+          <li id="s6">Net Influencer, <a href="https://www.netinfluencer.com/nearly-half-of-gen-z-sports-fans-discover-athletes-through-content-not-competition-study-finds/">Gen Z Sports Fandom and the Mega-Moment</a></li>
+          <li id="s7">MediaNews4U, <a href="https://www.medianews4u.com/indias-sports-market-poised-to-reach-130-billion-by-2030-creating-10-5-million-jobs-google-deloitte-report/">Google and Deloitte report on India’s sports market</a></li>
+          <li id="s8">NewsBytes, <a href="https://www.newsbytesapp.com/news/science/jiostar-adds-openai-chatgpt-for-live-multilingual-ipl-2026-queries/tldr">JioStar adds ChatGPT for live multilingual IPL 2026 queries</a></li>
+          <li id="s9">Mediainfoline, <a href="https://www.mediainfoline.com/sports/jiostars-tata-ipl-2025-a-year-of-firsts-report-highlights-how-a-billion-viewers-came-together-for-cricket">JioStar’s IPL 2025 “A Year of Firsts” report</a></li>
+          <li id="s10">Let’s Data Science, <a href="https://letsdatascience.com/news/jiohotstar-highlights-ai-ctv-and-commerce-roadmap-7c46c5cf">JioHotstar’s AI, CTV and commerce roadmap</a></li>
+          <li id="s11">JioStar, <a href="https://cdn.jiostar.com/jiostar/wp-content/uploads/2026/04/JioStar-Powers-TATA-IPL-to-Its-Biggest-Ever-Opening-Weekend-Google-Docs.pdf">IPL 2026 opening weekend release</a></li>
+        </ol>
+        <h3>Big tech and leagues</h3>
+        <ol start="12">
+          <li id="s12">Microsoft, <a href="https://news.microsoft.com/source/2025/07/01/premier-league-and-microsoft-announce-five-year-strategic-partnership-to-personalize-the-fan-experience-with-ai-for-1-8-billion-people/">Premier League and Microsoft five-year partnership</a></li>
+          <li id="s13">CO/AI, <a href="https://getcoai.com/news/premier-league-transforms-fan-experience-with-new-ai-assistant-for-900m-fans/">Premier League Companion and the Fantasy Premier League assistant</a></li>
+          <li id="s14">ESPN Press Room, <a href="https://espnpressroom.com/us/press-releases/2025/08/espn-launches-new-direct-to-consumer-service-enhanced-espn-app/">ESPN DTC launch and the enhanced ESPN app</a></li>
+          <li id="s15">ESPN Front Row, <a href="https://espnpressroom.com/feature/late-nights-launch-day-and-beyond-espns-content-team-on-new-app-features/">The content team behind SC For You</a></li>
+          <li id="s16">Sportico, <a href="https://www.sportico.com/leagues/basketball/2025/nba-amazon-web-services-inside-the-game-stats-ai-1234872489/">NBA and AWS launch Inside the Game</a></li>
+          <li id="s17">Amazon, <a href="https://press.aboutamazon.com/2025/10/nba-and-aws-announce-new-multi-year-partnership-to-power-the-next-era-of-basketball-innovation">NBA and AWS multi-year partnership</a></li>
+          <li id="s18">IBM Newsroom, <a href="https://newsroom.ibm.com/2025-06-17-the-all-england-lawn-tennis-club-and-ibm-launch-new-ai-features-for-real-time-wimbledon-fan-engagement">Wimbledon 2025 AI features</a></li>
+          <li id="s19">CSI Magazine, <a href="https://csimagazine.com/csi/apple-f1-deal.php">Apple secures exclusive US F1 rights</a></li>
+          <li id="s20">Cult of Mac, <a href="https://www.cultofmac.com/news/apple-becomes-formula-1-f1-exclusive-us-broadcast-partner">Apple becomes F1’s exclusive US broadcast partner</a></li>
+          <li id="s21">Google DeepMind, <a href="https://deepmind.google/discover/blog/tacticai-ai-assistant-for-football-tactics/">TacticAI: an AI assistant for football tactics</a></li>
+          <li id="s22">Cosmos, <a href="https://cosmosmagazine.com/technology/ai/artificial-intelligence-soccer-coach">TacticAI study details</a></li>
+          <li id="s23">Cyber Daily, <a href="https://www.cyberdaily.au/digital-transformation/11619-tennis-australia-uses-ai-avatars-to-stream-australian-open-footage">Tennis Australia’s AO Animated</a></li>
+          <li id="s24">YouGov, <a href="https://yougov.com/articles/51590-australian-open-streams-using-animation-but-what-did-tennis-fans-think-and-how-did-it-impact-brands">What tennis fans thought of animated streams</a></li>
+          <li id="s25">Regen Sports, <a href="https://regensports.substack.com/p/sports-tech-monthly-may-2025">Sports Tech Monthly: May 2025</a></li>
+        </ol>
+        <h3>Regulation</h3>
+        <ol start="26">
+          <li id="s26">Drishti IAS, <a href="https://www.drishtiias.com/daily-updates/daily-news-analysis/promotion-and-regulation-of-online-gaming-act,-2025/print_manually">Promotion and Regulation of Online Gaming Act, 2025</a></li>
+          <li id="s27">Mondaq, <a href="https://webiis08.mondaq.com/india/gaming/1678102/the-promotion-and-regulation-of-online-gaming-act-2025-analysis">Analysis of the Online Gaming Act</a></li>
+          <li id="s28">Inc42, <a href="https://inc42.com/?p=528910">Dream11 and the BCCI after the gaming law</a></li>
+        </ol>
+        <h3>Startups</h3>
+        <ol start="29">
+          <li id="s29">Axios, <a href="https://www.axios.com/wsc-sports-fundraising-100-million-26f49332-1a28-44d4-a201-5d7936a3efa7.html">WSC Sports raises $100 million</a></li>
+          <li id="s30">Dealroom, <a href="https://app.dealroom.co/companies/statmuse">StatMuse</a></li>
+          <li id="s31">Wikipedia, <a href="https://en.wikipedia.org/wiki/Kings_League">Kings League</a></li>
+          <li id="s32">SportAI, <a href="https://sportai.com/news/norwegian-tech-leaders-unite-to-launch-ai-powered-sports-tech-company-1">Seed round announcement</a></li>
+          <li id="s33">Raising.fi, <a href="https://raising.fi/company/sportai">SportAI funding rounds</a></li>
+          <li id="s34">The Top Voices, <a href="https://thetopvoices.com/news/puntr-secures-dollar500k-to-build-ai-powered-personalized-sports-platform">PUNTR secures $500K</a></li>
+          <li id="s35">Project Startups, <a href="https://projectstartups.com/pages/sports-tech/">Recently funded sports tech startups</a></li>
+          <li id="s36">Fortune, <a href="https://fortune.com/2026/10/08/sequoia-backed-catalyst-raises-30-million-build-ai-trading-agents-everyday-investors/">Funding roundup including Agentiq Sports</a></li>
+          <li id="s37">GitHub, <a href="https://github.com/machina-sports/sports-skills">machina-sports/sports-skills</a></li>
+          <li id="s38">Machina, <a href="https://docs.machina.gg/ecosystem/sports-skills">Sports Skills documentation</a></li>
+        </ol>
+        <h3>Data and research</h3>
+        <ol start="39">
+          <li id="s39">Hugging Face, <a href="https://huggingface.co/datasets/VaidhyaMegha/cricket-kg">cricket-kg, built on Cricsheet</a></li>
+          <li id="s40">Sports Skills, <a href="https://skillselion.com/skills/machina-sports/sports-skills/cricket-data">Cricket data reference, with Cricsheet licence and lag</a></li>
+          <li id="s41">GitHub, <a href="https://github.com/theOehrly/Fast-F1">FastF1</a></li>
+          <li id="s42">PyPI, <a href="https://pypi.org/project/pitstop-f1">pitstop-f1, covering FastF1, Jolpica and OpenF1</a></li>
+          <li id="s43">GitHub, <a href="https://github.com/roboflow/sports/wiki">roboflow/sports</a></li>
+          <li id="s44">GitHub, <a href="https://github.com/DesusLove/Football-PitchVision">Football-PitchVision</a></li>
+          <li id="s45">arXiv, <a href="https://arxiv.org/abs/2505.03735v1">Multi-Agent System for Comprehensive Soccer Understanding</a></li>
+          <li id="s46">CatalyzeX, <a href="https://catalyzex.com/author/Jiayuan%20Rao">MatchTime and MatchVoice</a></li>
+          <li id="s47">arXiv, <a href="https://arxiv.org/pdf/2604.23392">SoccerRef-Agents, with related work on Sports-QA and SPORTU</a></li>
+          <li id="s48">alphaXiv, <a href="https://www.alphaxiv.org/abs/2607.10990">TreeSoc</a></li>
+        </ol>
+        <h3>AI harness engineering</h3>
+        <ol start="49">
+          <li id="s49">arXiv, <a href="https://arxiv.org/pdf/2609.00006">Harness Engineering: Anatomy, Architecture, and Evolution of Coding Agents</a></li>
+          <li id="s50">Faros, <a href="https://www.faros.ai/blog/harness-engineering">Harness engineering</a></li>
+          <li id="s51">Addy Osmani, <a href="https://addyosmani.com/blog/agent-harness-engineering/">Agent harness engineering</a></li>
+          <li id="s52">Anthropic, <a href="https://anthropic.com/engineering/effective-harnesses-for-long-running-agents">Effective harnesses for long-running agents</a></li>
+          <li id="s53">Anthropic, <a href="https://anthropic.com/engineering/managed-agents">Scaling Managed Agents</a></li>
+          <li id="s54">Anthropic, <a href="https://www.anthropic.com/engineering?album=45">Engineering blog index</a></li>
+          <li id="s55">Machina, <a href="https://machina.gg/learn/sports-mcp-server">What a sports MCP server exposes</a></li>
+        </ol>
+        <h3>Trademarks and lineage</h3>
+        <ol start="56">
+          <li id="s56">Justia, <a href="https://trademark.justia.com/784/28/hitman-78428222.html">HITMAN trademark, registration 2997558</a></li>
+          <li id="s57">Justia, <a href="https://trademarks.justia.com/860/61/hitman-86061319.html">HITMAN SNIPER trademark</a></li>
+          <li id="s58">CBS Sports, <a href="https://www.cbssports.com/nba/news/kobe-bryant-llc-files-trademarks-for-footwear-apparel-and-multiple-logos">Kobe Bryant LLC trademark filings</a></li>
+          <li id="s59">Fortune, <a href="https://fortune.com/2022/02/03/kobe-bryant-estate-trademarks-virtual-goods-metaverse">Kobe Bryant estate files virtual-goods trademarks</a></li>
+          <li id="s60">CNBC, <a href="https://www.cnbc.com/2021/04/20/kobe-bryants-estate-may-be-quietly-planning-to-launch-its-own-brand-.html">Kobe Bryant estate trademark applications</a></li>
+          <li id="s61">Mumbai Indians, <a href="https://www.mumbaiindians.com/news/from-ro-hit-to-hitman">From Ro-HIT to Hitman</a></li>
+          <li id="s62">Scroll, <a href="https://scroll.in/field/962332/watch-when-rohit-didnt-go-with-dhonis-strategy-and-ended-up-scoring-his-first-double-ton-in-odis">Rohit Sharma’s first ODI double hundred</a></li>
+        </ol>
+        <h3>Design references</h3>
+        <ol start="63">
+          <li id="s63">Awwwards, <a href="https://www.awwwards.com/offbrand/">OFF+BRAND profile</a></li>
+          <li id="s64">DesignRush, <a href="https://designrush.com/best-designs/websites/lando-norris-website-design">Lando Norris website design</a></li>
+          <li id="s65">Wikipedia, <a href="https://en.wikipedia.org/wiki/Otl_Aicher">Otl Aicher</a></li>
+          <li id="s66">Cambridge University Library, <a href="https://languagecollections-blog.lib.cam.ac.uk/2022/05/13/otl-aicher-a-visual-communication-innovator/">Otl Aicher, a visual communication innovator</a></li>
+          <li id="s67">Counter-Print, <a href="https://www.counter-print.co.uk/products/guidelines-and-standards-for-the-visual-design-the-games-of-the-xx-olympiad-munich-1972">Munich 1972 visual design guidelines</a></li>
+          <li id="s68">Poster House, <a href="https://access.posterhouse.org/?p=2236">Munich 1972 sports posters</a></li>
+          <li id="s69">DT Next, <a href="https://www.dtnext.in/amp/story/edit/exuberant-video-game-menus-designed-with-da-vinci-in-mind-807823">Atlus menu design</a></li>
+          <li id="s70">Inverse, <a href="https://inverse.com/gaming/persona-5-tactica-user-interface">Persona 5 Tactica’s interface</a></li>
+          <li id="s71">Push Square, <a href="https://www.pushsquare.com/news/2024/02/persona-3-reloads-sexy-ui-result-of-retaining-key-staff-says-atlus">Atlus on investing in UI</a></li>
+          <li id="s72">Mechanics of Magic, <a href="https://mechanicsofmagic.com/2022/04/23/visual-design-of-games-persona-5/">Visual design of Persona 5</a></li>
+        </ol>
+        <h3>Open repositories</h3>
+        <ol start="73">
+          <li id="s73"><a href="https://github.com/statsbomb/open-data">StatsBomb open data</a></li>
+          <li id="s74"><a href="https://github.com/PySport/kloppy">kloppy</a></li>
+          <li id="s75"><a href="https://github.com/andrewRowlinson/mplsoccer">mplsoccer</a></li>
+          <li id="s76"><a href="https://github.com/swar/nba_api">nba_api</a></li>
+          <li id="s77"><a href="https://github.com/JeffSackmann/tennis_atp">Jeff Sackmann, tennis_atp</a></li>
+          <li id="s78"><a href="https://github.com/JeffSackmann/tennis_MatchChartingProject">Jeff Sackmann, Match Charting Project</a></li>
+          <li id="s79"><a href="https://cricsheet.org">Cricsheet</a></li>
+          <li id="s80"><a href="https://github.com/br-g/openf1">OpenF1</a></li>
+          <li id="s81">Nature Communications, <a href="https://www.nature.com/articles/s41467-024-45965-x">TacticAI: an AI assistant for football tactics</a></li>
+        </ol>
+        <h3>Additional</h3>
+        <ol start="82">
+          <li id="s82">Stats Perform, <a href="https://www.statsperform.com/?p=32580">2026 Sports Fan Engagement, Monetisation and AI Trends Survey</a></li>
+          <li id="s83">The Sports Stack, <a href="https://the-sports-stack.beehiiv.com/p/capital-code-circularity-how-technology-is-reshaping-sports-business">Inside Drake Star’s 2024 sports tech report</a></li>
+          <li id="s84">CB Insights, <a href="https://www.cbinsights.com/company/wsc-sports">WSC Sports</a></li>
+          <li id="s85">Sportskeeda, <a href="https://sportskeeda.com/cricket/rohit-sharma-reveals-origin-of-nickname-hitman">Rohit Sharma on the origin of “Hitman”</a></li>
+        </ol>
+      </section>
+    </article>
+  </div>
+</div>
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <p>Research current to 17 October 2026. Figures come from the cited sources; product, design and roadmap recommendations are proposals.</p>
+    <p>Athlete names appear as editorial references to sporting history, with no affiliation or endorsement implied. This page is not legal advice.</p>
+  </div>
+</footer>
+<script>
+(() => {
+  const d = document.getElementById('tocd');
+  if (d && window.matchMedia('(max-width: 980px)').matches) d.open = false;
+  const links = Array.from(document.querySelectorAll('.toc a'));
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        links.forEach(a => a.removeAttribute('aria-current'));
+        const a = map.get(e.target.id);
+        if (a) a.setAttribute('aria-current', 'true');
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('.part').forEach(s => io.observe(s));
+  }
+})();
+</script>
+</body>
+</html>

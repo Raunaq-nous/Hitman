@@ -1,0 +1,16 @@
+{
+  "slug": "architect",
+  "name": "The Architect",
+  "sport": "Football",
+  "sportKey": "football",
+  "skillDomain": "TEMPO",
+  "colorToken": "--architect",
+  "signatureTool": "Possession value",
+  "skillWords": [
+    "tempo",
+    "build-up",
+    "space",
+    "pressing",
+    "shape"
+  ]
+}

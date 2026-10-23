@@ -1,0 +1,42 @@
+{
+ "hash": "89f38c14ef83ed612dffd676c68e43da1eb7f9cb46381f2d32347e2d149a7b85",
+ "version": "v1",
+ "status": "exploratory",
+ "decisionType": "death-bowling (pace vs spin)",
+ "outcomesHash": "26d4e16fbc44810e72f8cc4b876670237be6c4524ec97b131ca94a77af842ea6",
+ "optionsHash": "677cf427ca7960c93ef830937db26a76c56f35d4ac4c540e937b1030a8697011",
+ "loggedDecisions": 225,
+ "matches": 191,
+ "pace": 32,
+ "spin": 193,
+ "propensityModel": {
+  "a": -1.9184,
+  "b": 0.0087,
+  "feature": "required run rate",
+  "clip": [
+   0.05,
+   0.95
+  ]
+ },
+ "estimates": {
+  "pace": {
+   "model": 0.4553,
+   "dr": 0.5443,
+   "disagreementPts": 8.91,
+   "ci95Pts": [
+    -0.09,
+    19.48
+   ]
+  },
+  "spin": {
+   "model": 0.4623,
+   "dr": 0.5827,
+   "disagreementPts": 12.04,
+   "ci95Pts": [
+    7.8,
+    16.5
+   ]
+  }
+ },
+ "note": "Offline check only; scenario estimates are labelled model estimates and never shown as what would have happened."
+}

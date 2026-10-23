@@ -2,6 +2,15 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Radio, RefreshCw, Zap, BarChart3, Users2, Info, Trophy, Clock, MapPin, Wifi, WifiOff } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { completedOvers, runRate, tryParseOvers } from "@/engine/legalBalls";
+
+// Run rates use legal balls: "10.4" overs is 64 balls, never 10.4 overs.
+const rateOf = (runs: number, overs: string): number | null => {
+  const balls = tryParseOvers(overs);
+  return balls === null ? null : runRate(runs, balls);
+};
+const formatRate = (runs: number, overs: string): string => rateOf(runs, overs)?.toFixed(2) ?? "–";
 
 type ScoreEntry = {
   runs: number; wickets: number; overs: string; inning: string;
@@ -13,11 +22,12 @@ type InningsData = {
   battingTeam: string; bowlingTeam: string; totalRuns: number; totalWickets: number;
   overs: string; runRate: number; isCompleted: boolean;
   extras: { wides: number; noBalls: number; byes: number; legByes: number; total: number; };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
   batsmen: any[]; bowlers: any[]; fallOfWickets: any[]; partnerships: any[];
 };
 type MatchData = {
   source: string; matchId: string; matchName: string; matchType: string;
-  score: string; status: string; overs: string; isLive: boolean;
+  score: string; status: string; overs: string; isLive: boolean; dataLabel?: string;
   matchStarted: boolean; matchEnded: boolean;
   teams: TeamData[]; scores: ScoreEntry[];
   target: number | null; currentInnings: number;
@@ -28,6 +38,7 @@ type MatchData = {
 type APIResponse = {
   primary: MatchData | null;
   iplMatches: MatchData[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy untyped API payload; replaced by typed DTOs in F-F-03
   allMatches: any[];
   apiInfo: { hitsToday: number; hitsLimit: number; hitsUsed: number; };
 };
@@ -45,10 +56,10 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
 
   const fetchLive = async () => {
     try {
-      setError(null);
       const res = await fetch("/api/live-score");
       const json = await res.json();
       if (json.success && json.data) {
+        setError(null);
         setData(json.data);
       } else {
         setError(json.error || "Failed to fetch");
@@ -62,15 +73,16 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
   };
 
   useEffect(() => {
-    fetchLive();
+    // first fetch on the next tick: state updates belong to the response, not to the effect itself
+    const first = setTimeout(fetchLive, 0);
     if (autoRefresh) {
       intervalRef.current = setInterval(fetchLive, 30000); // Every 30 seconds
     }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+    return () => { clearTimeout(first); if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [autoRefresh]);
 
-  const tabs: { key: TabKey; label: string; icon: any }[] = [
-    { key: "LIVE", label: "LIVE SCORE", icon: Zap },
+  const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
+    { key: "LIVE", label: "SCORE", icon: Zap },
     { key: "SCORECARD", label: "SCORECARD", icon: BarChart3 },
     { key: "MATCHES", label: "ALL MATCHES", icon: Users2 },
     { key: "INFO", label: "INFO", icon: Info },
@@ -82,7 +94,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
         <div className="flex items-center justify-center space-x-3">
           <Radio size={16} className="text-red-500 animate-pulse" />
           <span className="text-gray-400 font-mono text-sm animate-pulse tracking-widest">
-            CONNECTING TO LIVE FEED...
+            LOADING SCORES…
           </span>
         </div>
       </div>
@@ -121,7 +133,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
             {match.isLive ? (
               <>
                 <Radio size={12} className="text-red-500 animate-pulse" />
-                <span className="text-red-500 text-[10px] font-mono font-bold tracking-[0.3em]">LIVE</span>
+                <span className="text-red-500 text-[10px] font-mono font-bold tracking-[0.3em] uppercase">{match.dataLabel ?? "In progress"}</span>
               </>
             ) : match.matchEnded ? (
               <>
@@ -264,20 +276,20 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
                       ({s.overs} overs)
                     </span>
                     <span className="text-gray-400 font-mono text-xs">
-                      RR: {(s.runs / Math.max(0.1, parseFloat(s.overs))).toFixed(2)}
+                      RR: {formatRate(s.runs, s.overs)}
                     </span>
                   </div>
                   {/* Run rate bar */}
                   <div className="mt-3 w-full bg-gray-800 rounded-full h-1.5">
                     <div
                       className={`h-1.5 rounded-full transition-all duration-500 ${
-                        s.runs / Math.max(0.1, parseFloat(s.overs)) > 10
+                        (rateOf(s.runs, s.overs) ?? 0) > 10
                           ? "bg-red-500"
-                          : s.runs / Math.max(0.1, parseFloat(s.overs)) > 7
+                          : (rateOf(s.runs, s.overs) ?? 0) > 7
                           ? "bg-yellow-500"
                           : "bg-green-500"
                       }`}
-                      style={{ width: `${Math.min(100, (parseFloat(s.overs) / 20) * 100)}%` }}
+                      style={{ width: `${Math.min(100, ((tryParseOvers(s.overs) ?? 0) / 120) * 100)}%` }}
                     />
                   </div>
                   <div className="flex justify-between mt-1.5 text-[9px] text-gray-600 font-mono">
@@ -318,7 +330,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
             ) : (
               match.scores.map((s, i) => {
                 const teamName = s.inning.split(" Inning")[0].replace(/,.*/, "");
-                const rr = (s.runs / Math.max(0.1, parseFloat(s.overs))).toFixed(2);
+                const rr = formatRate(s.runs, s.overs);
                 return (
                   <div key={i} className="bg-black/50 border border-white/10 rounded-sm p-4">
                     <div className="flex items-center justify-between mb-3">
@@ -357,9 +369,9 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
                         <div
                           key={oi}
                           className={`flex-1 h-2 rounded-sm ${
-                            oi < Math.floor(parseFloat(s.overs))
+                            oi < completedOvers(tryParseOvers(s.overs) ?? 0)
                               ? "bg-green-500/70"
-                              : oi === Math.floor(parseFloat(s.overs))
+                              : oi === completedOvers(tryParseOvers(s.overs) ?? 0)
                               ? "bg-yellow-500/70"
                               : "bg-gray-800"
                           }`}
@@ -404,7 +416,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
                         ? "bg-green-500/20 text-green-400"
                         : "bg-yellow-500/20 text-yellow-400"
                     }`}>
-                      {m.isLive ? "LIVE" : m.matchEnded ? "COMPLETED" : "UPCOMING"}
+                      {m.isLive ? (m.dataLabel ?? "IN PROGRESS").toUpperCase() : m.matchEnded ? "COMPLETED" : "UPCOMING"}
                     </span>
                   </div>
                   {m.scores.map((s, si) => (
@@ -426,7 +438,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
 
             {/* Other matches */}
             <h4 className="text-[10px] text-gray-500 font-mono tracking-[0.3em] mt-6 mb-3">
-              OTHER LIVE MATCHES
+              OTHER MATCHES IN PROGRESS
             </h4>
             {data.allMatches.filter(m => !m.name?.includes("Indian Premier League")).slice(0, 5).map((m, i) => (
               <div key={i} className="p-3 rounded-sm border border-white/5 bg-black/30">
@@ -434,7 +446,7 @@ export default function LiveMatchCenter({ compact = false }: { compact?: boolean
                   {m.isLive && <Radio size={8} className="text-red-500 animate-pulse" />}
                   <span className="text-gray-300 font-mono text-xs">{m.name}</span>
                 </div>
-                {m.score?.map((s: any, si: number) => (
+                {m.score?.map((s: ScoreEntry, si: number) => (
                   <div key={si} className="text-gray-500 font-mono text-[10px]">
                     {s.inning?.split(" Inning")[0].replace(/,.*/, "")}: {s.runs}/{s.wickets} ({s.overs} ov)
                   </div>

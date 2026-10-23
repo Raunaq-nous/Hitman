@@ -25,10 +25,12 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      setError("Invalid credentials");
+      setError(/too many/i.test(res.error) ? res.error : "Invalid credentials");
       setLoading(false);
     } else {
-      router.push("/dashboard");
+      // only same-site paths, never an external redirect
+      const next = new URLSearchParams(window.location.search).get("callbackUrl");
+      router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/crews");
       router.refresh();
     }
   };
@@ -52,25 +54,27 @@ export default function LoginPage() {
           )}
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label htmlFor="f-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
+              id="f-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-[var(--ink)] placeholder:text-gray-500 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label htmlFor="f-password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
+              id="f-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-[var(--ink)] placeholder:text-gray-500 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="••••••••"
             />
           </div>
@@ -89,7 +93,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-8 text-center text-sm text-gray-600">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="font-semibold text-red-600 hover:text-red-500">
             Create an account
           </Link>

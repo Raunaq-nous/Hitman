@@ -1,0 +1,16 @@
+{
+  "source_id": "cricsheet",
+  "display_name": "Cricsheet",
+  "may_display_raw": true,
+  "may_store_history": true,
+  "may_create_derivatives": true,
+  "may_embed_for_retrieval": true,
+  "may_train_models": true,
+  "may_show_video": false,
+  "commercial_use": "unconfirmed",
+  "territories": ["*"],
+  "attribution_required": true,
+  "attribution_text": "Data from Cricsheet (cricsheet.org)",
+  "prototype_only": false,
+  "notes": "Confirm licence on cricsheet.org before commercial launch; third-party descriptions differ."
+}

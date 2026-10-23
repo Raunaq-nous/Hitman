@@ -1,0 +1,7 @@
+{
+  "tags": [
+    { "tag": "gate-0", "sha": "109c20c192da288184843f8a6c136584affc56cd", "message": "Gate 0: repository safety and harness. Phase features passing with evidence; verify and verify --clean green; review-gate findings fixed; CI run 39817981766 green." },
+    { "tag": "gate-1", "sha": "109c20c192da288184843f8a6c136584affc56cd", "message": "Gate 1: foundations. Phase features passing with evidence; verify and verify --clean green; review-gate findings fixed; CI run 39817981766 green." },
+    { "tag": "gate-4", "sha": "109c20c192da288184843f8a6c136584affc56cd", "message": "Gate 4: Desk and generation contract. Phase features passing with evidence; verify and verify --clean green; review-gate findings fixed; CI run 39817981766 green." }
+  ]
+}

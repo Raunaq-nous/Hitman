@@ -1,0 +1,11 @@
+# External references
+- Next.js docs: https://nextjs.org/docs (and `node_modules/next/dist/docs/` for the installed version)
+- Prisma: https://www.prisma.io/docs · Playwright: https://playwright.dev · Vitest: https://vitest.dev · Zod: https://zod.dev
+- Gemini API (models, `@google/genai`): https://ai.google.dev
+- Cricsheet downloads and licensing: https://cricsheet.org
+- OpenF1 API: https://openf1.org · StatsBomb open data: https://github.com/statsbomb/open-data
+- Antigravity docs (rules, skills, permissions, /goal): https://antigravity.google/docs
+- Harness engineering (OpenAI, Feb 2026): https://openai.com/index/harness-engineering/
+- Effective harnesses for long-running agents (Anthropic): https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+- The calibration–leverage tradeoff in exactly solvable win-probability models (arXiv 2608.14696)
+- Klaassen & Magnus (2001), JASA 96(454): 500–509 · Jiang & Li (2016), ICML, PMLR 48: 652–661

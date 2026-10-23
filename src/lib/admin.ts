@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { env } from "@/providers/env";
 
 /**
  * Gate for destructive and scoring routes.
@@ -8,14 +9,10 @@ import { authOptions } from "@/lib/auth";
  * or when the signed-in user's email is listed in ADMIN_EMAILS (comma-separated).
  */
 export async function isAdminRequest(req: Request): Promise<boolean> {
-  const cronSecret = process.env.CRON_SECRET;
+  const { CRON_SECRET: cronSecret, ADMIN_EMAILS: admins } = env();
   const header = req.headers.get("authorization");
   if (cronSecret && header === `Bearer ${cronSecret}`) return true;
 
-  const admins = (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
   if (admins.length === 0) return false;
 
   const session = await getServerSession(authOptions);

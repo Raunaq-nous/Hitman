@@ -49,7 +49,7 @@ const ROLE_REQUIREMENTS = {
 export default function TeamBuilderClient({
   players,
   matchId,
-  leagueId,
+  crewId,
   tossCompleted,
   membersCount,
   team1,
@@ -57,7 +57,7 @@ export default function TeamBuilderClient({
 }: {
   players: Player[];
   matchId: string;
-  leagueId: string;
+  crewId: string;
   tossCompleted: boolean;
   membersCount: number;
   team1: string;
@@ -137,7 +137,7 @@ export default function TeamBuilderClient({
       });
 
       if (res.ok) {
-        router.push(`/leagues/${leagueId}`);
+        router.push(`/crews/${crewId}`);
         router.refresh();
       } else {
         const data = await res.json();
@@ -373,7 +373,7 @@ export default function TeamBuilderClient({
             </div>
 
             {/* Player list */}
-            <div className="space-y-2 max-h-[550px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[550px] overflow-y-auto pr-1" tabIndex={0} role="region" aria-label="Player list">
               {sortedPlayers.map(p => {
                 const isSelected = selectedPlayers.some(sp => sp.id === p.id);
                 const subRole = getSubRole(p);
@@ -460,7 +460,7 @@ export default function TeamBuilderClient({
               </div>
             </div>
 
-            <div className="space-y-2 max-h-[550px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[550px] overflow-y-auto pr-1" tabIndex={0} role="region" aria-label="Player list">
               {selectedPlayers.map(p => {
                 const isCaptain = captainId === p.id;
                 const isVC = viceCaptainId === p.id;

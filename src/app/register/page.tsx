@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { Trophy } from "lucide-react";
 
@@ -10,6 +11,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,11 +24,16 @@ export default function RegisterPage() {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, ageConfirmed }),
       });
 
       if (res.ok) {
-        router.push("/login?registered=true");
+        // sign straight in and continue where the visitor was heading (e.g. an invite link)
+        await signIn("credentials", { email, password, redirect: false });
+        const next = new URLSearchParams(window.location.search).get("callbackUrl");
+        const dest = next && next.startsWith("/") && !next.startsWith("//") ? next : "/crews";
+        router.push(`/onboarding?next=${encodeURIComponent(dest)}`);
+        router.refresh();
       } else {
         const data = await res.json();
         setError(data.message || "Failed to register");
@@ -57,44 +64,56 @@ export default function RegisterPage() {
           )}
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <label htmlFor="f-full-name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
             <input
+              id="f-full-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-[var(--ink)] placeholder:text-gray-500 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="John Doe"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label htmlFor="f-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
+              id="f-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-[var(--ink)] placeholder:text-gray-500 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label htmlFor="f-password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
+              id="f-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
-              placeholder="Create a strong password"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-[var(--ink)] placeholder:text-gray-500 focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all outline-none"
+              placeholder="At least 10 characters"
+              minLength={10}
             />
+          </div>
+
+          <div className="flex items-start gap-3 rounded-lg border border-gray-300 p-3">
+            <input id="f-age" type="checkbox" required checked={ageConfirmed} onChange={(e) => setAgeConfirmed(e.target.checked)} className="mt-1 h-4 w-4" aria-describedby="f-age-help" />
+            <div>
+              <label htmlFor="f-age" className="block text-sm font-semibold text-gray-900">I am 18 or over</label>
+              <p id="f-age-help" className="text-sm text-gray-700 mt-1">The ALTER EGO beta is open to adults only while we finish safety and legal reviews. It’s free and involves no money.</p>
+            </div>
           </div>
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !ageConfirmed}
             className="w-full bg-red-600 text-white font-bold font-mono tracking-widest py-3 px-4 rounded-lg hover:bg-red-700 hover:shadow-[0_0_15px_rgba(220,38,38,0.5)] focus:ring-4 focus:ring-red-200 transition-all flex justify-center items-center mt-2"
           >
             {loading ? (
