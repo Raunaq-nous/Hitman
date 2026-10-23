@@ -5,7 +5,8 @@ import { DomainError } from "@/domain/shared/types";
 import * as repo from "./repo";
 import { brier, grade } from "@/engine/grader";
 import { momentDifficulty, START, updateRating } from "@/engine/readRating";
-import type { CallReview, LockedCall, LockInput, PrelockMoment } from "./types";
+import { brierSeries, domainScores, MIN_SAMPLE, reliabilityBuckets } from "@/engine/reliability";
+import { DECISION_TYPE_LABEL, type CallReview, type LockedCall, type LockInput, type Notebook, type NotebookCall, type PrelockMoment } from "./types";
 
 const cache = namedCache<repo.MomentsFile>("lab-moments", { ttlMs: 24 * 60 * 60 * 1000, maxEntries: 1 });
 const file = (): repo.MomentsFile => {
@@ -129,4 +130,45 @@ export async function nextMomentFor(userId: string, afterId: string): Promise<st
 export async function regradeUser(userId: string): Promise<void> {
   await repo.deleteReviews(userId);
   await gradePending(userId);
+}
+
+const PROVISIONAL_CALLS = 20;
+const DOMAINS = ["Next-over intent", "Chase tempo", "Middle overs", "Death overs"];
+const cap = (s: string): string => s[0].toUpperCase() + s.slice(1);
+
+/**
+ * The fan's Notebook (F-L-05): every call (filterable by decision type; cricket is the only sport so far), the
+ * reliability diagram, Brier over time and skill domains from graded calls, the Read Rating history (F-L-06), and
+ * small-sample warnings.
+ */
+export async function notebook(userId: string, filter: { type?: string | null } = {}): Promise<Notebook> {
+  await gradePending(userId);
+  const all: NotebookCall[] = [];
+  for (const c of await repo.callsInLockOrder(userId)) {
+    const m = storedMoment(c.momentId);
+    if (!m || !c.review) continue;
+    const label = (o: string) => cap(m.decision.options.find((x) => x.option === o)?.label ?? o);
+    all.push({
+      momentId: m.id, season: m.season, teams: `${m.prelock.battingTeam} v ${m.prelock.bowlingTeam}`, phase: m.prelock.phase, decisionType: m.decision.type, question: m.decision.question,
+      pick: label(c.option), best: label(c.review.best), confidence: c.confidence, lockedAt: c.lockedAt.toISOString(),
+      graded: c.review.graded, readPoints: c.review.readPoints, hit: c.review.hit, brier: c.review.brier,
+    });
+  }
+  const type = filter.type && DECISION_TYPE_LABEL[filter.type] ? filter.type : null;
+  const calls = type ? all.filter((c) => c.decisionType === type) : all;
+  const graded = calls.filter((c) => c.graded);
+  const scored = graded.map((c) => ({ confidence: c.confidence, hit: c.hit === true }));
+  const domains = domainScores(graded.map((c) => ({ domains: [DECISION_TYPE_LABEL[c.decisionType], c.phase === "death" ? "Death overs" : c.phase === "middle" ? "Middle overs" : "Powerplay"], readPoints: c.readPoints ?? 0, hit: c.hit === true })), DOMAINS);
+  // the rating is the user's, across every graded call (filters don't change it)
+  const allGraded = all.filter((c) => c.graded).length;
+  const reviews = (await repo.callsInLockOrder(userId)).flatMap((c) => (c.review?.graded ? [c.review.ratingAfter] : []));
+  const warnings: string[] = [];
+  if (graded.length < MIN_SAMPLE) warnings.push(`Small sample: ${graded.length} graded ${graded.length === 1 ? "call" : "calls"} here. Patterns need at least ${MIN_SAMPLE}.`);
+  if (allGraded < PROVISIONAL_CALLS) warnings.push(`Your Read Rating is provisional until ${PROVISIONAL_CALLS} graded calls (${allGraded} so far).`);
+  return {
+    sport: "cricket", filter: { type }, decisionTypes: Object.keys(DECISION_TYPE_LABEL).filter((t) => all.some((c) => c.decisionType === t)),
+    calls: [...calls].reverse(), reliability: reliabilityBuckets(scored), brier: brierSeries(scored), domains,
+    rating: { current: reviews.at(-1) ?? START, graded: allGraded, provisional: allGraded < PROVISIONAL_CALLS, history: [{ i: 0, rating: START }, ...reviews.map((r, i) => ({ i: i + 1, rating: r }))] },
+    warnings,
+  };
 }
