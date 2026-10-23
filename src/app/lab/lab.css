@@ -27,3 +27,13 @@
 .nb-chart svg{width:100%;height:auto;display:block}
 .nb-table{width:100%;border-collapse:collapse;font-size:var(--step--1);display:block;overflow-x:auto}
 .nb-table th,.nb-table td{text-align:left;padding:.35rem .5rem;border-bottom:1px solid var(--line)}
+.dossier{display:grid;gap:.8rem;padding:1.2rem;border:2px dashed var(--line);border-radius:12px;background:var(--surface)}
+.dossier-stamp{min-height:3rem}
+.dossier-name{font:800 var(--step-2)/1.1 var(--font-display);margin:0}
+.dossier-body{display:grid;gap:.8rem}
+@media (prefers-reduced-motion:no-preference){.dossier[data-open=true] .dossier-body{animation:dossier-open .45s ease-out both}}
+@keyframes dossier-open{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.dossier-evidence{margin:0;padding-left:1.1rem}
+.dossier-axes{margin:0;display:grid;gap:.6rem}
+.dossier-axes dt{font-weight:800}
+.dossier-axes dd{margin:0;color:var(--text-2)}

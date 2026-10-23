@@ -30,6 +30,8 @@ export type Identity =
 const rate = (xs: IdentityCall[]): number | null => (xs.length ? xs.filter((c) => c.hit).length / xs.length : null);
 const pct = (x: number): string => `${Math.round(x * 100)}%`;
 const clamp = (x: number): number => Math.min(1, Math.max(0, x));
+/** A sentence continued after a colon starts in lower case. */
+const lc = (s: string): string => s[0].toLowerCase() + s.slice(1);
 const TYPE_NAME: Record<string, string> = { "next-over-intent": "next-over intent", "chase-tempo": "chase tempo", "death-bowling": "death bowling" };
 
 export function alterEgo(calls: IdentityCall[]): Identity {
@@ -74,11 +76,11 @@ export function alterEgo(calls: IdentityCall[]): Identity {
   };
   const slug = ORDER.reduce((best, p) => (score[p] > score[best] ? p : best), ORDER[0]);
   const why: Record<PersonaSlug, string> = {
-    opener: `Your timing stands out: ${axes[1].explanation}`,
+    opener: `Your timing stands out: ${lc(axes[1].explanation)}`,
     closer: `You read the biggest moments best: right ${pct(high as number)} on your higher-leverage calls against ${pct(low ?? 0)} on the rest.`,
     architect: `You read the tempo of a chase: right ${pct(rate(tempo) ?? 0)} of the time on ${tempo.length} chase-tempo calls.`,
-    professor: `You take calculated risks: ${axes[0].explanation}`,
-    iceman: `You stay cool under pressure: ${axes[2].explanation}`,
+    professor: `You take calculated risks: ${lc(axes[0].explanation)}`,
+    iceman: `You stay cool under pressure: ${lc(axes[2].explanation)}`,
   };
   const modifier = contrarianism !== null && contrarianism >= 0.6 ? "Contrarian" : risk >= 0.7 ? "Bold" : risk <= 0.3 ? "Steady" : calibration >= 0.8 ? "Sharp" : "Balanced";
   const modWhy: Record<string, string> = {
@@ -87,6 +89,6 @@ export function alterEgo(calls: IdentityCall[]): Identity {
   };
   return {
     revealed: true, graded: n, axes, persona: { slug, name: NAMES[slug] }, modifier, label: `${NAMES[slug]} · ${modifier}`,
-    evidence: [why[slug], `${modifier}: ${modWhy[modifier]}`],
+    evidence: [why[slug], `${modifier}: ${lc(modWhy[modifier])}`],
   };
 }
