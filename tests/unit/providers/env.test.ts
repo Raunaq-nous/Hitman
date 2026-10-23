@@ -35,6 +35,10 @@ describe("env", () => {
     const f = parseEnv({ DATABASE_URL: DB, LIVE_CALLS: "TRUE", PROTOTYPE_DATA: "false", GEMINI_API_KEY: "k" });
     expect([f.LIVE_CALLS, f.PROTOTYPE_DATA, f.LLM_ENABLED]).toEqual([true, false, true]);
     expect(() => parseEnv({ DATABASE_URL: DB, LIVE_CALLS: "maybe" })).toThrow(/LIVE_CALLS/);
+    // production: prototype-only sources are off unless switched on explicitly
+    const prod = { DATABASE_URL: DB, NODE_ENV: "production", NEXTAUTH_SECRET: "s".repeat(40), NEXTAUTH_URL: "https://alterego.example", CRON_SECRET: "c".repeat(32) };
+    expect(parseEnv(prod).PROTOTYPE_DATA).toBe(false);
+    expect(parseEnv({ ...prod, PROTOTYPE_DATA: "true" }).PROTOTYPE_DATA).toBe(true);
   });
 
   it("splits ADMIN_EMAILS and refuses seeding in production", () => {
