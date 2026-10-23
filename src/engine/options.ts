@@ -56,6 +56,8 @@ export const totalCount = (c: Counts | undefined): number => (c ? OUTCOMES.reduc
 const BALL_EDGES = [6, 12, 24, 36, 60, 120];
 const WICKET_EDGES = [2, 4, 6, 8, 10];
 export const RATE_EDGES = [6, 8, 10, 12, 15, Infinity];
+// intent relative to the current band: one below, the same, one above
+const INTENT_LABELS = ["ease off", "hold", "attack"];
 const RATE_LABELS = ["up to 6 rpo", "6–8 rpo", "8–10 rpo", "10–12 rpo", "12–15 rpo", "over 15 rpo"];
 
 /** The situation an option's counts are pooled over: balls-left band and wickets-in-hand band. */
@@ -71,15 +73,15 @@ export const DECISION_TYPES = ["next-over-intent", "chase-tempo", "death-bowling
 export type DecisionType = (typeof DECISION_TYPES)[number];
 
 /**
- * The options a moment offers. Intent: bat like sides one required-rate band above (attack) or below (consolidate)
- * the current one, for the next over. Tempo: the required-rate band the chaser targets for the next two overs (the
+ * The options a moment offers. Intent: bat like sides one required-rate band above (attack), in (hold) or below
+ * (ease off) the current one, for the next over. Tempo: the required-rate band the chaser targets for the next two overs (the
  * current band and its neighbours). Death bowling (overs 17–20): pace or spin for the next over.
  */
 export function momentOptions(type: DecisionType, s: ChaseState): { windowBalls: number; options: { option: string; label: string }[] } | null {
   const k = rateBand(s);
   if (type === "next-over-intent") {
-    const up = Math.min(RATE_EDGES.length - 1, k + 1), down = Math.max(0, k - 1);
-    return { windowBalls: Math.min(6, s.b), options: [{ option: `rate:${up}`, label: "attack" }, { option: `rate:${down}`, label: "consolidate" }] };
+    const bands = [k + 1, k, k - 1].filter((b) => b >= 0 && b < RATE_EDGES.length);
+    return { windowBalls: Math.min(6, s.b), options: bands.map((b) => ({ option: `rate:${b}`, label: INTENT_LABELS[b - k + 1] })) };
   }
   if (type === "chase-tempo") {
     const bands = [k - 1, k, k + 1].filter((b) => b >= 0 && b < RATE_EDGES.length);

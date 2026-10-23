@@ -6,7 +6,7 @@ As a fan, I see a real moment from a past match exactly as it stood before the d
 ## Moments
 - Source: Cricsheet IPL ball-by-ball data. Moments are auto-selected by leverage (top decile) and diversified by season, team and phase; 50 “golden moments” are curated, validated and committed as fixtures.
 - Each moment stores the pre-lock state only (balls left, wickets in hand, runs required, phase, batters/bowler roles, recent overs) and an `observedCutoff`. Nothing after the cutoff may be shown before lock.
-- Decision types (start with data-rich ones): death-over bowling choice (pace vs spin), batting intent for the next over (attack vs consolidate), chase tempo (target required rate bands). Options per moment: 2–3.
+- Decision types (start with data-rich ones): death-over bowling choice (pace vs spin), batting intent for the next over (attack, hold or ease off; D-039), chase tempo (target required rate bands). Options per moment: 2–3.
 
 ## Call card (“Ticket Call”)
 Context strip (score, overs as legal balls formatted `O.B`, required rate, leverage meter), the question, 2–3 option buttons, a confidence slider 50–99% (default 60), a **Lock** button that records server time. After lock the card shows a “LOCKED” stamp. Keyboard and screen-reader accessible.

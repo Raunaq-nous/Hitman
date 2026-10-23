@@ -11,12 +11,15 @@ import { checkCricketContract } from "@/domain/facts/contract";
 import { createChaseModel, type ChaseModel, type ChaseState } from "@/engine/chaseWp";
 import { diversify, phaseOf, quantile, type Candidate } from "@/engine/moments";
 import { chaseSamples, predictOutcome, predictStyles, type OutcomeArtifact } from "@/engine/outcomeModel";
-import { momentDecision, type DecisionType, type OptionArtifact } from "@/engine/options";
+import { momentDecision, rateBand, type DecisionType, type OptionArtifact } from "@/engine/options";
 import { parseCsv } from "./fit-outcomes";
 
 export const SEASONS = [2024, 2025, 2026];
 export const N = 50;
-export const CAPS = { perSeason: 18, perPhase: { powerplay: 12, middle: 25, death: 25 }, perTeam: 14 };
+// The model's best answer is "higher band" at every gradeable middle-over state and splits between higher and current
+// only in the death overs (lower almost never wins; D-039), so most moments come from the death overs and at most half
+// share an answer: neither a fixed answer nor a phase rule ("attack in the middle, hold at the death") does well
+export const CAPS = { perSeason: 20, perPhase: { powerplay: 12, middle: 10, death: 40 }, perTeam: 16, perAnswer: 25 };
 const SECONDS_PER_DELIVERY = 30;
 type Row = Record<string, string>;
 
@@ -41,12 +44,18 @@ export function eventFromDerived(match: Row, rows: Row[]): ParsedEvent {
   };
 }
 
+/** The best option's required-rate band relative to the state's own: "higher", "current" or "lower". */
+export function answerOf(best: string, s: ChaseState): "higher" | "current" | "lower" {
+  const d = Number(best.slice("rate:".length)) - rateBand(s);
+  return d > 0 ? "higher" : d < 0 ? "lower" : "current";
+}
+
 const oversOf = (legalBowled: number): string => `${Math.floor(legalBowled / 6)}.${legalBowled % 6}`;
 // decision types tried per phase, in order (death-over pace vs spin lacks style data: D-036)
 const DECISIONS_FOR: Record<string, DecisionType[]> = { powerplay: ["chase-tempo", "next-over-intent"], middle: ["next-over-intent", "chase-tempo"], death: ["next-over-intent", "chase-tempo"] };
-export const STATES_PER_MATCH_PHASE = 5;
+export const STATES_PER_MATCH_PHASE = 12;
 const QUESTION: Record<DecisionType, string> = {
-  "next-over-intent": "Next over: should the chasing side attack or consolidate?",
+  "next-over-intent": "Next over: should the chasing side attack, hold its rate or ease off?",
   "chase-tempo": "What run rate should the chasing side aim for over the next two overs?",
   "death-bowling": "Death over: pace or spin?",
 };
@@ -91,9 +100,10 @@ export function buildMoments() {
     const k = `${c.match}:${c.phase}`;
     if ((tried.get(k) ?? 0) >= STATES_PER_MATCH_PHASE) continue;
     tried.set(k, (tried.get(k) ?? 0) + 1);
+    // every gradeable decision type is a candidate; its answer is the best band relative to the current one
     for (const type of DECISIONS_FOR[c.phase]) {
       const d = momentDecision(type, c.state, predictOutcome(outcomes, c.state, c.target), (s) => predictStyles(outcomes, s, c.target), options);
-      if (d && !d.insufficient && !d.coinFlip) { gradeable.push({ ...c, decision: d }); break; }
+      if (d && !d.insufficient && !d.coinFlip) gradeable.push({ ...c, decision: d, answer: answerOf(d.best as string, c.state) });
     }
   }
   const picked = diversify(gradeable, N, CAPS);
@@ -118,7 +128,7 @@ export function buildMoments() {
       decision: {
         type: c.decision.type, question: QUESTION[c.decision.type],
         options: c.decision.options.map((o) => ({ option: o.option, label: c.decision.labels[o.option], wp: Math.round(o.wp * 1e6) / 1e6, n: o.n })),
-        best: c.decision.best, gapPts: Math.round(c.decision.gapPts * 1000) / 1000, calibration: "provisional",
+        best: c.decision.best, answer: c.answer as string, gapPts: Math.round(c.decision.gapPts * 1000) / 1000, calibration: "provisional",
       },
       // shown only after lock
       reveal: { chaseWon: c.chaseWon, winner: c.matchRow.winner },
@@ -136,5 +146,5 @@ if (process.argv[1]?.endsWith("select-golden-moments.ts")) {
   mkdirSync("data/fixtures/moments", { recursive: true });
   writeFileSync("data/fixtures/moments/golden-moments.json", JSON.stringify({ hash, source: "Cricsheet IPL ball-by-ball (cricsheet.org)", ...a }, null, 1) + "\n");
   const by = (k: (m: (typeof a.moments)[number]) => string) => JSON.stringify(a.moments.reduce<Record<string, number>>((o, m) => ({ ...o, [k(m)]: (o[k(m)] ?? 0) + 1 }), {}));
-  console.log(`golden moments: ${a.moments.length} (threshold ${a.leverageThreshold}, ${a.statesScored} states, ${a.matchesExcluded} matches excluded); seasons ${by((m) => String(m.season))}; phases ${by((m) => m.prelock.phase)}; types ${by((m) => m.decision.type)}; sha256 ${hash.slice(0, 12)}`);
+  console.log(`golden moments: ${a.moments.length} (threshold ${a.leverageThreshold}, ${a.statesScored} states, ${a.matchesExcluded} matches excluded); seasons ${by((m) => String(m.season))}; phases ${by((m) => m.prelock.phase)}; types ${by((m) => m.decision.type)}; answers ${by((m) => m.decision.answer)}; sha256 ${hash.slice(0, 12)}`);
 }

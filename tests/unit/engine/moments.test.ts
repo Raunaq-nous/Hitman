@@ -35,4 +35,11 @@ describe("golden-moment selection (moments)", () => {
     const tied = [c("z", "Z", 2024, "death", ["A"], 0.2), c("m", "M", 2024, "death", ["B"], 0.2)];
     expect(diversify(tied, 1, caps).map((x) => x.id)).toEqual(["m"]);
   });
+
+  it("caps how many moments share an answer, so no fixed answer scores well", () => {
+    const caps = { perSeason: 9, perPhase: { powerplay: 9, middle: 9, death: 9 }, perTeam: 9, perAnswer: 1 };
+    const tagged = [{ ...c("a", "A", 2024, "death", ["A"], 0.3), answer: "higher" }, { ...c("b", "B", 2024, "death", ["B"], 0.2), answer: "higher" }, { ...c("d", "D", 2024, "death", ["D"], 0.15), answer: "current" }, c("e", "E", 2024, "death", ["E"], 0.1)];
+    expect(diversify(tagged, 9, caps).map((x) => x.id)).toEqual(["a", "d", "e"]);
+    expect(diversify(tagged, 9, { ...caps, perAnswer: undefined }).map((x) => x.id)).toEqual(["a", "b", "d", "e"]);
+  });
 });

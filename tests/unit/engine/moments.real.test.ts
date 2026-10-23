@@ -4,6 +4,7 @@ import { gunzipSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
 import { checkCricketContract } from "@/domain/facts/contract";
 import { chaseSamples } from "@/engine/outcomeModel";
+import { RATE_EDGES } from "@/engine/options";
 import { parseCsv } from "../../../scripts/fit-outcomes";
 import { CAPS, eventFromDerived } from "../../../scripts/select-golden-moments";
 
@@ -11,7 +12,7 @@ import { CAPS, eventFromDerived } from "../../../scripts/select-golden-moments";
 interface Moment {
   id: string; matchId: string; season: number; date: string; observedCutoff: string; leverage: number;
   prelock: Record<string, unknown> & { battingTeam: string; bowlingTeam: string; target: number; ballsLeft: number; wicketsInHand: number; runsRequired: number; phase: string; overs: string };
-  decision: { type: string; options: { option: string; label: string; wp: number; n: number }[]; best: string | null; gapPts: number; calibration: string };
+  decision: { type: string; options: { option: string; label: string; wp: number; n: number }[]; best: string | null; answer: string; gapPts: number; calibration: string };
   reveal: { chaseWon: 0 | 1; winner: string };
 }
 const file = JSON.parse(readFileSync("data/fixtures/moments/golden-moments.json", "utf8")) as { hash: string; seasons: number[]; leverageThreshold: number; moments: Moment[] } & Record<string, unknown>;
@@ -45,7 +46,18 @@ describe("fifty golden moments (moments)", () => {
       expect(m.decision.best).toBe([...m.decision.options].sort((a, b) => b.wp - a.wp)[0].option);
       expect(m.decision.options.every((o) => o.n >= 300 && o.wp > 0 && o.wp < 1)).toBe(true);
       expect(m.decision.calibration).toBe("provisional");
+      const band = RATE_EDGES.findIndex((e) => (m.prelock.runsRequired * 6) / m.prelock.ballsLeft <= e);
+      const best = Number((m.decision.best as string).slice(5));
+      expect(m.decision.answer).toBe(best > band ? "higher" : best < band ? "lower" : "current");
     }
+    // not trivially answerable: no fixed answer is right more than 40% of the time
+    const answers = file.moments.reduce<Record<string, number>>((o, m) => ({ ...o, [m.decision.answer]: (o[m.decision.answer] ?? 0) + 1 }), {});
+    expect(Math.max(...Object.values(answers))).toBeLessThanOrEqual(CAPS.perAnswer);
+    expect(Object.keys(answers).length).toBeGreaterThanOrEqual(2);
+    // the best phase rule (each phase's most common answer) is right at most 70% of the time
+    const byPhase = file.moments.reduce<Record<string, Record<string, number>>>((o, m) => { const p = (o[m.prelock.phase] ??= {}); p[m.decision.answer] = (p[m.decision.answer] ?? 0) + 1; return o; }, {});
+    const phaseRule = Object.values(byPhase).reduce((a, p) => a + Math.max(...Object.values(p)), 0);
+    expect(phaseRule / file.moments.length).toBeLessThanOrEqual(0.7);
   });
 
   it("come from matches the data contract accepts, and their pre-lock state matches the ball-by-ball data", () => {
@@ -70,6 +82,14 @@ describe("fifty golden moments (moments)", () => {
       expect(m.prelock.overs).toBe(`${Math.floor(legal / 6)}.${legal % 6}`);
       expect(Date.parse(m.observedCutoff)).toBeGreaterThanOrEqual(Date.parse(`${m.date}T14:00:00Z`));
       for (const key of ["winner", "chaseWon", "result", "reveal"]) expect(m.prelock).not.toHaveProperty(key);
+      // the pre-lock state is exactly what the deliveries up to the cutoff add up to, and the next delivery is legal
+      const rows = rowsOf.get(m.matchId) as Record<string, string>[];
+      const seen = Math.round((Date.parse(m.observedCutoff) - Date.parse(`${m.date}T14:00:00Z`)) / 30_000) + 1;
+      const chase = rows.slice(0, seen).filter((r) => r.innings === "2");
+      expect(m.prelock.target - chase.reduce((a, r) => a + Number(r.runs_batter) + Number(r.extras), 0), m.id).toBe(m.prelock.runsRequired);
+      expect(10 - chase.filter((r) => r.wicket === "1").length, m.id).toBe(m.prelock.wicketsInHand);
+      expect(120 - chase.filter((r) => r.extra_type !== "wides" && r.extra_type !== "noballs").length, m.id).toBe(m.prelock.ballsLeft);
+      expect(["wides", "noballs"], m.id).not.toContain(rows[seen].extra_type);
     }
   });
 });
