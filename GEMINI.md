@@ -1,7 +1,7 @@
 # Antigravity-specific instructions (overrides AGENTS.md where they conflict)
 
 - You usually run under `/goal`. Do not stop to ask for approval; artifact review is set to Always Proceed. Map every deliverable to evidence before declaring completion.
-- Keep Antigravity artifacts in sync with the repo: the Task List mirrors the current phase in `docs/exec-plans/active/0001-alter-ego-overhaul.md`; the Implementation Plan for a feature is copied into the progress log; at each phase gate write a Walkthrough and append it to `docs/WALKTHROUGH.md`.
+- Keep Antigravity artifacts in sync with the repo: the Task List mirrors the current phase in `docs/exec-plans/completed/0001-alter-ego-overhaul.md`; the Implementation Plan for a feature is copied into the progress log; at each phase gate write a Walkthrough and append it to `docs/WALKTHROUGH.md`.
 - Browser: use the browser only on `http://localhost` / `http://127.0.0.1` to verify UI. Capture screenshots at 390 px and 1280 px wide, light and dark, and save them under `docs/evidence/<feature-id>/`. Never log in to third-party sites.
 - Reasoning effort: High for planning, gate reviews and engine work; Medium for routine edits and docs.
 - Subagents: allowed for read-only research and drafting tests. Only the main agent writes to git, and only one feature is in progress at a time.

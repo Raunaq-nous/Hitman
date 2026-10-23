@@ -12,7 +12,7 @@ This file is a map, not a manual. The repository is the system of record: if it 
 
 ## Read in this order
 1. `docs/index.md` — what every document is for, and its status.
-2. `docs/exec-plans/active/0001-alter-ego-overhaul.md` — phases, gates, decision log, progress log.
+2. `docs/exec-plans/completed/0001-alter-ego-overhaul.md` — phases, gates, decision log, progress log.
 3. `harness/feature_list.json` (what to build next) and `harness/progress.md` (where we are, NEXT PROMPT).
 4. `docs/PRODUCT_SENSE.md`, `ARCHITECTURE.md`, `docs/DESIGN.md` — read the parts your feature touches.
 5. `.agents/rules/` — always-on rules. `.agents/skills/` — procedures (verify, review, ship, evidence, cricket engine, doc gardening).

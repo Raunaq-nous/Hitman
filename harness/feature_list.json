@@ -1312,8 +1312,8 @@
       "depends_on": [
         "F-Z-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "Release v0.1.0-beta: exec plan moved to docs/exec-plans/completed/ with all gates checked and Outcomes written; CI green on overhaul at the release head; PR Raunaq-nous/Hitman#1 merged into main with a merge commit through the API (no squash, every overhaul commit on main); tags gate-7 and v0.1.0-beta created by the tagger workflow at that merge commit; CI on main checked after the merge. Verify: gh run list --branch main --limit 1; git ls-remote --tags origin v0.1.0-beta."
     }
   ]
 }

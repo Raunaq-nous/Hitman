@@ -16,7 +16,7 @@
 | `RELIABILITY.md` | Freshness, latency, honest states, observability | Approved |
 | `QUALITY_SCORE.md` | Grade per domain, kept current by doc gardening | Living |
 | `PLANS.md` | How execution plans work | Approved |
-| `exec-plans/active/0001-alter-ego-overhaul.md` | The overhaul plan | Active |
+| `exec-plans/completed/0001-alter-ego-overhaul.md` | The overhaul plan (phases, gates, decision log D-001..D-045, outcomes) | Completed (v0.1.0-beta) |
 | `exec-plans/tech-debt-tracker.md` | Known debt | Living |
 | `HUMAN_TODO.md` | Actions only a human can take | Living |
 | `RESUME.md` | How a new session resumes | Approved |
