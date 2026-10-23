@@ -20,3 +20,7 @@ The agent keeps this list current and never blocks on it. Each item has a safe f
 - [ ] Counsel review of terms, privacy, persona lineage copy and any future sponsor reward (India’s 2025 gaming law).
 - [ ] Confirm data licences before commercial launch (Cricsheet terms; F1, football, basketball and tennis feeds to be procured).
 - [ ] Review `docs/WALKTHROUGH.md` and the screenshot evidence.
+- [ ] Licensed live feeds before turning on `LIVE_CALLS`: live calls then use the feed-time lock rule (F-T-05); until then the Lab runs on historical golden moments only.
+- [ ] Production data rights: OpenF1 is prototype-only, so production hides it unless `PROTOTYPE_DATA=true` is set deliberately (the default is off in production since 2026-10-23). Procure an F1 timing licence to show the Professor's pit window in production.
+- [ ] Look at the "lab anomaly flags" warnings in the logs from time to time (burst locking, implausible streaks, always-99% confidence). They are only logged, never acted on automatically.
+- [ ] Moment difficulty is fixed per moment (D-041). Decide whether to build the slow K = 8 difficulty update, which needs a shared, ordered ledger.
