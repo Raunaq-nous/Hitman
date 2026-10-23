@@ -104,7 +104,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ momentI
       />
 
       <p className="lab-lesson" data-testid="lesson">{lesson(r)}</p>
-      <p><NextReadLink fromCallId={r.callId} momentId={next} /></p>
+      <p className="nb-filters"><NextReadLink fromCallId={r.callId} momentId={next} /> {r.grade.graded && <a href={`/api/og/call/${r.callId}`} target="_blank" rel="noopener" data-testid="share-card">Share card (image)</a>}</p>
     </main>
   );
 }

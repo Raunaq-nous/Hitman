@@ -7,7 +7,7 @@ import * as repo from "./repo";
 import { brier, grade } from "@/engine/grader";
 import { momentDifficulty, START, updateRating } from "@/engine/readRating";
 import { brierSeries, domainScores, MIN_SAMPLE, reliabilityBuckets } from "@/engine/reliability";
-import { DECISION_TYPE_LABEL, type CallReview, type LockedCall, type LockInput, type Notebook, type NotebookCall, type PrelockMoment } from "./types";
+import { DECISION_TYPE_LABEL, type CallReview, type LockedCall, type LockInput, type Notebook, type NotebookCall, type PrelockMoment, type ShareCardData } from "./types";
 
 const cache = namedCache<repo.MomentsFile>("lab-moments", { ttlMs: 24 * 60 * 60 * 1000, maxEntries: 1 });
 const file = (): repo.MomentsFile => {
@@ -217,4 +217,21 @@ export async function crewTower(members: { id: string; name: string }[], now = n
     withCalls.push({ ...m, calls: await repo.callsInLockOrder(m.id) });
   }
   return towerEntries(withCalls, now);
+}
+
+/** The share card for a graded call (F-C-03); null when the call doesn't exist or isn't graded yet. */
+export async function shareCard(callId: string): Promise<ShareCardData | null> {
+  const c = await repo.findCallForShare(callId);
+  const m = c ? storedMoment(c.momentId) : null;
+  if (!c || !m || !c.review) return null;
+  const label = cap(m.decision.options.find((o) => o.option === c.option)?.label ?? c.option);
+  const p = c.review.readPoints ?? 0;
+  return {
+    displayName: c.user.name,
+    title: m.decision.question,
+    pick: `${label} · ${Math.round(c.confidence * 100)}% sure`,
+    grade: c.review.graded ? `${p > 0 ? "+" : p < 0 ? "−" : ""}${Math.abs(p).toFixed(1)} pts` : "Coin flip — no grade",
+    moment: `${m.prelock.battingTeam} v ${m.prelock.bowlingTeam}, IPL ${m.season} · needing ${m.prelock.runsRequired} off ${m.prelock.ballsLeft}`,
+    calibration: "Provisional calibration",
+  };
 }

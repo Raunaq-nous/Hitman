@@ -835,8 +835,8 @@
       "depends_on": [
         "F-L-04"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "GET /api/og/call/[callId] (src/app/api/og/call/[callId]/route.tsx, next/og): a graded call as a 1200×630 PNG — question, pick and confidence, moment, read points (or 'Coin flip — no grade'), display name only, 'Provisional calibration'; colours read from src/ui/tokens.css (src/ui/tokenValues.ts). 404 for an ungraded or unknown call. Linked from the Review ('Share card (image)'). npm test -- og: card data has no email or user id and no money/prize terms (tests/audit/money-terms), PNG signature and 1200×630 dimensions. Evidence docs/evidence/F-C-03/called-it.png. verify --ci PASS."
     },
     {
       "id": "F-C-04",
