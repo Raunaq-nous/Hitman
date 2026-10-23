@@ -1143,8 +1143,8 @@
       "depends_on": [
         "F-R-03"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "/lab/season-file (src/app/lab/season-file/page.tsx; service seasonFile): printable season summary — calls, graded, coin flips, best-pick rate, mean read, mean Brier, Read Rating (provisional flag), Alter Ego label once revealed, best and worst reads (top/bottom three by read points), reliability diagram, rating history, small-sample warnings, 'Provisional calibration'; Print button; print CSS hides nav, footer and buttons. tests/e2e/season-file.spec.ts: real calls, best/worst lists, charts, no money words, print media hides the button, axe clean. Evidence docs/evidence/F-R-05/season-file.pdf (A4 print). verify --ci PASS."
     },
     {
       "id": "F-T-01",
