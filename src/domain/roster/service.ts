@@ -97,14 +97,19 @@ export function personaTool(slug: PersonaSlug): PersonaTool {
   if (!e) return { kind: "pending", title: "Pit window", note: pending.find((p) => p.sport === "f1")?.reason ?? "No F1 data yet." };
   const laps = e.incidents.filter((i) => i.type === "lap").map((i) => i.payload as { driverNumber: number; lap: number; lapSeconds: number | null; pitOutLap: boolean });
   const drivers = [...new Set(laps.map((l) => l.driverNumber))].sort((a, b) => a - b);
-  const rows = drivers.slice(0, 5).flatMap((d) => {
+  // cars are lettered, not numbered: no real driver is identified (public names only)
+  const rows = drivers.slice(0, 5).flatMap((d, idx) => {
     const own = laps.filter((l) => l.driverNumber === d && l.lapSeconds !== null).sort((a, b) => a.lap - b.lap);
     const firstStop = own.find((l) => l.pitOutLap && l.lap > 1)?.lap;
+    // lap 1 (standing start) is left out of the stint
     const stint = own.filter((l) => l.lap > 1 && (!firstStop || l.lap < firstStop)).map((l) => ({ lap: l.lap, seconds: l.lapSeconds as number, pitOut: false }));
     if (stint.length < 5) return [];
     const deg = degradation(stint);
-    const w = pitWindow({ slopePerLap: deg.slopePerLap, stintStartLap: 1, pitLossSeconds: PIT_LOSS_SECONDS });
-    return [{ label: `Car ${d}: first stint ${(deg.slopePerLap).toFixed(3)} s/lap slower each lap`, value: `${w ? `window opens lap ${w.opensOnLap}` : "no window from wear"}${firstStop ? ` · pitted lap ${firstStop - 1}` : ""}` }];
+    const w = pitWindow({ slopePerLap: deg.slopePerLap, stintStartLap: stint[0].lap - 1, pitLossSeconds: PIT_LOSS_SECONDS });
+    const car = `Car ${String.fromCharCode(65 + idx)}`;
+    const trend = deg.slopePerLap > 0 ? `${deg.slopePerLap.toFixed(3)} s slower each lap` : `${Math.abs(deg.slopePerLap).toFixed(3)} s faster each lap`;
+    const verdict = w ? `window opens lap ${w.opensOnLap}` : "no window from wear (lap times fell as fuel burned off)";
+    return [{ label: `${car}: first stint ${trend}`, value: `${verdict}${firstStop ? ` · pitted lap ${firstStop - 1}` : ""}` }];
   });
   const last = e.incidents.map((i) => i.observedAt.toISOString()).sort().at(-1) as string;
   return { kind: "open-data", title: "Pit window", note: `Demo on OpenF1 open data, ${e.name} (${e.season}): tyre wear from each car's first-stint lap times, and the lap where the time lost to wear passes an illustrative ${PIT_LOSS_SECONDS}-second pit-lane loss.`, rows, receipt: { sourceId: e.sourceId, sourceClass: "VERIFIED_DELAYED", observedAt: last, clock: "replay" }, attribution: getPolicy(e.sourceId)?.attribution_text ?? e.sourceId };

@@ -21,7 +21,10 @@ test.describe("alter ego reveal", () => {
     await expect(page.getByTestId("axes").locator("dt")).toHaveCount(5);
     await expect(page.getByTestId("axes")).toContainText("Risk appetite");
     await expect(page.getByText("Provisional calibration")).toBeVisible();
-    const href = await page.getByTestId("share-alter-ego").getAttribute("href");
+    // sharing is opt-in: a click creates a revocable link; stopping sharing kills it
+    await page.getByTestId("share-button").click();
+    const href = await page.getByTestId("share-link").getAttribute("href");
+    expect(href).toMatch(/^\/api\/og\/alter-ego\/[\w-]{24}$/);
     const img = await page.request.get(href as string);
     expect(img.status()).toBe(200);
     expect(img.headers()["content-type"]).toBe("image/png");
@@ -33,5 +36,9 @@ test.describe("alter ego reveal", () => {
     }
     const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(axe.violations.map((v) => v.id)).toEqual([]);
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.getByTestId("stop-sharing").click();
+    await expect(page.getByTestId("share-button")).toBeVisible();
+    expect((await page.request.get(href as string)).status()).toBe(404);
   });
 });

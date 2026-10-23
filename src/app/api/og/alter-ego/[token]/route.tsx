@@ -1,15 +1,16 @@
 import { ImageResponse } from "next/og";
 import { NextResponse } from "next/server";
-import { alterEgoCard } from "@/domain/lab/service";
+import { alterEgoCardByToken } from "@/domain/lab/service";
 import { clientIp, RateLimiter } from "@/providers/rateLimit";
 import { tokenValues } from "@/ui/tokenValues";
 
 const limiter = new RateLimiter({ limit: 30, windowMs: 60_000 });
 
-// Alter Ego share card (F-R-04): display name, persona and the lead evidence. No personal data beyond the display name.
-export async function GET(req: Request, ctx: { params: Promise<{ userId: string }> }): Promise<Response> {
+// Alter Ego share card (F-R-04), behind the fan's opt-in, revocable share token: display name, persona and the lead
+// evidence. No personal data beyond the display name; reads existing grades only.
+export async function GET(req: Request, ctx: { params: Promise<{ token: string }> }): Promise<Response> {
   if (!limiter.hit(clientIp(req.headers)).ok) return NextResponse.json({ code: "RATE_LIMITED", message: "Too many requests." }, { status: 429 });
-  const card = await alterEgoCard((await ctx.params).userId);
+  const card = await alterEgoCardByToken((await ctx.params).token);
   if (!card) return NextResponse.json({ code: "NOT_FOUND", message: "No revealed Alter Ego here." }, { status: 404 });
   const t = tokenValues(["bg", "text", "text-2", "brick"]);
   return new ImageResponse(

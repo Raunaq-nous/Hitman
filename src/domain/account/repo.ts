@@ -32,6 +32,7 @@ export async function eraseUser(userId: string): Promise<void> {
     await tx.fantasyTeamPlayer.deleteMany({ where: { fantasyTeam: { userId } } });
     await tx.fantasyTeam.deleteMany({ where: { userId } });
     await tx.analyticsEvent.deleteMany({ where: { userId } });
+    await tx.alterEgoShare.deleteMany({ where: { userId } });
     await tx.decisionReview.deleteMany({ where: { userId } });
     await tx.labCall.deleteMany({ where: { userId } });
     await tx.user.delete({ where: { id: userId } });

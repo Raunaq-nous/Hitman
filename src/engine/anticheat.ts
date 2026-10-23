@@ -14,8 +14,8 @@ export function lockAllowed(a: { mode: LockMode; serverNow: string; feedCutoff: 
 export interface FlagCall { lockedAt: string; confidence: number; hit: boolean | null }
 export interface Flag { kind: "burst" | "streak" | "max-confidence"; detail: string }
 
-/** Thresholds: 10 locks inside 60 s; 15 best picks in a row; 20+ calls all at 99%. */
-const BURST = { calls: 10, windowMs: 60_000 }, STREAK = 15, MAXED = 20;
+/** Thresholds: 10 locks inside 60 s; 15 best picks in a row; 90%+ of 20 or more calls at 99%. */
+const BURST = { calls: 10, windowMs: 60_000 }, STREAK = 15, MAXED = { calls: 20, share: 0.9 };
 
 export function anomalyFlags(calls: FlagCall[]): Flag[] {
   const flags: Flag[] = [];
@@ -30,6 +30,6 @@ export function anomalyFlags(calls: FlagCall[]): Flag[] {
   for (const c of calls) { run = c.hit === true ? run + 1 : 0; best = Math.max(best, run); }
   if (best >= STREAK) flags.push({ kind: "streak", detail: `${best} best picks in a row.` });
   const maxed = calls.filter((c) => c.confidence >= 0.99).length;
-  if (calls.length >= MAXED && maxed === calls.length) flags.push({ kind: "max-confidence", detail: `${maxed} of ${calls.length} calls at 99% confidence.` });
+  if (calls.length >= MAXED.calls && maxed >= MAXED.share * calls.length) flags.push({ kind: "max-confidence", detail: `${maxed} of ${calls.length} calls at 99% confidence.` });
   return flags;
 }

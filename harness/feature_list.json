@@ -1214,7 +1214,7 @@
         "F-L-02"
       ],
       "passes": true,
-      "evidence": "src/engine/anticheat.ts (pure, 100% coverage): feed-time lock rule — a live call locks only up to the feed's cutoff by the server clock; historical golden moments always allowed because nothing is revealed before a lock (D-040); anomaly flag stub (10 locks inside 60 s, 15 best picks in a row, 20+ calls all at 99%) logged for review, never acted on. Wired into lockCall (src/domain/lab/service.ts) with integrityFlags. With the existing one-pick-per-call unique key (409) and rate limits (20 locks/min per user; events, OG routes per IP). npm test -- anticheat 5/5 (engine + Postgres-backed service: second lock refused, burst flagged and logged without blocking, clean fan unflagged); verify --ci PASS."
+      "evidence": "src/engine/anticheat.ts (pure, 100% coverage): feed-time lock rule — a live call locks only up to the feed's cutoff by the server clock (enforced once live calls exist; LIVE_CALLS=false today), historical golden moments rely on D-040 (nothing revealed before a lock); anomaly flag stub (10 locks inside 60 s, 15 best picks in a row, ≥ 90% of 20+ calls at 99%) computed on the last hour of calls, logged for review, never acted on and never able to fail a saved lock (D-045). Plus one final call per moment (unique key, 409), rate limits (20 locks/min per user; events and share images per IP) and server-only KPI events. npm test -- anticheat 6/6 (engine + Postgres-backed service); verify --ci PASS."
     },
     {
       "id": "F-A-02",
