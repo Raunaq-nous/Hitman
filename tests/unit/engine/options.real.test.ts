@@ -35,11 +35,11 @@ describe("option-conditioned win probability on real data (options)", () => {
   it("intent and tempo: data-rich options with distinct win probabilities, shrunk toward the state's distribution", () => {
     const s = stateAt(36);
     const intent = momentDecision("next-over-intent", s, predictOutcome(outcomes, s, target), base, file);
-    expect(intent?.options).toHaveLength(2);
+    expect(intent?.options).toHaveLength(3);
     expect(intent?.options.every((o) => o.sufficient && o.n >= 300)).toBe(true);
     expect(intent?.options.every((o) => o.wp > 0 && o.wp < 1)).toBe(true);
     expect(intent?.options[0].wp).not.toBe(intent?.options[1].wp);
-    expect(Object.values(intent?.labels ?? {}).sort()).toEqual(["attack", "consolidate"]);
+    expect(Object.values(intent?.labels ?? {}).sort()).toEqual(["attack", "ease off", "hold"]);
     const tempo = momentDecision("chase-tempo", s, predictOutcome(outcomes, s, target), base, file);
     expect(tempo?.options.length).toBeGreaterThanOrEqual(2);
     expect(tempo?.gapPts).toBeGreaterThanOrEqual(0);

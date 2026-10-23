@@ -6,7 +6,7 @@
 | Foundations (env, DTOs, auth) | A | Zod env, DTOs, membership, keyed cache, source authority, scoring ledger, auth hardening, no-money audit, strict TS |
 | Data and rights | B | Real data via the data courier: Cricsheet IPL (1,245 match files) ingested and derived to `data/derived/`, fixtures for Cricsheet, OpenF1 and StatsBomb with `data/manifest.json`; adapters for five sports (basketball, tennis source-pending); bitemporal reads, leakage tests, SSE replay. Gap: OpenF1 has no pit records for session 7953 |
 | Engine (WP, leverage, calibration, grading) | C | Outcome model fitted on IPL 2008–2023 (held out 2024–2026), exact chase WP with free-disposal styles, leverage/swing, tennis Pressure Index. Walk-forward calibration gate F-E-04 passes narrowly (D-038); grader, Read Rating, option-conditioned WP, golden moments and DR check (F-E-05..09) pass |
-| Decision Lab | D | Swing Seismograph and Leverage Meter components only (F-L-08); call, lock, review, Notebook pending (blocked on F-E-04..08) |
+| Decision Lab | D | 50 golden moments (death 40, middle 10; answers balanced 25/25 so no fixed answer or phase rule does well: D-039), Ticket Call screen (F-L-01), Swing Seismograph and Leverage Meter (F-L-08); lock API, review, Notebook pending |
 | Crews | B | Crews with invites, owner controls, moderation; timing tower and share cards pending (need Read Rating) |
 | Desk | C | `/desk` brief from recorded replays ranked by swing, rules-first story detector, query planner; football/F1 swing "not modelled"; Receipt Drawer, depth switch, Hindi, Event Rooms pending |
 | LLM contract | A | Provider interface, claim verifier, production prompt, injection tests, retrieval with temporal and rights filters (F-G-04) |

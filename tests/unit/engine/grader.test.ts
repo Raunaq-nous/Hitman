@@ -41,10 +41,11 @@ describe("grader", () => {
     const s = (chase.find((x) => x.state.b === 36) as (typeof chase)[number]).state;
     const d = momentDecision("next-over-intent", s, predictOutcome(outcomes, s, target), (st) => predictStyles(outcomes, st, target), options);
     expect(d).not.toBeNull();
-    const [a, b] = d?.options ?? [];
-    const ga = gradeDecision(d!, a.option), gb = gradeDecision(d!, b.option);
-    expect(ga?.readPoints).toBeCloseTo((a.wp - b.wp) * 100, 9);
-    expect(gb?.readPoints).toBeCloseTo((b.wp - a.wp) * 100, 9);
+    const opts = d?.options ?? [];
+    expect(opts).toHaveLength(3);
+    // read points: the pick's WP minus the best other option's, in points
+    for (const o of opts) expect(gradeDecision(d!, o.option)?.readPoints).toBeCloseTo((o.wp - Math.max(...opts.filter((x) => x !== o).map((x) => x.wp))) * 100, 9);
+    const a = opts[0], ga = gradeDecision(d!, a.option);
     expect(ga?.calibration).toBe("provisional");
     expect(ga?.coinFlip).toBe(d?.coinFlip);
     // a decision without enough data is never graded

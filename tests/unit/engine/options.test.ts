@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createChaseModel, OUTCOMES, type OutcomeDist } from "@/engine/chaseWp";
-import { bandOf, decide, fitOptionCounts, momentDecision, optionWp, shrinkToward, totalCount, zeroCounts, type OptionArtifact } from "@/engine/options";
+import { bandOf, decide, fitOptionCounts, momentDecision, momentOptions, optionWp, shrinkToward, totalCount, zeroCounts, type OptionArtifact } from "@/engine/options";
 
 // Synthetic distributions for testing the maths (not fitted to any data).
 const flat: OutcomeDist = { 0: 0.35, 1: 0.33, 2: 0.08, 3: 0.01, 4: 0.1, 5: 0, 6: 0.08, W: 0.05 };
@@ -63,5 +63,11 @@ describe("option-conditioned win probability (options)", () => {
     expect(d?.options.every((o) => o.n === 0 && !o.sufficient)).toBe(true);
     expect(d?.insufficient).toBe(true);
     expect(momentDecision("death-bowling", { b: 12, w: 4, r: 20 }, flat, () => flat, empty)).toBeNull();
+  });
+
+  it("intent offers attack, hold and ease off around the current required-rate band, dropping bands that don't exist", () => {
+    expect(momentOptions("next-over-intent", { b: 60, w: 8, r: 90 })?.options).toEqual([{ option: "rate:3", label: "attack" }, { option: "rate:2", label: "hold" }, { option: "rate:1", label: "ease off" }]);
+    expect(momentOptions("next-over-intent", { b: 60, w: 8, r: 20 })?.options.map((o) => o.label)).toEqual(["attack", "hold"]);
+    expect(momentOptions("next-over-intent", { b: 12, w: 8, r: 40 })?.options.map((o) => o.label)).toEqual(["hold", "ease off"]);
   });
 });
