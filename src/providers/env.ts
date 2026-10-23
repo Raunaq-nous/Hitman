@@ -49,7 +49,10 @@ export function parseEnv(raw: Record<string, string | undefined>): Env {
     ...productionIssues(raw),
   ];
   if (!result.success || issues.length > 0) throw new Error(`Invalid environment:\n${issues.map((l) => `  - ${l}`).join("\n")}`);
-  return { ...result.data, LLM_ENABLED: Boolean(result.data.GEMINI_API_KEY) };
+  // prototype-only sources are off in production unless PROTOTYPE_DATA is set explicitly (ARCHITECTURE.md "Feature flags")
+  const unsetPrototype = raw.PROTOTYPE_DATA === undefined || raw.PROTOTYPE_DATA.trim() === "";
+  const prototypeData = unsetPrototype && result.data.NODE_ENV === "production" ? false : result.data.PROTOTYPE_DATA;
+  return { ...result.data, PROTOTYPE_DATA: prototypeData, LLM_ENABLED: Boolean(result.data.GEMINI_API_KEY) };
 }
 
 let cached: Env | undefined;
