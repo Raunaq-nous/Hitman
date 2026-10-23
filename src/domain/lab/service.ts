@@ -112,7 +112,17 @@ export async function reviewCall(userId: string, momentId: string): Promise<Call
     reveal: m.reveal,
     receipts: { momentsHash: r.momentsHash, outcomesHash: r.outcomesHash, optionsHash: r.optionsHash },
     gradedAt: r.gradedAt.toISOString(),
+    moment: toPrelock(m), matchDate: m.date, after: m.after,
+    scenario: (({ option, label, wp }) => ({ option, label, wp }))([...m.decision.options].filter((o) => o.option !== c.option).sort((a, b) => b.wp - a.wp)[0]),
   };
+}
+
+/** The next moment the user hasn't called, after `afterId` in list order (wrapping); null when every moment is called. */
+export async function nextMomentFor(userId: string, afterId: string): Promise<string | null> {
+  const ids = listMoments().map((m) => m.id);
+  const called = await repo.calledMomentIds(userId);
+  const start = ids.indexOf(afterId) + 1;
+  return [...ids.slice(start), ...ids.slice(0, start)].find((id) => !called.has(id)) ?? null;
 }
 
 /** Rebuild every review of the user from the fixtures and their calls (reproducibility check and model upgrades). */

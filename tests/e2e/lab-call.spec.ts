@@ -28,10 +28,13 @@ test.describe("lab call", () => {
     for (let i = 0; i < 3; i++) await page.keyboard.press("ArrowRight");
     await expect(slider).toHaveValue("63");
     // Lock (the lock endpoint itself is covered by the lab-lock tests)
-    await page.route("**/api/lab/calls", (route) => route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: "c1" }) }));
+    let sent: unknown = null;
+    await page.route("**/api/lab/calls", (route) => { sent = route.request().postDataJSON(); return route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: "c1" }) }); });
     await ticket.getByRole("button", { name: /lock/i }).click();
     await expect(ticket.getByText("LOCKED").first()).toBeVisible();
     await expect(radios.first()).toBeDisabled();
+    // the API takes confidence as a fraction (0.50–0.99)
+    expect(sent).toMatchObject({ confidence: 0.63 });
     const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(axe.violations.map((v) => v.id)).toEqual([]);
   });

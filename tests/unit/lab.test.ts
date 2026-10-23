@@ -11,7 +11,7 @@ describe("lab moments before lock", () => {
   it("never exposes the reveal or the model's answer before lock", () => {
     for (const m of listMoments()) {
       const json = JSON.stringify(m);
-      for (const k of ["reveal", "chaseWon", "winner", "wp", "best", "gapPts", "matchId", "date"]) expect(json).not.toContain(`"${k}"`);
+      for (const k of ["reveal", "chaseWon", "winner", "wp", "best", "gapPts", "matchId", "date", "after", "wpPath", "wpAtMoment"]) expect(json).not.toContain(`"${k}"`);
       expect(m.options.length).toBeGreaterThanOrEqual(2);
       expect(m.overs).toMatch(/^\d+\.\d$/);
     }

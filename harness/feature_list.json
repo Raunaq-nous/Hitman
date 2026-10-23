@@ -730,8 +730,8 @@
       "depends_on": [
         "F-L-03"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/app/lab/[momentId]/review/page.tsx: three columns — What happened (the decision window as played and the result, OBSERVED, Cricsheet receipt), What was reasonable beforehand (WP at the moment and each option's pre-lock exact-model estimate, model receipt with outcomes/options/moments hashes), What might have happened otherwise (scenario model estimate for the best option not picked, labelled an estimate, never fact, with receipt). Swing Seismograph WP chart from the moment to the end of the chase with the dashed counterfactual ghost (D-042); template learning sentence; Next read button to the next uncalled moment; grade or 'Coin flip — no grade' and every grade and WP labelled 'Provisional calibration'. tests/e2e/review.spec.ts: real sign-in → lock → review → next read, axe clean; also fixed the Ticket sending confidence in percent (lab-call spec now asserts 0.63). Screenshots docs/evidence/F-L-04/review-{desktop,mobile}.png. npm run test:e2e -- review PASS; verify --ci PASS."
     },
     {
       "id": "F-L-05",

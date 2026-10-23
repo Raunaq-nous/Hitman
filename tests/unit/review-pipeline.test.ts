@@ -55,6 +55,13 @@ describe("reveal and grading pipeline (review-pipeline)", () => {
     expect(r.reveal).toEqual(m.reveal);
     expect(r.options.map((o) => o.option)).toEqual(m.decision.options.map((o) => o.option));
     expect(Object.keys(r.receipts).sort()).toEqual(["momentsHash", "optionsHash", "outcomesHash"]);
+    // post-lock: WP path from the moment to the result, the window as played, the best alternative as the scenario
+    const full = await reviewCall(fan.id, m.id);
+    expect(full.after.wpPath[0].t).toBe(120 - m.prelock.ballsLeft);
+    expect(full.after.wpPath.at(-1)?.wp).toBe(m.reveal.chaseWon);
+    expect(full.after.window.legalBalls).toBeLessThanOrEqual(full.after.window.plannedBalls);
+    const others = m.decision.options.filter((o) => o.option !== full.call.option).sort((a, b) => b.wp - a.wp);
+    expect(full.scenario).toEqual({ option: others[0].option, label: others[0].label, wp: others[0].wp });
     // asking again returns the same stored review
     const again = (await (await get(m.id)).json()) as typeof r;
     expect(again.grade).toEqual(r.grade);

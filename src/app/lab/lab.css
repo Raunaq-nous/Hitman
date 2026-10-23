@@ -5,3 +5,14 @@
 .lab-call{display:grid;gap:.8rem}
 .lab-note{color:var(--text-2);font-size:var(--step--1);margin:0}
 .lab-error{color:var(--brick)}
+.lab-review{display:grid;gap:1.2rem}
+.lab-verdict{display:grid;gap:.35rem;padding:1rem;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.lab-verdict p{margin:0}
+.lab-columns{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+.lab-col{display:grid;gap:.5rem;align-content:start;padding:1rem;border:1px solid var(--line);border-radius:12px}
+.lab-col h2{font:800 var(--step-0)/1.2 var(--font-display);margin:0}
+.lab-col p{margin:0}
+.lab-options{margin:0;padding-left:1.1rem}
+.lab-lesson{font-size:var(--step-0);margin:0}
+.crew-page .lab-btn,.crew-page .lab-btn:visited,.lab-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.6em 1.2em;border-radius:999px;background:var(--text);color:var(--bg);font-weight:700;text-decoration:none}
+.lab-btn:focus-visible{outline:3px solid var(--call);outline-offset:2px}

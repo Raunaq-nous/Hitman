@@ -45,4 +45,10 @@ export interface CallReview {
   reveal: { chaseWon: 0 | 1; winner: string };
   receipts: { momentsHash: string; outcomesHash: string; optionsHash: string };
   gradedAt: string;
+  /** the moment as it stood, and what followed (post-lock) */
+  moment: PrelockMoment;
+  matchDate: string;
+  after: { wpAtMoment: number; wpPath: { t: number; wp: number }[]; window: { legalBalls: number; plannedBalls: number; runs: number; wickets: number } };
+  /** the best option other than the pick: its scenario model estimate (the counterfactual ghost) */
+  scenario: { option: string; label: string; wp: number };
 }

@@ -108,6 +108,24 @@ export function buildMoments() {
   }
   const picked = diversify(gradeable, N, CAPS);
 
+  // Post-lock facts and model path (shown only in the Review): WP before each remaining legal ball (exact model), the
+  // result at the end, and what the chasing side actually did over the decision window.
+  const afterLock = (c: (typeof picked)[number]) => {
+    const chase = c.rows.filter((r) => r.innings === "2");
+    const states = chaseSamples(chase.map((r) => ({ matchId: c.match, year: c.season, innings: 2, runsBatter: Number(r.runs_batter), extras: Number(r.extras), extraType: r.extra_type || null, wicket: r.wicket === "1", target: r.target ? Number(r.target) : null })));
+    const path = states.filter((x) => x.state.b <= c.state.b).map((x) => ({ t: 120 - x.state.b, wp: Math.round(model(c.target).wp(x.state) * 1e6) / 1e6 }));
+    const lastT = path.length ? path[path.length - 1].t + 1 : c.legalBowled;
+    path.push({ t: lastT, wp: c.chaseWon });
+    const windowBalls = c.decision.type === "chase-tempo" ? Math.min(12, c.state.b) : Math.min(6, c.state.b);
+    let legal = 0, runs = 0, wickets = 0, i = c.deliveryIndex;
+    for (; i < c.rows.length && c.rows[i].innings === "2" && legal < windowBalls; i++) {
+      const r = c.rows[i];
+      runs += Number(r.runs_batter) + Number(r.extras);
+      if (r.wicket === "1") wickets++;
+      if (r.extra_type !== "wides" && r.extra_type !== "noballs") legal++;
+    }
+    return { wpAtMoment: Math.round(model(c.target).wp(c.state) * 1e6) / 1e6, wpPath: path, window: { legalBalls: legal, plannedBalls: windowBalls, runs, wickets } };
+  };
   const moments = picked.map((c) => {
     const r = c.rows, next = r[c.deliveryIndex];
     const before = r.slice(0, c.deliveryIndex).filter((x) => x.innings === "2");
@@ -132,6 +150,7 @@ export function buildMoments() {
       },
       // shown only after lock
       reveal: { chaseWon: c.chaseWon, winner: c.matchRow.winner },
+      after: afterLock(c),
     };
   });
   return {
