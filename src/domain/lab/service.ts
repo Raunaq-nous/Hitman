@@ -9,7 +9,7 @@ import { momentDifficulty, START, updateRating } from "@/engine/readRating";
 import { brierSeries, domainScores, MIN_SAMPLE, reliabilityBuckets } from "@/engine/reliability";
 import { alterEgo as identityOf, MIN_CROWD, type Identity, type IdentityCall } from "@/engine/alterEgo";
 import { rateBand } from "@/engine/options";
-import { DECISION_TYPE_LABEL, type CallReview, type LockedCall, type LockInput, type Notebook, type NotebookCall, type PrelockMoment, type ShareCardData } from "./types";
+import { DECISION_TYPE_LABEL, type CallReview, type LockedCall, type LockInput, type Notebook, type NotebookCall, type PrelockMoment, type SeasonFile, type ShareCardData } from "./types";
 
 const cache = namedCache<repo.MomentsFile>("lab-moments", { ttlMs: 24 * 60 * 60 * 1000, maxEntries: 1 });
 const file = (): repo.MomentsFile => {
@@ -289,4 +289,20 @@ export async function alterEgoCard(userId: string): Promise<{ displayName: strin
   const id = await alterEgoFor(userId);
   if (!id.revealed) return null;
   return { displayName: name, label: id.label, evidence: id.evidence[0], graded: id.graded, calibration: "Provisional calibration" };
+}
+
+/** The Season File (F-R-05): best and worst reads, calibration and rating history, from the fan's Notebook. */
+export async function seasonFile(userId: string, now = new Date()): Promise<SeasonFile> {
+  const nb = await notebook(userId);
+  const graded = nb.calls.filter((c) => c.graded);
+  const byRead = [...graded].sort((a, b) => (b.readPoints ?? 0) - (a.readPoints ?? 0) || a.momentId.localeCompare(b.momentId));
+  const mean = (xs: number[]): number | null => (xs.length ? xs.reduce((a, x) => a + x, 0) / xs.length : null);
+  const id = await alterEgoFor(userId);
+  return {
+    displayName: (await repo.displayName(userId)) ?? "", generatedAt: now.toISOString(),
+    calls: nb.calls.length, graded: graded.length, coinFlips: nb.calls.length - graded.length,
+    hitRate: mean(graded.map((c) => (c.hit ? 1 : 0))), meanBrier: mean(graded.map((c) => c.brier ?? 0)), meanRead: mean(graded.map((c) => c.readPoints ?? 0)),
+    best: byRead.slice(0, 3).filter((c) => (c.readPoints ?? 0) > 0), worst: byRead.slice(-3).reverse().filter((c) => (c.readPoints ?? 0) < 0),
+    reliability: nb.reliability, rating: nb.rating, alterEgo: id.revealed ? id.label : null, warnings: nb.warnings,
+  };
 }

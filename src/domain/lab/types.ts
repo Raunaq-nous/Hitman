@@ -78,3 +78,11 @@ export interface Notebook {
  * is left off, so a card never gives away a golden moment's best option to someone who hasn't called it (D-043).
  */
 export interface ShareCardData { displayName: string; heading: "CALLED IT" | "MY READ"; title: string; confidence: string; grade: string; moment: string; calibration: "Provisional calibration" }
+
+/** A printable season summary (F-R-05). */
+export interface SeasonFile {
+  displayName: string; generatedAt: string; calls: number; graded: number; coinFlips: number;
+  hitRate: number | null; meanBrier: number | null; meanRead: number | null;
+  best: NotebookCall[]; worst: NotebookCall[];
+  reliability: Notebook["reliability"]; rating: Notebook["rating"]; alterEgo: string | null; warnings: string[];
+}

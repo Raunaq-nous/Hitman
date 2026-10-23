@@ -13,7 +13,7 @@ export default function LabPage(): React.JSX.Element {
       <header>
         <h1>The Decision Lab</h1>
         <p className="crew-lead">Real moments from IPL chases, stopped just before the decision. Make the call, say how sure you are, lock it — your read is graded on what was reasonable beforehand, not on how it turned out.</p>
-        <p><Link href="/lab/notebook">Your Notebook and Read Rating</Link> · <Link href="/lab/alter-ego">Your Alter Ego</Link></p>
+        <p><Link href="/lab/notebook">Your Notebook and Read Rating</Link> · <Link href="/lab/alter-ego">Your Alter Ego</Link> · <Link href="/lab/season-file">Season File</Link></p>
       </header>
       <ol className="lab-moments" data-testid="moments">
         {moments.map((m) => (
