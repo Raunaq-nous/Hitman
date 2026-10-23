@@ -1113,8 +1113,8 @@
       "depends_on": [
         "F-L-05"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "src/engine/alterEgo.ts (pure, 100% branch coverage): five deterministic axes from graded calls, each in [0,1] with n and a plain-language explanation — risk appetite (share of faster-scoring picks), timing (death vs middle-over hit rate), calibration (mean confidence vs hit rate), contrarianism (picks against ≥ 5 other fans' majority; unknown, not guessed, without a crowd), domain mix (decision types and sports). Mapped to one public persona (Opener: timing; Closer: clutch on higher-leverage calls; Architect: chase tempo; Professor: risk; Iceman: calibration; ties in fixed order) plus a modifier (Contrarian, Bold, Steady, Sharp, Balanced) with evidence sentences; hidden until 10 graded calls. src/domain/lab/service.ts alterEgoFor builds inputs from real calls and the crowd. npm test -- alter-ego 7/7 (engine and Postgres-backed service); verify --quick PASS."
     },
     {
       "id": "F-R-04",

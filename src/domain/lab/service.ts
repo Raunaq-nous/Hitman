@@ -7,6 +7,8 @@ import * as repo from "./repo";
 import { brier, grade } from "@/engine/grader";
 import { momentDifficulty, START, updateRating } from "@/engine/readRating";
 import { brierSeries, domainScores, MIN_SAMPLE, reliabilityBuckets } from "@/engine/reliability";
+import { alterEgo as identityOf, MIN_CROWD, type Identity, type IdentityCall } from "@/engine/alterEgo";
+import { rateBand } from "@/engine/options";
 import { DECISION_TYPE_LABEL, type CallReview, type LockedCall, type LockInput, type Notebook, type NotebookCall, type PrelockMoment, type ShareCardData } from "./types";
 
 const cache = namedCache<repo.MomentsFile>("lab-moments", { ttlMs: 24 * 60 * 60 * 1000, maxEntries: 1 });
@@ -234,4 +236,25 @@ export async function shareCard(callId: string): Promise<ShareCardData | null> {
     moment: `${m.prelock.battingTeam} v ${m.prelock.bowlingTeam}, IPL ${m.season} · needing ${m.prelock.runsRequired} off ${m.prelock.ballsLeft}`,
     calibration: "Provisional calibration",
   };
+}
+
+/** The fan's Alter Ego (F-R-03) from their graded calls; hidden until 10 graded calls. */
+export async function alterEgoFor(userId: string): Promise<Identity> {
+  await gradePending(userId);
+  const calls = (await repo.callsInLockOrder(userId)).filter((c) => c.review?.graded);
+  const crowd = await repo.crowdCounts(calls.map((c) => c.momentId), userId);
+  const input: IdentityCall[] = [];
+  for (const c of calls) {
+    const m = storedMoment(c.momentId);
+    if (!m) continue;
+    const others = crowd.filter((x) => x.momentId === c.momentId);
+    const total = others.reduce((a, x) => a + x._count._all, 0);
+    const same = others.find((x) => x.option === c.option)?._count._all ?? 0;
+    const band = c.option.startsWith("rate:") ? Number(c.option.slice(5)) - rateBand({ b: m.prelock.ballsLeft, w: m.prelock.wicketsInHand, r: m.prelock.runsRequired }) : 0;
+    input.push({
+      relation: band > 0 ? "higher" : band < 0 ? "lower" : "current", phase: m.prelock.phase, decisionType: m.decision.type, sport: "cricket",
+      confidence: c.confidence, hit: c.review?.hit === true, leverage: m.leverage, crowdShare: total >= MIN_CROWD ? same / total : null,
+    });
+  }
+  return identityOf(input);
 }
