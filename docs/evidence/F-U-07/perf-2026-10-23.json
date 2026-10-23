@@ -1,0 +1,45 @@
+{
+  "profile": "412x915, 4x CPU, 1.6 Mbps/750 kbps, 150 ms RTT, cache disabled",
+  "runs": 3,
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "lcpMs": 684,
+      "lcpRunsMs": [
+        684,
+        696,
+        668
+      ],
+      "routeJsKbTransferred": 161,
+      "lcpOk": true,
+      "jsOk": true
+    },
+    {
+      "path": "/desk",
+      "status": 200,
+      "lcpMs": 684,
+      "lcpRunsMs": [
+        684,
+        652,
+        696
+      ],
+      "routeJsKbTransferred": 157,
+      "lcpOk": true,
+      "jsOk": true
+    },
+    {
+      "path": "/lab",
+      "status": 200,
+      "lcpMs": 624,
+      "lcpRunsMs": [
+        664,
+        624,
+        604
+      ],
+      "routeJsKbTransferred": 190,
+      "lcpOk": true,
+      "jsOk": true
+    }
+  ]
+}

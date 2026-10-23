@@ -11,7 +11,7 @@
 | Desk | C | `/desk` brief from recorded replays ranked by swing, rules-first story detector, query planner; football/F1 swing "not modelled"; Receipt Drawer, depth switch, Hindi, Event Rooms pending |
 | LLM contract | A | Provider interface, claim verifier, production prompt, injection tests, retrieval with temporal and rights filters (F-G-04) |
 | Roster and Alter Ego | C | Five personas and Persona Switchboard (F-R-01); persona tools, Alter Ego identity, Dossier Reveal, Season File pending |
-| Design system and accessibility | B | Tokens, fonts, components, gallery, pictograms, onboarding, nav, landing; axe on every route; performance budgets (F-U-07) unmeasured; legacy contest screens still old-styled |
+| Design system and accessibility | B | Tokens, fonts, components, gallery, pictograms, onboarding, nav, landing; axe on every route; performance budgets met (F-U-07, `npm run perf`: LCP 0.62–0.68 s on slow-4G mobile for /, /desk, /lab; route JS 157–190 KB of a 200 KB budget, /lab closest); legacy contest screens still old-styled |
 | Trust, legal, privacy | B | Legal pages, export/delete, 18+ gate, AI labels; anti-cheat basics (F-T-05) pending; pages await counsel review |
 | Analytics and scoreboards | A | Event log, KPI queries with fixture tests, `/admin/scoreboards` |
 Grades: A (complete, tested, documented) · B (works, minor gaps) · C (partial) · D (stub) · — (not started). Feature status: 57 of 85 passing in `harness/feature_list.json` at this gardening.

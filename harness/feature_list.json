@@ -1069,8 +1069,8 @@
       "depends_on": [
         "F-U-05"
       ],
-      "passes": false,
-      "evidence": "Partial (not passing): scripts/perf.mjs (npm run perf) measures median LCP on a mid-range mobile profile (412×915, 4× CPU, 1.6 Mbps/150 ms RTT) and transferred route JS. 2026-10-22: / 660 ms, /desk 616 ms, a room 556 ms; route JS 166–170 KB (budget 200 KB) — docs/evidence/F-U-07/perf-2026-10-22.json. /lab does not exist yet (Lab features blocked behind F-E-04), so the criterion can't be met."
+      "passes": true,
+      "evidence": "npm run perf (scripts/perf.mjs: Playwright + CDP, 412×915 mobile, 4× CPU slowdown, 1.6 Mbps/750 kbps, 150 ms RTT, cache disabled, median of 3) on the production build: LCP / 684 ms, /desk 684 ms, /lab 624 ms (budget 2,500 ms); route JS transferred / 161 KB, /desk 157 KB, /lab 190 KB (budget 200 KB). Exit 0. Evidence docs/evidence/F-U-07/perf-2026-10-23.json (and the 2026-10-22 run before /lab existed); QUALITY_SCORE updated."
     },
     {
       "id": "F-R-01",
