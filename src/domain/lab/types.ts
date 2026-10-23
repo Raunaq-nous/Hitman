@@ -72,3 +72,6 @@ export interface Notebook {
   rating: { current: number; graded: number; provisional: boolean; history: { i: number; rating: number }[] };
   warnings: string[];
 }
+
+/** A "Called it" share card: display name and the call only (no email, id or other personal data). */
+export interface ShareCardData { displayName: string; title: string; pick: string; grade: string; moment: string; calibration: "Provisional calibration" }
