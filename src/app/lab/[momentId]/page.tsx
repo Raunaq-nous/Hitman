@@ -24,6 +24,7 @@ export default async function MomentPage({ params }: { params: Promise<{ momentI
         <p className="crew-kicker"><Link href="/lab">Decision Lab</Link></p>
         <h1>{m.battingTeam} v {m.bowlingTeam}</h1>
         <p className="crew-lead">IPL {m.season} · {m.venue} · chasing {m.target}</p>
+        {m.decisionType === "next-over-intent" && <p className="lab-note" data-testid="over-call"><Link href="/roster/opener">Over Call</Link> · The Opener’s signature tool</p>}
       </header>
       <CallTicket moment={m} />
       <MomentViewed momentId={m.id} />
