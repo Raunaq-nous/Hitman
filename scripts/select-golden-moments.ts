@@ -76,6 +76,9 @@ export function buildMoments() {
       const lev = model(s.target).leverage(s.state);
       // the moment is just before this legal ball: the delivery index of the first delivery after the previous legal ball
       const prevLegal = k === 0 ? chaseRows[0].i - 1 : legalRows[k - 1].i;
+      // a wide or no-ball since the previous legal ball is folded into this ball's state (chaseSamples), so the state
+      // would include a delivery bowled after the cutoff: skip it (no pre-lock fact may come from after the cutoff)
+      if (legalRows[k].i !== prevLegal + 1) return;
       all.push({ id: `gm-${m.date.slice(0, 4)}-${m.match_id}-${120 - s.state.b}`, match: m.match_id, season: Number(m.date.slice(0, 4)), phase: phaseOf(s.state.b), teams: [chaser, bowling], leverage: lev, matchRow: m, rows, deliveryIndex: prevLegal + 1, legalBowled: 120 - s.state.b, state: s.state, target: s.target, chaseWon: m.winner === chaser ? 1 : 0 });
     });
   }
