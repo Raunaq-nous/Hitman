@@ -40,7 +40,7 @@ Features: F-T-01, F-T-02, F-T-03, F-T-04, F-T-05, F-A-02, F-A-03
 
 ### Phase 7 — Release
 Features: F-Z-01, F-Z-02, F-Z-03
-- [ ] Gate 7: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-7`; default branch fast-forwarded and pushed; CI green.
+- [x] Gate 7: all phase features passing with evidence; `node harness/verify.mjs` and `--clean` green; review gate: since gate-6 the only product change is the production default of PROTOTYPE_DATA (tested), the rest is docs and evidence; `npm audit --omit=dev` 0 vulnerabilities; no findings. Tags `gate-7` and `v0.1.0-beta` at the merge commit of PR #1 into main (tagger workflow); CI green on main.
 
 ## DONE criteria
 1. Every feature passes with evidence; `node harness/check-features.mjs` exits 0.
@@ -144,3 +144,10 @@ Features: F-Z-01, F-Z-02, F-Z-03
 - 2026-10-22: Cricsheet renamed the IPL archive to `ipl_male_json.zip`; OpenF1 has no pit records for the 2023 Bahrain race; IPL chases in 2024–26 are won far more often than any pre-2024 model predicts (see D-022).
 
 ## Outcomes
+- v0.1.0-beta: 85 of 85 features passing on real evidence (`node harness/check-features.mjs`). `node harness/verify.mjs --clean` passes from a fresh worktree with no keys or paid data (F-Z-01).
+- Phase 2: the calibration gate F-E-04 passes on real IPL data under the owner's walk-forward criterion. The first run failed in-sample (D-032); the Gate 2 review fixed the method (D-038). The pass is narrow, so grades stay labelled "provisional calibration".
+- Decision Lab: 50 balanced, leak-free golden moments. Locking, deterministic grading with receipts, the three-column Review, the Notebook and the Read Rating all work. Call → review → next read takes about 4 s on a phone. Crews have a timing tower and share cards. Alter Ego, Dossier Reveal and Season File work. Persona tools are live or labelled demos. Anti-cheat basics are in place.
+- Gates 0–7 are tagged through the tagger workflow (D-028). The default branch moves only by merging PR #1 with a merge commit (no squash, no direct pushes). Owner-only work is in `docs/HUMAN_TODO.md`.
+- Lessons:
+  - An independent review at every gate caught real defects every time: leakage, trivially answerable moments, rating maths, forgeable KPI events, answer leaks through shared artefacts, and privacy.
+  - Never point a Prisma shadow database at a real database.
