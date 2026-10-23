@@ -9,6 +9,8 @@ export interface StoredMoment {
   prelock: { battingTeam: string; bowlingTeam: string; venue: string; target: number; ballsLeft: number; wicketsInHand: number; runsRequired: number; overs: string; phase: "powerplay" | "middle" | "death"; requiredRate: number; striker: string; bowler: string; recent: { deliveries: number; runs: number; wickets: number } };
   decision: { type: string; question: string; options: { option: string; label: string; wp: number; n: number }[]; best: string | null; gapPts: number; calibration: "provisional" };
   reveal: { chaseWon: 0 | 1; winner: string };
+  /** post-lock only: WP before each remaining legal ball (exact model) then the result, and the window as played */
+  after: { wpAtMoment: number; wpPath: { t: number; wp: number }[]; window: { legalBalls: number; plannedBalls: number; runs: number; wickets: number } };
 }
 
 export interface MomentsFile { hash: string; outcomesHash: string; optionsHash: string; moments: StoredMoment[] }
@@ -50,5 +52,7 @@ export async function insertReview(userId: string, callId: string, data: ReviewD
     throw e;
   }
 }
+
+export const calledMomentIds = async (userId: string): Promise<Set<string>> => new Set((await prisma.labCall.findMany({ where: { userId }, select: { momentId: true } })).map((c) => c.momentId));
 
 export const deleteReviews = (userId: string) => prisma.decisionReview.deleteMany({ where: { userId } });

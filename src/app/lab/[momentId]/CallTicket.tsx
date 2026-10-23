@@ -8,10 +8,12 @@ import type { PrelockMoment } from "@/domain/lab/types";
 /** The call card for one moment; Lock records the call on the server (server time, one pick per call). */
 export function CallTicket({ moment }: { moment: PrelockMoment }): React.JSX.Element {
   const [needsSignIn, setNeedsSignIn] = useState(false);
+  const [locked, setLocked] = useState(false);
   async function onLock(lock: TicketLock): Promise<void> {
-    const res = await fetch("/api/lab/calls", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ momentId: moment.id, option: lock.optionId, confidence: lock.confidence }) });
+    const res = await fetch("/api/lab/calls", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ momentId: moment.id, option: lock.optionId, confidence: lock.confidence / 100 }) });
     if (res.status === 401) { setNeedsSignIn(true); throw new Error("Sign in to lock your call."); }
     if (!res.ok) throw new Error(((await res.json().catch(() => ({}))) as { message?: string }).message ?? "Couldn’t lock your call. Try again.");
+    setLocked(true);
   }
   const m = moment;
   return (
@@ -30,6 +32,7 @@ export function CallTicket({ moment }: { moment: PrelockMoment }): React.JSX.Ele
         onLock={onLock}
       />
       <p className="lab-note">On strike: {m.striker} · Bowling: {m.bowler} · Last {m.recent.deliveries} deliveries: {m.recent.runs} runs, {m.recent.wickets} {m.recent.wickets === 1 ? "wicket" : "wickets"}</p>
+      {locked && <p><Link className="lab-btn" href={`/lab/${m.id}/review`} data-testid="see-review">See your review</Link></p>}
       {needsSignIn && <p className="lab-error" role="alert"><Link href={`/login?callbackUrl=${encodeURIComponent(`/lab/${m.id}`)}`}>Sign in</Link> to lock your call.</p>}
     </div>
   );

@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { Stamp } from "./Stamp";
 
 export interface TicketOption { id: string; label: string; detail?: string }
+/** confidence in percent (50–99), as on the slider */
 export interface TicketLock { optionId: string; confidence: number }
 
 export interface TicketProps {
