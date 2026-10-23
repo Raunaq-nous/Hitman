@@ -20,7 +20,8 @@ test.describe("onboarding", () => {
     await page.getByLabel("Football").check();
     await page.getByLabel("हिन्दी").check();
     await page.getByRole("button", { name: "Start" }).click();
-    await expect(page).toHaveURL(/\/$/);
+    // "/onboarding?next=/" also ends in "/": wait for the home page itself, after the preferences POST has set cookies
+    await page.waitForURL((u) => u.pathname === "/" && u.search === "");
     const cookies = Object.fromEntries((await context.cookies()).map((c) => [c.name, c.value]));
     expect(cookies.ae_lang).toBe("hi");
     expect(decodeURIComponent(cookies.ae_sports)).toBe("cricket,football");
