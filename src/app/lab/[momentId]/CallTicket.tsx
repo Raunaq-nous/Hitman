@@ -12,6 +12,8 @@ export function CallTicket({ moment }: { moment: PrelockMoment }): React.JSX.Ele
   async function onLock(lock: TicketLock): Promise<void> {
     const res = await fetch("/api/lab/calls", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ momentId: moment.id, option: lock.optionId, confidence: lock.confidence / 100 }) });
     if (res.status === 401) { setNeedsSignIn(true); throw new Error("Sign in to lock your call."); }
+    // already locked (e.g. after a reload): the call stands, so point to its review
+    if (res.status === 409) { setLocked(true); throw new Error("You've already locked a call on this moment."); }
     if (!res.ok) throw new Error(((await res.json().catch(() => ({}))) as { message?: string }).message ?? "Couldn’t lock your call. Try again.");
     setLocked(true);
   }

@@ -84,11 +84,24 @@ export function gradeCall(m: repo.StoredMoment, call: { option: string; confiden
   return { graded: true, coinFlip: false, best: g.best, readPoints: g.readPoints, hit, brier: brier(call.confidence, hit ? 1 : 0), ratingBefore: prior.rating, ratingAfter: u.rating, difficulty };
 }
 
-/** Grade every locked, ungraded call of the user, in lock order, so each rating builds on the calls before it. */
+/**
+ * Grade every locked, ungraded call of the user, in lock order, so each rating builds on the calls before it. If an
+ * ungraded call sits before an already graded one (a lock that committed late), the later reviews are rebuilt so the
+ * ratings stay a pure function of the calls (D-041). `call_graded` fires once per call, never on a rebuild.
+ */
 async function gradePending(userId: string): Promise<void> {
   const f = file();
+  let calls = await repo.callsInLockOrder(userId);
+  const firstPending = calls.findIndex((c) => !c.review);
+  if (firstPending < 0) return;
+  const seen = new Set(calls.filter((c) => c.review).map((c) => c.id));
+  const later = calls.slice(firstPending).filter((c) => c.review).map((c) => c.id);
+  if (later.length) {
+    await repo.deleteReviewsFor(later);
+    calls = await repo.callsInLockOrder(userId);
+  }
   let prior = { rating: START, graded: 0 };
-  for (const c of await repo.callsInLockOrder(userId)) {
+  for (const c of calls) {
     if (c.review) {
       prior = { rating: c.review.ratingAfter, graded: prior.graded + (c.review.graded ? 1 : 0) };
       continue;
@@ -96,7 +109,8 @@ async function gradePending(userId: string): Promise<void> {
     const m = storedMoment(c.momentId);
     if (!m) continue;
     const g = gradeCall(m, c, prior, leveragePercentile(m));
-    if (await repo.insertReview(userId, c.id, { momentId: m.id, ...g, momentsHash: f.hash, outcomesHash: f.outcomesHash, optionsHash: f.optionsHash })) await track("call_graded", { callId: c.id, coinFlip: g.coinFlip }, userId);
+    const inserted = await repo.insertReview(userId, c.id, { momentId: m.id, ...g, momentsHash: f.hash, outcomesHash: f.outcomesHash, optionsHash: f.optionsHash });
+    if (inserted && !seen.has(c.id)) await track("call_graded", { callId: c.id, coinFlip: g.coinFlip }, userId);
     prior = { rating: g.ratingAfter, graded: prior.graded + (g.graded ? 1 : 0) };
   }
 }
@@ -133,11 +147,21 @@ export async function nextMomentFor(userId: string, afterId: string): Promise<st
 /** Rebuild every review of the user from the fixtures and their calls (reproducibility check and model upgrades). */
 export async function regradeUser(userId: string): Promise<void> {
   await repo.deleteReviews(userId);
-  await gradePending(userId);
+  const f = file();
+  let prior = { rating: START, graded: 0 };
+  for (const c of await repo.callsInLockOrder(userId)) {
+    const m = storedMoment(c.momentId);
+    if (!m) continue;
+    const g = gradeCall(m, c, prior, leveragePercentile(m));
+    await repo.insertReview(userId, c.id, { momentId: m.id, ...g, momentsHash: f.hash, outcomesHash: f.outcomesHash, optionsHash: f.optionsHash });
+    prior = { rating: g.ratingAfter, graded: prior.graded + (g.graded ? 1 : 0) };
+  }
 }
 
 const PROVISIONAL_CALLS = 20;
-const DOMAINS = ["Next-over intent", "Chase tempo", "Middle overs", "Death overs"];
+// every decision type and phase is a domain, so no graded call falls off the radar
+const PHASE_DOMAIN: Record<string, string> = { powerplay: "Powerplay", middle: "Middle overs", death: "Death overs" };
+const DOMAINS = [...Object.values(DECISION_TYPE_LABEL), ...Object.values(PHASE_DOMAIN)];
 const cap = (s: string): string => s[0].toUpperCase() + s.slice(1);
 
 /**
@@ -162,7 +186,7 @@ export async function notebook(userId: string, filter: { type?: string | null } 
   const calls = type ? all.filter((c) => c.decisionType === type) : all;
   const graded = calls.filter((c) => c.graded);
   const scored = graded.map((c) => ({ confidence: c.confidence, hit: c.hit === true }));
-  const domains = domainScores(graded.map((c) => ({ domains: [DECISION_TYPE_LABEL[c.decisionType], c.phase === "death" ? "Death overs" : c.phase === "middle" ? "Middle overs" : "Powerplay"], readPoints: c.readPoints ?? 0, hit: c.hit === true })), DOMAINS);
+  const domains = domainScores(graded.map((c) => ({ domains: [DECISION_TYPE_LABEL[c.decisionType], PHASE_DOMAIN[c.phase]], readPoints: c.readPoints ?? 0, hit: c.hit === true })), DOMAINS);
   // the rating is the user's, across every graded call (filters don't change it)
   const allGraded = all.filter((c) => c.graded).length;
   const reviews = (await repo.callsInLockOrder(userId)).flatMap((c) => (c.review?.graded ? [c.review.ratingAfter] : []));
@@ -213,11 +237,10 @@ export function towerEntries(members: { id: string; name: string; calls: TowerCa
 
 /** The tower for a crew the viewer belongs to: grades members' pending calls first. */
 export async function crewTower(members: { id: string; name: string }[], now = new Date()): Promise<TowerRow[]> {
-  const withCalls = [];
-  for (const m of members) {
+  const withCalls = await Promise.all(members.map(async (m) => {
     await gradePending(m.id);
-    withCalls.push({ ...m, calls: await repo.callsInLockOrder(m.id) });
-  }
+    return { ...m, calls: await repo.callsInLockOrder(m.id) };
+  }));
   return towerEntries(withCalls, now);
 }
 
@@ -226,12 +249,12 @@ export async function shareCard(callId: string): Promise<ShareCardData | null> {
   const c = await repo.findCallForShare(callId);
   const m = c ? storedMoment(c.momentId) : null;
   if (!c || !m || !c.review) return null;
-  const label = cap(m.decision.options.find((o) => o.option === c.option)?.label ?? c.option);
   const p = c.review.readPoints ?? 0;
   return {
     displayName: c.user.name,
+    heading: c.review.hit ? "CALLED IT" : "MY READ",
     title: m.decision.question,
-    pick: `${label} · ${Math.round(c.confidence * 100)}% sure`,
+    confidence: `${Math.round(c.confidence * 100)}% sure`,
     grade: c.review.graded ? `${p > 0 ? "+" : p < 0 ? "−" : ""}${Math.abs(p).toFixed(1)} pts` : "Coin flip — no grade",
     moment: `${m.prelock.battingTeam} v ${m.prelock.bowlingTeam}, IPL ${m.season} · needing ${m.prelock.runsRequired} off ${m.prelock.ballsLeft}`,
     calibration: "Provisional calibration",

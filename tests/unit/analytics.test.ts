@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { track } from "@/domain/analytics/service";
-import { EVENT_NAMES } from "@/domain/analytics/types";
+import { clientEventInput, EVENT_NAMES } from "@/domain/analytics/types";
 import { makeUser, resetDb } from "../helpers/db";
 
 let current: string | null = null;
@@ -10,6 +10,11 @@ vi.mock("@/providers/auth", () => ({ currentUserId: async () => current }));
 beforeAll(async () => { await resetDb(); });
 
 describe("analytics events", () => {
+  it("browsers can't send the server-side events that feed the KPIs", () => {
+    for (const name of ["call_locked", "call_graded", "review_viewed"]) expect(clientEventInput.safeParse({ name, props: {} }).success, name).toBe(false);
+    expect(clientEventInput.safeParse({ name: "moment_viewed", props: { momentId: "m" } }).success).toBe(true);
+  });
+
   it("covers exactly the events in the spec (plus server-side call_graded)", () => {
     expect([...EVENT_NAMES].sort()).toEqual(["alter_ego_revealed", "call_graded", "call_locked", "depth_changed", "language_changed", "moment_viewed", "next_read_started", "receipt_opened", "review_viewed", "share_clicked"]);
   });

@@ -23,6 +23,12 @@ Cross-cutting concerns (auth, rights, telemetry, feature flags, LLM, cache) ente
 - DTOs cross the server/client boundary; Prisma models never do. Password hashes never leave the auth module.
 - Route handlers are thin: parse → call service → map to DTO.
 
+## Decision Lab data flow
+- Golden moments are a committed, hashed fixture (`data/fixtures/moments/golden-moments.json`); pre-lock DTOs (`toPrelock`) carry no reveal, no option WPs and no post-lock path.
+- `LabCall`: one final call per user and moment (unique key), server timestamp. `DecisionReview`: the deterministic grade with receipts (fixture and model hashes), built in lock order from the fixture and the user's calls, so `regradeUser` reproduces it; a late-committing call rebuilds the reviews after it.
+- The reveal and the review are served only for the caller's own locked call. The share image (`/api/og/call/[id]`) is public by call id, shows the display name and read only (never the pick), is rate-limited and cacheable.
+- KPI events `call_locked`, `call_graded`, `review_viewed` are recorded by the server only; browsers may send only the events in `CLIENT_EVENTS`.
+
 ## Stack
 Next.js 16 (App Router), React 19, TypeScript strict, Tailwind 4 with CSS-variable tokens, Prisma on PostgreSQL, NextAuth (credentials), Zod, Vitest, Playwright (+ axe), GitHub Actions. LLM: Gemini API via `@google/genai` behind `src/llm/provider.ts`, with deterministic templates when no key is set. Fonts self-hosted with fontsource.
 

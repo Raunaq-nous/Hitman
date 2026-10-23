@@ -95,6 +95,24 @@ describe("reveal and grading pipeline (review-pipeline)", () => {
     await regradeUser(fan.id);
     const after = await prisma.decisionReview.findMany({ where: { userId: fan.id }, orderBy: { momentId: "asc" } });
     expect(strip(after)).toEqual(strip(before));
+    // a rebuild records no new call_graded events
+    const graded = await prisma.analyticsEvent.count({ where: { userId: fan.id, name: "call_graded" } });
+    expect(graded).toBe(before.length);
+  });
+
+  it("a call that committed late (earlier lock time, graded later) rebuilds the later reviews, matching a full regrade", async () => {
+    const strip = (rows: Record<string, unknown>[]) => rows.map(({ id: _id, gradedAt: _g, ...rest }) => rest);
+    const first = await prisma.labCall.findFirstOrThrow({ where: { userId: fan.id }, orderBy: { lockedAt: "asc" } });
+    const m = moments[10].id;
+    // locked "before" every existing call, but only now visible
+    await prisma.labCall.create({ data: { userId: fan.id, momentId: m, option: bestOf(m), confidence: 0.7, lockedAt: new Date(first.lockedAt.getTime() - 60_000) } });
+    await reviewCall(fan.id, m);
+    const incremental = await prisma.decisionReview.findMany({ where: { userId: fan.id }, orderBy: { momentId: "asc" } });
+    await regradeUser(fan.id);
+    const full = await prisma.decisionReview.findMany({ where: { userId: fan.id }, orderBy: { momentId: "asc" } });
+    expect(strip(incremental)).toEqual(strip(full));
+    expect(incremental.find((r) => r.momentId === m)?.ratingBefore).toBe(START);
+    expect(await prisma.analyticsEvent.count({ where: { userId: fan.id, name: "call_graded" } })).toBe(full.length);
   });
 
   it("coin-flip calls are marked no grade: no read points, no calibration score, no rating change", () => {
