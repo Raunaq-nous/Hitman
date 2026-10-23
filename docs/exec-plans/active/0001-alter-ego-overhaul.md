@@ -20,7 +20,7 @@ Features: F-D-01, F-D-02, F-D-03, F-D-04, F-D-05, F-D-06, F-D-07, F-E-01, F-E-02
 
 ### Phase 3 — Historical Decision Lab and Crews
 Features: F-L-01, F-L-02, F-L-03, F-L-04, F-L-05, F-L-06, F-L-07, F-L-08, F-C-01, F-C-02, F-C-03, F-C-04
-- [ ] Gate 3: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-3`; default branch fast-forwarded and pushed; CI green.
+- [x] Gate 3: all phase features passing with evidence; `node harness/verify.mjs` green; review-gate findings fixed; tag `gate-3` (62b7ba4, tagger workflow); CI green. The default branch moves only by merging PR #1.
   - Review-gate findings (2026-10-23), all fixed: (1) browsers could post server-side KPI events → `CLIENT_EVENTS` allowlist; (2) a late-committing lock left later reviews built on a stale rating → gradePending rebuilds reviews after the first pending call (test); (3) stale Lab docs → QUALITY_SCORE, models-and-grading, ARCHITECTURE; (4) the public share card showed the pick, revealing a moment's best option → pick removed (D-043); (5) "CALLED IT" on wrong reads → "MY READ" unless the pick was best; (6) share image unlimited and uncached → IP rate limit, 1-day immutable cache, memoised tokens; (7) a regrade re-fired call_graded → events only for first grades; (8) no way back to a review after a reload → a 409 shows the review link (e2e); (9) radar dropped powerplay and death-bowling calls → domains from every decision type and phase; (10) tower queried members serially → in parallel; (11) the coin-flip sentence hard-coded 2 → `COIN_FLIP_BAND_PTS`.
 
 ### Phase 4 — Desk and generation contract
