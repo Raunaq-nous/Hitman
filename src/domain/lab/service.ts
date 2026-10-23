@@ -9,6 +9,8 @@ import { momentDifficulty, START, updateRating } from "@/engine/readRating";
 import { brierSeries, domainScores, MIN_SAMPLE, reliabilityBuckets } from "@/engine/reliability";
 import { alterEgo as identityOf, MIN_CROWD, type Identity, type IdentityCall } from "@/engine/alterEgo";
 import { rateBand } from "@/engine/options";
+import { anomalyFlags, lockAllowed, type Flag } from "@/engine/anticheat";
+import { log } from "@/providers/log";
 import { DECISION_TYPE_LABEL, type CallReview, type LockedCall, type LockInput, type Notebook, type NotebookCall, type PrelockMoment, type SeasonFile, type ShareCardData } from "./types";
 
 const cache = namedCache<repo.MomentsFile>("lab-moments", { ttlMs: 24 * 60 * 60 * 1000, maxEntries: 1 });
@@ -57,9 +59,15 @@ export async function lockCall(userId: string, input: LockInput): Promise<Locked
   if (!m) throw new DomainError("NOT_FOUND", "No such moment.");
   if (!m.decision.options.some((o) => o.option === input.option)) throw new DomainError("INVALID", "Pick one of the moment's options.");
   if (!(input.confidence >= 0.5 && input.confidence <= 0.99)) throw new DomainError("INVALID", "Confidence is between 50% and 99%.");
+  // golden moments are historical (D-040); live moments will pass mode "live" and the feed's cutoff
+  const allowed = lockAllowed({ mode: "historical", serverNow: new Date().toISOString(), feedCutoff: m.observedCutoff });
+  if (!allowed.ok) throw new DomainError("CLOSED", allowed.reason);
   const row = await repo.insertCall(userId, { momentId: m.id, option: input.option, confidence: input.confidence });
   if (!row) throw new DomainError("CONFLICT", "You've already locked a call on this moment.");
   await track("call_locked", { momentId: m.id, callId: row.id, confidence: Math.round(row.confidence * 100) }, userId);
+  // anomaly flags are a stub: logged for review, never acted on (F-T-05)
+  const flags = await integrityFlags(userId);
+  if (flags.length) log.warn("lab anomaly flags", { userId, flags: flags.map((f) => f.kind) });
   return { ...row, lockedAt: row.lockedAt.toISOString() };
 }
 
@@ -305,4 +313,10 @@ export async function seasonFile(userId: string, now = new Date()): Promise<Seas
     best: byRead.slice(0, 3).filter((c) => (c.readPoints ?? 0) > 0), worst: byRead.slice(-3).reverse().filter((c) => (c.readPoints ?? 0) < 0),
     reliability: nb.reliability, rating: nb.rating, alterEgo: id.revealed ? id.label : null, warnings: nb.warnings,
   };
+}
+
+/** Anomaly flags on a fan's calls (burst locking, implausible streaks, always-maximum confidence), for review only. */
+export async function integrityFlags(userId: string): Promise<Flag[]> {
+  const calls = await repo.callsInLockOrder(userId);
+  return anomalyFlags(calls.map((c) => ({ lockedAt: c.lockedAt.toISOString(), confidence: c.confidence, hit: c.review?.graded ? c.review.hit : null })));
 }
