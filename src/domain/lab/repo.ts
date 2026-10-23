@@ -44,11 +44,12 @@ export type ReviewRow = NonNullable<NonNullable<Awaited<ReturnType<typeof findCa
 export type ReviewData = Omit<ReviewRow, "gradedAt" | "calibration">;
 
 /** Store a review; a review that already exists for the call (a concurrent request) is kept. */
-export async function insertReview(userId: string, callId: string, data: ReviewData): Promise<void> {
+export async function insertReview(userId: string, callId: string, data: ReviewData): Promise<boolean> {
   try {
     await prisma.decisionReview.create({ data: { userId, callId, ...data } });
+    return true;
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") return;
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") return false;
     throw e;
   }
 }

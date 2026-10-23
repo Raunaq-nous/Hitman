@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getMoment, listMoments } from "@/domain/lab/service";
 import { CallTicket } from "./CallTicket";
+import { MomentViewed } from "../_components/LabEvents";
 import "../lab.css";
 
 export const dynamicParams = false;
@@ -25,6 +26,7 @@ export default async function MomentPage({ params }: { params: Promise<{ momentI
         <p className="crew-lead">IPL {m.season} · {m.venue} · chasing {m.target}</p>
       </header>
       <CallTicket moment={m} />
+      <MomentViewed momentId={m.id} />
     </main>
   );
 }

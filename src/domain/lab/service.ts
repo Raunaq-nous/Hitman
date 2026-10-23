@@ -2,6 +2,7 @@
 // estimates stay on the server until the call is locked (F-L-02/F-L-03).
 import { namedCache } from "@/providers/cache";
 import { DomainError } from "@/domain/shared/types";
+import { track } from "@/domain/analytics/service";
 import * as repo from "./repo";
 import { brier, grade } from "@/engine/grader";
 import { momentDifficulty, START, updateRating } from "@/engine/readRating";
@@ -56,6 +57,7 @@ export async function lockCall(userId: string, input: LockInput): Promise<Locked
   if (!(input.confidence >= 0.5 && input.confidence <= 0.99)) throw new DomainError("INVALID", "Confidence is between 50% and 99%.");
   const row = await repo.insertCall(userId, { momentId: m.id, option: input.option, confidence: input.confidence });
   if (!row) throw new DomainError("CONFLICT", "You've already locked a call on this moment.");
+  await track("call_locked", { momentId: m.id, callId: row.id, confidence: Math.round(row.confidence * 100) }, userId);
   return { ...row, lockedAt: row.lockedAt.toISOString() };
 }
 
@@ -92,7 +94,7 @@ async function gradePending(userId: string): Promise<void> {
     const m = storedMoment(c.momentId);
     if (!m) continue;
     const g = gradeCall(m, c, prior, leveragePercentile(m));
-    await repo.insertReview(userId, c.id, { momentId: m.id, ...g, momentsHash: f.hash, outcomesHash: f.outcomesHash, optionsHash: f.optionsHash });
+    if (await repo.insertReview(userId, c.id, { momentId: m.id, ...g, momentsHash: f.hash, outcomesHash: f.outcomesHash, optionsHash: f.optionsHash })) await track("call_graded", { callId: c.id, coinFlip: g.coinFlip }, userId);
     prior = { rating: g.ratingAfter, graded: prior.graded + (g.graded ? 1 : 0) };
   }
 }
@@ -106,7 +108,7 @@ export async function reviewCall(userId: string, momentId: string): Promise<Call
   const r = c?.review;
   if (!c || !r) throw new DomainError("NOT_FOUND", "Lock a call on this moment first.");
   return {
-    momentId, call: { option: c.option, confidence: c.confidence, lockedAt: c.lockedAt.toISOString() },
+    momentId, callId: c.id, call: { option: c.option, confidence: c.confidence, lockedAt: c.lockedAt.toISOString() },
     grade: { graded: r.graded, coinFlip: r.coinFlip, best: r.best, readPoints: r.readPoints, hit: r.hit, brier: r.brier, calibration: "provisional" },
     rating: { before: r.ratingBefore, after: r.ratingAfter, difficulty: r.difficulty },
     options: m.decision.options.map((o) => ({ option: o.option, label: o.label, wp: o.wp })),

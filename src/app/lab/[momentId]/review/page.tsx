@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { currentUserId } from "@/providers/auth";
 import { isDomainError } from "@/domain/shared/types";
 import { nextMomentFor, reviewCall } from "@/domain/lab/service";
+import { track } from "@/domain/analytics/service";
+import { NextReadLink } from "../../_components/LabEvents";
 import type { CallReview } from "@/domain/lab/types";
 import { ProvisionalBadge, Receipt, SwingSeismograph } from "@/ui";
 import "../../lab.css";
@@ -45,6 +47,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ momentI
     throw e;
   }
   const next = await nextMomentFor(userId, momentId);
+  await track("review_viewed", { callId: r.callId }, userId);
   const m = r.moment;
   const t0 = 120 - m.ballsLeft;
   const pick = r.options.find((o) => o.option === r.call.option);
@@ -101,11 +104,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ momentI
       />
 
       <p className="lab-lesson" data-testid="lesson">{lesson(r)}</p>
-      <p>
-        {next
-          ? <Link className="lab-btn" href={`/lab/${next}`} data-testid="next-read">Next read</Link>
-          : <Link className="lab-btn" href="/lab" data-testid="next-read">Next read</Link>}
-      </p>
+      <p><NextReadLink fromCallId={r.callId} momentId={next} /></p>
     </main>
   );
 }
