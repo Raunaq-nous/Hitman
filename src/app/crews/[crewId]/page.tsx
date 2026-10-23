@@ -58,7 +58,7 @@ export default async function CrewPage({ params }: { params: Promise<{ crewId: s
             ))}
           </ul>
         )}
-        <p><Link href={`/crews/${crew.id}/leaderboard`}>Crew standings</Link></p>
+        <p><Link href={`/crews/${crew.id}/tower`}>Timing tower (Read Rating)</Link> · <Link href={`/crews/${crew.id}/leaderboard`}>Crew standings</Link></p>
       </section>
       <LeaveButton crewId={crew.id} />
     </main>
