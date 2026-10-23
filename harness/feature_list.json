@@ -1284,8 +1284,8 @@
         "F-F-11",
         "F-R-02"
       ],
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "node harness/verify.mjs --clean exit 0 at 4f90a6e: fresh git worktree; harness/init.mjs (install, .env.local from .env.example with no GEMINI_API_KEY or paid-data keys, LIVE_CALLS=false, database, migrate, seed) PASS; then feature list, lint, typecheck, unit tests (Postgres), build and e2e (every main journey: landing, sign-up, onboarding, Desk, Event Rooms, Lab call → review → next read, Notebook, Read Rating, crews and tower, roster and persona tools, Dossier Reveal, Season File, settings export/delete, legal pages) all PASS. Summary in docs/evidence/F-Z-01/verify-clean-2026-10-23.txt."
     },
     {
       "id": "F-Z-02",
