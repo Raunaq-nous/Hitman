@@ -15,6 +15,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   fetch:
+    # only on overhaul, however it is triggered (a manual dispatch on main is skipped)
+    if: github.ref == 'refs/heads/overhaul'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     services:
@@ -76,8 +78,9 @@ jobs:
       - name: Commit back to the triggering branch
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # the commit is authored as the repository owner; it is pushed with the workflow's GITHUB_TOKEN
+          git config user.name "Raunaq-nous"
+          git config user.email "164249000+Raunaq-nous@users.noreply.github.com"
           git add data/fixtures data/derived data/manifest.json
           if git diff --cached --quiet; then echo "nothing new"; exit 0; fi
           git commit -m "chore(data): courier fixtures, derived tables and manifest"
