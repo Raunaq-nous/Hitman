@@ -1,0 +1,42 @@
+# Checks the Codespace setup (docs/TESTING.md) on a runner: builds .devcontainer/ with the official devcontainer CLI,
+# which runs the same postCreateCommand (install, .env.local, npm run db:local, migrate, seed) and postStartCommand as
+# a Codespace, then runs the app on port 3000 and requests the main pages. Also records the repository owner's
+# account id for the authorship check (D-047).
+name: Devcontainer check
+on:
+  push:
+    branches: [overhaul]
+    paths:
+      - ".devcontainer/**"
+      - "scripts/db-seed.ts"
+      - ".github/workflows/devcontainer-check.yml"
+permissions:
+  contents: read
+jobs:
+  codespace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Owner account (GET /users/Raunaq-nous)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api users/Raunaq-nous --jq '{login: .login, id: .id, type: .type}'
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Build the devcontainer and run its create and start commands
+        # postAttachCommand (npm run dev) never exits; the next step runs the app instead
+        timeout-minutes: 20
+        run: npx --yes @devcontainers/cli@0.87.0 up --workspace-folder . --remove-existing-container --skip-post-attach
+      - name: Run the app on port 3000 and request the main pages
+        timeout-minutes: 10
+        run: |
+          npx --yes @devcontainers/cli@0.87.0 exec --workspace-folder . bash -lc '
+            set -euo pipefail
+            nohup npm run dev > /tmp/dev.log 2>&1 &
+            for i in $(seq 1 120); do curl -s -o /dev/null http://localhost:3000/ && break; sleep 2; done
+            for p in / /lab /desk /rooms /roster /terms /login /register; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:3000$p")
+              echo "$p $code"; [ "$code" = 200 ] || { tail -50 /tmp/dev.log; exit 1; }
+            done
+            grep -E "^(NEXTAUTH_SECRET|ADMIN_EMAILS)=" .env.local | sed "s/=\".\{8\}.*/=\"…set\"/"
+          '
