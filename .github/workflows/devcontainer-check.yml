@@ -20,13 +20,14 @@ jobs:
       - name: Owner account (GET /users/Raunaq-nous)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api users/Raunaq-nous --jq '{login: .login, id: .id, type: .type}'
+        run: |
+          gh api users/Raunaq-nous --jq '{login: .login, id: .id, type: .type}'
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Build the devcontainer and run its create and start commands
-        run: npx --yes @devcontainers/cli@0.72.0 up --workspace-folder . --remove-existing-container
+        run: npx --yes @devcontainers/cli@0.87.0 up --workspace-folder . --remove-existing-container
       - name: Run the app on port 3000 and request the main pages
         run: |
-          npx --yes @devcontainers/cli@0.72.0 exec --workspace-folder . bash -lc '
+          npx --yes @devcontainers/cli@0.87.0 exec --workspace-folder . bash -lc '
             set -euo pipefail
             nohup npm run dev > /tmp/dev.log 2>&1 &
             for i in $(seq 1 120); do curl -s -o /dev/null http://localhost:3000/ && break; sleep 2; done
