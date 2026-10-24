@@ -1,0 +1,4 @@
+{"tags":[
+ {"tag":"gate-7","sha":"930e5ad2fa4da7ddaa0a77135e5ab8364040db5d","message":"Gate 7: clean install with no keys, docs gardened, release. All 85 features passing."},
+ {"tag":"v0.1.0-beta","sha":"930e5ad2fa4da7ddaa0a77135e5ab8364040db5d","message":"ALTER EGO v0.1.0-beta: historical Decision Lab, Desk and Event Rooms, Crews, Roster and Alter Ego. Free to play, no money."}
+]}
