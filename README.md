@@ -2,6 +2,10 @@
 
 Working title for a multi-sport AI sports desk and game, evolving from HITMAN, an IPL fantasy app. Free to play, no money ever. The repo holds the Decision Lab (real IPL moments, graded on decision quality), the Desk and Event Rooms, Crews with a Read Rating timing tower, the Roster of five AI analysts, and the Alter Ego.
 
+## Test it
+
+Open a Codespace: https://codespaces.new/Raunaq-nous/Hitman. It installs everything, seeds the committed real data and opens the app on port 3000. Then follow `docs/TESTING.md`.
+
 ## Run it
 
 1. `node harness/init.mjs` (installs dependencies, creates `.env.local` from `.env.example`, starts a local Postgres, applies migrations, seeds). No API keys or paid data are needed.
