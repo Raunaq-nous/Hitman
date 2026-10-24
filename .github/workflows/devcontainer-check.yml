@@ -24,8 +24,11 @@ jobs:
           gh api users/Raunaq-nous --jq '{login: .login, id: .id, type: .type}'
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Build the devcontainer and run its create and start commands
-        run: npx --yes @devcontainers/cli@0.87.0 up --workspace-folder . --remove-existing-container
+        # postAttachCommand (npm run dev) never exits; the next step runs the app instead
+        timeout-minutes: 20
+        run: npx --yes @devcontainers/cli@0.87.0 up --workspace-folder . --remove-existing-container --skip-post-attach
       - name: Run the app on port 3000 and request the main pages
+        timeout-minutes: 10
         run: |
           npx --yes @devcontainers/cli@0.87.0 exec --workspace-folder . bash -lc '
             set -euo pipefail
