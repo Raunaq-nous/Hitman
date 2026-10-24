@@ -1,0 +1,23 @@
+{
+  "name": "ALTER EGO",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+  "hostRequirements": { "cpus": 4, "memory": "8gb" },
+  "containerEnv": {
+    "LIVE_CALLS": "false",
+    "PROTOTYPE_DATA": "true"
+  },
+  // once: install dependencies, write .env.local, start the database (npm run db:local), migrate, seed the committed real fixtures
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  // every start: the embedded database doesn't survive a container restart
+  "postStartCommand": "npm run db:local",
+  // every attach: run the app on port 3000 in the terminal
+  "postAttachCommand": { "app": "npm run dev" },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "ALTER EGO", "onAutoForward": "openBrowser" }
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["docs/TESTING.md"] },
+    "vscode": { "extensions": ["Prisma.prisma", "dbaeumer.vscode-eslint"] }
+  }
+}
