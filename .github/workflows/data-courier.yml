@@ -4,6 +4,8 @@ name: Data courier
 on:
   workflow_dispatch:
   push:
+    # requests are made on the working branch; merging them into main must not re-run the courier there
+    branches: [overhaul]
     paths:
       - "data/requests/*.json"
 permissions:
