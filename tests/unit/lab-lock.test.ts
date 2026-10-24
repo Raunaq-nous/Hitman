@@ -43,7 +43,8 @@ describe("lock API: POST /api/lab/calls (lock)", () => {
     expect(Date.parse(body.lockedAt)).toBeGreaterThanOrEqual(before - 1000);
     expect(Date.parse(body.lockedAt)).toBeLessThanOrEqual(Date.now() + 1000);
     // the lock response carries no reveal and no model estimate
-    expect(JSON.stringify(body)).not.toMatch(/wp|reveal|winner|chaseWon|best/);
+    // exactly these fields (a substring search would trip on random ids that happen to contain "wp")
+    expect(Object.keys(body).sort()).toEqual(["confidence", "id", "lockedAt", "momentId", "option"]);
     const row = await prisma.labCall.findUniqueOrThrow({ where: { userId_momentId: { userId: fan.id, momentId: moment.id } } });
     expect(row.lockedAt.toISOString()).toBe(body.lockedAt);
   });
