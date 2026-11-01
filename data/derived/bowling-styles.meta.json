@@ -1,9 +1,9 @@
 {
   "source": "Wikidata (CC0) via Cricsheet people register",
-  "fetchedAt": "2026-10-23T12:24:37.568Z",
+  "fetchedAt": "2026-11-01T18:45:53.386Z",
   "register": {
     "url": "https://cricsheet.org/register/people.csv",
-    "sha256": "a643e7f4479c7e6d448c9ab8d36b1254917d3de356b707f728612ab47113a08f"
+    "sha256": "ffacf43c141d729ff3a999d6fce9a2777bd462a1bb86c086467dda88946ae990"
   },
   "propertyCandidates": [
     {
