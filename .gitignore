@@ -64,3 +64,4 @@ harness/.agent-heartbeat
 /blob-report/
 
 /coverage/
+graphify-out/
